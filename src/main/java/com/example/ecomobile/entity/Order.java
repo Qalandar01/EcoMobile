@@ -2,10 +2,7 @@ package com.example.ecomobile.entity;
 
 import com.example.ecomobile.base.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,6 +26,6 @@ public class Order extends BaseEntity {
     private User user;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order",fetch = FetchType.EAGER)
     private List<OrderItem> orderItems;
 }

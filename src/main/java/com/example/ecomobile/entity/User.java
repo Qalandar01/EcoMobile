@@ -33,6 +33,6 @@ public class User extends BaseEntity {
     @ManyToOne
     private Attachment attachment;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private List<Location> locations ;
 }

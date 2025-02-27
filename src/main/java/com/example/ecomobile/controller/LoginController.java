@@ -5,6 +5,7 @@ import com.example.ecomobile.dto.EmailDTO;
 import com.example.ecomobile.dto.LoginDTO;
 import com.example.ecomobile.entity.User;
 import com.example.ecomobile.service.JwtService;
+import com.example.ecomobile.service.LoginService;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
@@ -28,13 +29,15 @@ public class LoginController {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final JavaMailSender mailSender;
+    private final LoginService loginService;
 
 
-    public LoginController(AuthenticationManager authenticationManager, JwtService jwtService, JavaMailSender mailSender) {
+    public LoginController(AuthenticationManager authenticationManager, JwtService jwtService, JavaMailSender mailSender, LoginService loginService) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
 
         this.mailSender = mailSender;
+        this.loginService = loginService;
     }
 
     @PostMapping("/login")
@@ -54,30 +57,7 @@ public class LoginController {
 
     @PostMapping("/forgot-password")
     public HttpEntity<?> sendEmail(@RequestBody EmailDTO email) {
-        System.out.println("email = " + email.getEmail());
-
-        Random random = new Random();
-        int resetCode = 100000 + random.nextInt(999999);
-
-        // Send email with reset code
-        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        simpleMailMessage.setTo(email.getEmail());
-        simpleMailMessage.setSubject("Password Reset Code");
-        simpleMailMessage.setText("Your password reset code is: " + resetCode);
-
-
-        mailSender.send(simpleMailMessage);
-
-        System.out.println("Reset code sent: " + resetCode);
-
-        // Schedule a task to expire the code after 1 minute
-        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-        scheduler.schedule(() -> {
-            // Logic to expire the reset code after 1 minute
-            System.out.println("Reset code expired after 1 minute.");
-        }, 1, TimeUnit.MINUTES);
-
-        return ResponseEntity.ok("A reset code has been sent to your email.");
+        loginService.
     }
 
 

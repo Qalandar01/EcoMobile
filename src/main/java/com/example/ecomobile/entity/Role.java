@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 
 @Data
 @AllArgsConstructor
@@ -18,8 +19,16 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @Table(name = "roles")
-public class Role extends BaseEntity {
+public class Role extends BaseEntity implements GrantedAuthority {
 
     @Enumerated(EnumType.STRING)
     private RoleName roleName;
+
+    @Override
+    public String getAuthority() {
+        return roleName.name();
+    }
+    public Role(Long id, RoleName roleName) {
+        this.roleName = roleName;
+    }
 }

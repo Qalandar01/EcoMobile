@@ -8,6 +8,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -17,7 +18,10 @@ import java.util.stream.Collectors;
 @Service
 public class JwtService {
 
-    private final SecretKey secretKey = Keys.hmacShaKeyFor("01234567890123456789012345678912".getBytes());
+    @Value("${custom.key}")
+    private String secretKeyForToken;
+
+    private final SecretKey secretKey = Keys.hmacShaKeyFor(secretKeyForToken.getBytes());
 
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();

@@ -212,10 +212,22 @@
         <a href="#" onclick="openModal()">Forgot Password?</a>
     </div>
     <div class="register-link">
-        <p>Don't have an account? <a href="#" onclick="">Register</a></p>
+        <p>Don't have an account? <a href="#" onclick="openRegisterModal()">Register</a></p>
     </div>
 </div>
-
+<div id="register-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeRegisterModal()">&times;</span>
+        <h3>Register</h3>
+        <form onsubmit="handleRegister(event)">
+            <input type="email" id="register-email" placeholder="Enter your email" required>
+            <br>
+            <input type="password" id="register-password" placeholder="Enter your password" required>
+            <br>
+            <button type="submit">Register</button>
+        </form>
+    </div>
+</div>
 <div id="forgot-password-modal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
@@ -225,6 +237,7 @@
         <button onclick="sendResetCode()">Send Code</button>
     </div>
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="js/request.js"></script>
@@ -307,6 +320,42 @@
             alert("Failed to send reset code. Please try again.");
         });
     }
+
+
+    function openRegisterModal() {
+        document.getElementById("register-modal").style.display = "flex";
+    }
+
+    function closeRegisterModal() {
+        document.getElementById("register-modal").style.display = "none";
+    }
+
+    function handleRegister(event) {
+        event.preventDefault();
+        const email = document.getElementById("register-email").value;
+        const password = document.getElementById("register-password").value;
+
+        if (!email || !password) {
+            alert("Please enter all fields!");
+            return;
+        }
+
+        request({
+            url: "/register",
+            method: "POST",
+            data: {
+                email: email,
+                password: password
+            }
+        }).then(res => {
+            alert("Registration successful!");
+            closeRegisterModal();
+        }).catch(error => {
+            console.error("Error:", error);
+            alert("Failed to register. Please try again.");
+        });
+    }
+
 
 
 </script>

@@ -21,12 +21,6 @@ public class Product extends BaseEntity {
     private String name;
     private Double price;
 
-    @Enumerated(EnumType.STRING)
-    private Size size;
-
-    @Enumerated(EnumType.STRING)
-    private ColorName colorName ;
-
     private String description;
 
     @Enumerated(EnumType.STRING)

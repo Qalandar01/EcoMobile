@@ -55,10 +55,10 @@ public class LoginController {
         return ResponseEntity.ok(jwtService.generateToken(user));
     }
 
-    @PostMapping("/forgot-password")
-    public HttpEntity<?> sendEmail(@RequestBody EmailDTO email) {
-        loginService.
-    }
+//    @PostMapping("/forgot-password")
+//    public HttpEntity<?> sendEmail(@RequestBody EmailDTO email) {
+//        loginService.
+//    }
 
 
 

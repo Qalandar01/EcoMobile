@@ -26,44 +26,53 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Role role =Role.builder()
-                .roleName(RoleName.ROLE_SUPER_ADMIN)
-                .build();
-        Role role1 =Role.builder()
-                .roleName(RoleName.ROLE_ADMIN)
-                .build();
-        Role role2 =Role.builder()
-                .roleName(RoleName.ROLE_USER)
-                .build();
-        roleRepository.save(role);
-        roleRepository.save(role1);
-        roleRepository.save(role2);
-        User user = User.builder()
-                .roles(new ArrayList<>(List.of(role)))
-                .email("nayimovalisher06@gmail.com")
-                .password(passwordEncoder.encode("1"))
-                .firstname("Alisher")
-                .lastname("Nayimov")
-                .phone("+998914474587")
-                .build();
-        User user1= User.builder()
-                .email("qalandar2201@gmail.com")
-                .firstname("Qalandar")
-                .password(passwordEncoder.encode("2"))
-                .phone("+998914368678")
-                .lastname("Qalandarov")
-                .roles(new ArrayList<>(List.of(role1)))
-                .build();
-        User user2= User.builder()
-                .roles(new ArrayList<>(List.of(role2)))
-                .email("akmalovmavlon5@gmail.com")
-                .password(passwordEncoder.encode("3"))
-                .firstname("Mavlon")
-                .lastname("Akmalov")
-                .phone("+998945060701")
-                .build();
-        userRepository.save(user);
-        userRepository.save(user1);
-        userRepository.save(user2);
+//        Role role =Role.builder()
+//                .roleName(RoleName.ROLE_SUPER_ADMIN)
+//                .build();
+//        Role role1 =Role.builder()
+//                .roleName(RoleName.ROLE_ADMIN)
+//                .build();
+//        Role role2 =Role.builder()
+//                .roleName(RoleName.ROLE_USER)
+//                .build();
+//        roleRepository.save(role);
+//        roleRepository.save(role1);
+//        roleRepository.save(role2);
+//        User user = User.builder()
+//                .roles(new ArrayList<>(List.of(role)))
+//                .email("nayimovalisher06@gmail.com")
+//                .password(passwordEncoder.encode("1"))
+//                .firstname("Alisher")
+//                .lastname("Nayimov")
+//                .phone("+998914474587")
+//                .build();
+//        User user1= User.builder()
+//                .email("qalandar2201@gmail.com")
+//                .firstname("Qalandar")
+//                .password(passwordEncoder.encode("2"))
+//                .phone("+998914368678")
+//                .lastname("Qalandarov")
+//                .roles(new ArrayList<>(List.of(role1)))
+//                .build();
+//        User user2= User.builder()
+//                .roles(new ArrayList<>(List.of(role2)))
+//                .email("akmalovmavlon5@gmail.com")
+//                .password(passwordEncoder.encode("3"))
+//                .firstname("Mavlon")
+//                .lastname("Akmalov")
+//                .phone("+998945060701")
+//                .build();
+//        User user3= User.builder()
+//                .roles(new ArrayList<>(List.of(role2)))
+//                .email("masturabonu.1985@gmail.com")
+//                .password(passwordEncoder.encode("4"))
+//                .firstname("Abdulloh")
+//                .lastname("Abduqodirov")
+//                .phone("+998994095956")
+//                .build();
+//        userRepository.save(user);
+//        userRepository.save(user3);
+//        userRepository.save(user1);
+//        userRepository.save(user2);
     }
 }

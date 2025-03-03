@@ -74,12 +74,11 @@ public class JwtService {
     }
 
     private Claims getClaims(String token) {
-        Claims claims = Jwts.parser()
+        return Jwts.parser()
                 .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-        return claims;
     }
 
     public List<Role> getRoles(String token) {

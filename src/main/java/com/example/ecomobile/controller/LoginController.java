@@ -1,11 +1,15 @@
 package com.example.ecomobile.controller;
 
 import com.example.ecomobile.config.security.CustomUserDetails;
+import com.example.ecomobile.dto.EmailConfirmationDTO;
 import com.example.ecomobile.dto.EmailDTO;
 import com.example.ecomobile.dto.LoginDTO;
+import com.example.ecomobile.dto.ResetPasswordDTO;
 import com.example.ecomobile.entity.User;
+import com.example.ecomobile.repo.UserRepository;
 import com.example.ecomobile.service.JwtService;
 import com.example.ecomobile.service.LoginService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
@@ -13,11 +17,10 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -30,14 +33,18 @@ public class LoginController {
     private final JwtService jwtService;
     private final JavaMailSender mailSender;
     private final LoginService loginService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
 
-    public LoginController(AuthenticationManager authenticationManager, JwtService jwtService, JavaMailSender mailSender, LoginService loginService) {
+    public LoginController(AuthenticationManager authenticationManager, JwtService jwtService, JavaMailSender mailSender, LoginService loginService, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
 
         this.mailSender = mailSender;
         this.loginService = loginService;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/login")
@@ -55,10 +62,27 @@ public class LoginController {
         return ResponseEntity.ok(jwtService.generateToken(user));
     }
 
-//    @PostMapping("/forgot-password")
-//    public HttpEntity<?> sendEmail(@RequestBody EmailDTO email) {
-//        loginService.
-//    }
+    @PostMapping("/forgot-password")
+    public HttpEntity<?> sendEmail(@Valid @RequestBody EmailDTO email) {
+        return loginService.sendConfirmationCode(email);
+    }
+
+    @PostMapping("/verify-code")
+    public HttpEntity<?> verifyCode(@RequestBody EmailConfirmationDTO emailConfirmationDTO){
+        return loginService.verifyCode(emailConfirmationDTO);
+    }
+
+    @PostMapping("/set-new-password")
+    public HttpEntity<?> setNewPassword(@RequestBody ResetPasswordDTO resetPasswordDTO){
+        Optional<User> optionalUser = userRepository.findByEmail(resetPasswordDTO.getEmail());
+        if (optionalUser.isEmpty()){
+            return ResponseEntity.badRequest().build();
+        }
+        User user = optionalUser.get();
+        user.setPassword(passwordEncoder.encode(resetPasswordDTO.getPassword()));
+        userRepository.save(user);
+        return ResponseEntity.accepted().build();
+    }
 
 
 

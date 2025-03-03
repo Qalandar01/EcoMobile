@@ -22,8 +22,8 @@ import java.util.List;
 public class ProductColor extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ColorName colorName;
-
-    @ManyToMany
-    private List<Product> products;
+//
+//    @ManyToMany
+//    private List<Product> products;
 
 }

@@ -1,11 +1,12 @@
 package com.example.ecomobile.dto;
 
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Value
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class CategoryProductCountDTO {
-     Integer categoryId;
-     String categoryName;
-     Integer productCount;
+     String name;
 }
-

@@ -5,12 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class ResetPasswordDTO {
-    @NotBlank
+public class EmailConfirmationDTO {
     @Email
     private String email;
-
     @NotBlank
-    private String password;
-
+    private String code;
 }

@@ -201,7 +201,7 @@
     }
 
     function loadCategories() {
-        axios.get("http://localhost:8080/category")
+        axios.get("http://localhost:8080/api/category")
             .then(res => {
                 let categoryList = document.getElementById("categoryList");
                 let productCategory = document.getElementById("productCategory"); // agar mahsulot qo'shish formasida select kerak bo'lsa
@@ -238,7 +238,7 @@
     function addCategory(event) {
         event.preventDefault();
         let categoryName = document.getElementById("categoryName").value;
-        axios.post("http://localhost:8080/category", { name: categoryName })
+        axios.post("http://localhost:8080/api/category", { name: categoryName })
             .then(() => {
                 loadCategories();
                 document.getElementById("categoryName").value = "";
@@ -248,7 +248,7 @@
     }
 
     function deleteCategory(id) {
-        axios.delete(`http://localhost:8080/category/${id}`)
+        axios.delete(`http://localhost:8080/api/category/${id}`)
             .then(() => loadCategories())
             .catch(err => alert("Failed to delete category!"));
     }
@@ -256,7 +256,7 @@
     function editCategory(id, currentName) {
         let newName = prompt("Edit Category Name", currentName);
         if (newName && newName !== currentName) {
-            axios.put(`http://localhost:8080/category/${id}`, { name: newName })
+            axios.put(`http://localhost:8080/api/category/${id}`, { name: newName })
                 .then(() => loadCategories())
                 .catch(err => alert("Failed to update category!"));
         }

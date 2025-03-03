@@ -8,7 +8,7 @@ function handleLogin(event) {
         .then(response => {
             alert("Login successful!");
             localStorage.setItem("token", response.data.token);
-            window.location.href = "dashboard.html";
+            window.location.href = "admin.html";
         })
         .catch(error => {
             document.getElementById("email-error").textContent = error.response?.data?.message || "Invalid email or password";

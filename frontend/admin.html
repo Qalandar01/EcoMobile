@@ -58,7 +58,7 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        axios.get("http://localhost:8080/category")
+        axios.get("http://localhost:8080/api/category")
             .then(response => {
                 let categorySelect = document.getElementById("category");
                 response.data.forEach(category => {

@@ -38,13 +38,14 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public void update(@RequestBody CategoryProductCountDTO categoryProductCountDTO, @PathVariable Integer id){
-        Category category = Category
-                .builder()
-                .name(categoryProductCountDTO.getName())
-                .build();
-        categoryRepository.save(category) ;
+    public void update(@RequestBody CategoryProductCountDTO categoryProductCountDTO, @PathVariable Integer id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found!"));
+
+        category.setName(categoryProductCountDTO.getName()); // Eski obyektning nomini yangilaymiz
+        categoryRepository.save(category); // Yangilangan obyektni saqlaymiz
     }
+
 
 
 

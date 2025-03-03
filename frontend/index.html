@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mahsulot Kartalari</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: sans-serif;
+    }
+
+    body {
+      background-color: #f6f6f6;
+      padding: 20px;
+    }
+
+    .cards-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    /* Har bir kartaning asosiy stili */
+    .product-card {
+      background-color: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      width: 300px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Mahsulot rasmi */
+    .product-image {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      background-color: #ddd;
+    }
+
+    /* Kartaning ichki qismi (rasmdan pastki qismi) */
+    .product-content {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Mahsulot nomi */
+    .product-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    /* Reyting (yulduzlar) */
+    .rating {
+      color: #f5b50a;
+      font-size: 1rem;
+    }
+
+    .rating span {
+      margin-right: 3px;
+    }
+
+    /* Narx, hajm, rangi tanlash kabi elementlar uchun */
+    .product-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .product-size label,
+    .product-color label {
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: inline-block;
+      margin-right: 5px;
+    }
+
+    /* Hajm tugmalari */
+    .size-options {
+      display: flex;
+      gap: 5px;
+    }
+    .size-options input[type="radio"] {
+      display: none;
+    }
+    .size-options label {
+      border: 1px solid #ccc;
+      padding: 5px 10px;
+      border-radius: 4px;
+    }
+    .size-options input[type="radio"]:checked + label {
+      background-color: #000;
+      color: #fff;
+      border-color: #000;
+    }
+
+    /* Rang doiralari */
+    .color-options {
+      display: flex;
+      gap: 5px;
+    }
+    .color-options input[type="radio"] {
+      display: none;
+    }
+    .color-circle {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+    }
+    .color-options input[type="radio"]:checked + .color-circle {
+      border: 2px solid #000;
+    }
+
+    /* Mahsulot ta’rifi */
+    .product-description {
+      font-size: 0.9rem;
+      color: #555;
+      line-height: 1.4;
+    }
+
+    /* Narx */
+    .product-price {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    /* Tugmalar */
+    .product-buttons {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+    }
+    .stock-info {
+      font-size: 0.9rem;
+      color: green;
+    }
+    .add-to-cart {
+      background-color: #000;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .add-to-cart:hover {
+      opacity: 0.9;
+    }
+
+  </style>
+</head>
+<body>
+
+<h1 style="text-align: center; margin-bottom: 30px;">Mahsulot Kartalari</h1>
+
+<div class="cards-container">
+
+  <!-- 1-Karta: Futbolka -->
+  <div class="product-card">
+    <img
+            src="https://via.placeholder.com/300x250?text=T-shirt"
+            alt="T-shirt"
+            class="product-image"
+    />
+    <div class="product-content">
+      <h2 class="product-title">Roller Rabbit T-shirt</h2>
+      <div class="rating">
+        <span>★</span><span>★</span><span>★</span><span>★</span><span>☆</span>
+        <span style="color: #555; font-size: 0.9rem;">(120 reviews)</span>
+      </div>
+
+      <div class="product-options">
+        <div class="product-size">
+          <label>Size:</label>
+          <div class="size-options">
+            <input type="radio" name="size1" id="s1-xs" />
+            <label for="s1-xs">XS</label>
+
+            <input type="radio" name="size1" id="s1-s" />
+            <label for="s1-s">S</label>
+
+            <input type="radio" name="size1" id="s1-m" checked />
+            <label for="s1-m">M</label>
+
+            <input type="radio" name="size1" id="s1-l" />
+            <label for="s1-l">L</label>
+
+            <input type="radio" name="size1" id="s1-xl" />
+            <label for="s1-xl">XL</label>
+          </div>
+        </div>
+      </div>
+
+      <p class="product-description">
+        Ushbu futbolka eng sifatli matodan tayyorlangan bo‘lib, kundalik kiyinishda juda qulay.
+      </p>
+
+      <div class="product-price">$198.00</div>
+
+      <div class="product-buttons">
+        <span class="stock-info">Available in stock</span>
+        <button class="add-to-cart">Add to cart</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2-Karta: Krossovkalar -->
+  <div class="product-card">
+    <img
+            src="https://via.placeholder.com/300x250?text=Sneakers"
+            alt="Sneakers"
+            class="product-image"
+    />
+    <div class="product-content">
+      <h2 class="product-title">Axel Arigato Clean 90</h2>
+      <div class="rating">
+        <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+        <span style="color: #555; font-size: 0.9rem;">(270 reviews)</span>
+      </div>
+
+      <div class="product-options">
+        <div class="product-size">
+          <label>Size:</label>
+          <div class="size-options">
+            <input type="radio" name="size2" id="s2-39" />
+            <label for="s2-39">39</label>
+
+            <input type="radio" name="size2" id="s2-40" />
+            <label for="s2-40">40</label>
+
+            <input type="radio" name="size2" id="s2-41" checked />
+            <label for="s2-41">41</label>
+
+            <input type="radio" name="size2" id="s2-42" />
+            <label for="s2-42">42</label>
+
+            <input type="radio" name="size2" id="s2-43" />
+            <label for="s2-43">43</label>
+          </div>
+        </div>
+      </div>
+
+      <p class="product-description">
+        Ushbu krossovkalar oyoqqa juda yengil va qulay bo‘lib, har qanday uslub bilan yaxshi ketadi.
+      </p>
+
+      <div class="product-price">$245.00</div>
+
+      <div class="product-buttons">
+        <span class="stock-info">Available in stock</span>
+        <button class="add-to-cart">Add to cart</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3-Karta: Ryukzak -->
+  <div class="product-card">
+    <img
+            src="https://via.placeholder.com/300x250?text=Backpack"
+            alt="Backpack"
+            class="product-image"
+    />
+    <div class="product-content">
+      <h2 class="product-title">Herschel Supply Co. Backpack</h2>
+      <div class="rating">
+        <span>★</span><span>★</span><span>★</span><span>★</span><span>☆</span>
+        <span style="color: #555; font-size: 0.9rem;">(90 reviews)</span>
+      </div>
+
+      <div class="product-options">
+        <div class="product-color">
+          <label>Color:</label>
+          <div class="color-options">
+            <input type="radio" name="color3" id="color3-black" />
+            <label for="color3-black">
+              <div class="color-circle" style="background-color: black;"></div>
+            </label>
+
+            <input type="radio" name="color3" id="color3-gray" checked />
+            <label for="color3-gray">
+              <div class="color-circle" style="background-color: gray;"></div>
+            </label>
+
+            <input type="radio" name="color3" id="color3-beige" />
+            <label for="color3-beige">
+              <div class="color-circle" style="background-color: beige;"></div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <p class="product-description">
+        Kundalik ishlatishga juda qulay bo‘lgan keng ryukzak. Ish, o‘qish yoki sayohat uchun juda yaxshi tanlov.
+      </p>
+
+      <div class="product-price">$245.00</div>
+
+      <div class="product-buttons">
+        <span class="stock-info">Available in stock</span>
+        <button class="add-to-cart">Add to cart</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

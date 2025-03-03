@@ -1,8 +1,14 @@
 package com.example.ecomobile.config;
 
+import com.example.ecomobile.entity.ProductColor;
+import com.example.ecomobile.entity.ProductSize;
 import com.example.ecomobile.entity.Role;
 import com.example.ecomobile.entity.User;
+import com.example.ecomobile.enums.ColorName;
 import com.example.ecomobile.enums.RoleName;
+import com.example.ecomobile.enums.Size;
+import com.example.ecomobile.repo.ProductColorRepository;
+import com.example.ecomobile.repo.ProductSizeRepository;
 import com.example.ecomobile.repo.RoleRepository;
 import com.example.ecomobile.repo.UserRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -12,16 +18,20 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+//@Component
 public class DataLoader implements CommandLineRunner {
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ProductSizeRepository productSizeRepository;
+    private final ProductColorRepository productColorRepository;
 
-    public DataLoader(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public DataLoader(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, ProductSizeRepository productSizeRepository, ProductColorRepository productColorRepository) {
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.productSizeRepository = productSizeRepository;
+        this.productColorRepository = productColorRepository;
     }
 
     @Override
@@ -65,5 +75,20 @@ public class DataLoader implements CommandLineRunner {
         userRepository.save(user);
         userRepository.save(user1);
         userRepository.save(user2);
+
+        List<ProductSize> sizes = new ArrayList<>();
+        for (Size size : Size.values()) {
+            sizes.add(ProductSize.builder().size(size).build());
+        }
+        productSizeRepository.saveAll(sizes);
+
+        List<ProductColor> colors = new ArrayList<>();
+        for (ColorName color : ColorName.values()) {
+            colors.add(ProductColor.builder().colorName(color).build());
+        }
+        productColorRepository.saveAll(colors);
+
+        System.out.println("✅ Data successfully loaded into the database!");
+
     }
 }

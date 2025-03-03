@@ -21,7 +21,7 @@ import java.util.List;
 public class ProductSize extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Size size;
-
-    @ManyToMany
-    private List<Product> products;
+//
+//    @ManyToMany
+//    private List<Product> products;
 }

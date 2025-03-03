@@ -26,9 +26,27 @@ public class Product extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ProductBrand productBrand;
 
-    @OneToMany
+    @ManyToMany
+    private List<ProductColor> colors;
+
+    @ManyToMany
+    private List<ProductSize> sizes;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Attachment> attachment;
+
 
     @ManyToOne
     private Category category;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "product_likes",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> likedByUsers;
+
+
+
 }

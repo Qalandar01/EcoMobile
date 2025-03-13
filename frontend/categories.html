@@ -43,14 +43,13 @@
   document.addEventListener("DOMContentLoaded", loadCategories);
 
   function loadCategories() {
-    axios.get("http://localhost:8080/api/categoryWithProQuantity")
+    axios.get("http://localhost:8080/api/category")
             .then(res => {
               console.log("API Response:", res.data);
               let categoryList = document.getElementById("category-list");
               categoryList.innerHTML = res.data.map(cat => `
           <li class="list-group-item d-flex justify-content-between align-items-center">
             ${cat.categoryName || "No Name"}
-            <span class="badge bg-primary">${cat.productCount || 0}</span>
             <button class="btn btn-sm btn-warning ms-2" onclick="editCategory(${cat.categoryId}, '${cat.categoryName}')">Edit</button>
             <button class="btn btn-sm btn-danger ms-2" onclick="deleteCategory(${cat.categoryId})">Delete</button>
           </li>

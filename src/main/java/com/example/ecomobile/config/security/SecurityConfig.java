@@ -51,17 +51,15 @@ public class SecurityConfig {
                         req
                                 .requestMatchers("/api/login", "/api/file/**").permitAll()
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                .requestMatchers("/api/category").permitAll()
 
                                 .requestMatchers("/api/verify-code").permitAll()
                                 .requestMatchers("/api/forgot-password").permitAll()
                                 .requestMatchers("/api/set-new-password").permitAll()
 
-                                .requestMatchers("/api/category/").permitAll()
+                                .requestMatchers("/api/category/**").permitAll()
                                 .requestMatchers("/api/file").permitAll()
                                 .requestMatchers("/api/**").permitAll()
                                 .requestMatchers("/api/product/**").hasRole("ADMIN")
-                                .requestMatchers("/api/categoryWithProQuantity").permitAll()
                                 .requestMatchers("/api/order/**").hasAnyRole("USER", "ADMIN")
                                 .anyRequest().authenticated()
                 )

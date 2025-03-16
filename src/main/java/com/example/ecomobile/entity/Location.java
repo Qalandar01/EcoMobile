@@ -13,6 +13,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 public class Location extends BaseEntity {
-    private Float latitude;
-    private Float longitude;
+    private String region;
+    private String district;
+    private String street;
+    private String home;
+
+    @Override
+    public String toString(){
+        return region +"\t"+district+"\t"+street+"\t" + home;
+    }
 }

@@ -2,8 +2,14 @@ package com.example.ecomobile.service;
 
 import com.example.ecomobile.dto.ProductDTO;
 import com.example.ecomobile.entity.*;
-import com.example.ecomobile.enums.ProductBrand;
-import com.example.ecomobile.repo.*;
+import com.example.ecomobile.repo.AttachmentContentRepository;
+import com.example.ecomobile.repo.AttachmentRepository;
+import com.example.ecomobile.repo.CategoryRepository;
+import com.example.ecomobile.repo.ProductBrandRepository;
+import com.example.ecomobile.repo.ProductColorRepository;
+import com.example.ecomobile.repo.ProductRepository;
+import com.example.ecomobile.repo.ProductSizeRepository;
+import com.example.ecomobile.repo.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +32,7 @@ public class ProductService {
     private final ProductColorRepository productColorRepository;
     private final ProductSizeRepository productSizeRepository;
     private final UserRepository userRepository;
+    private final ProductBrandRepository productBrandRepository; // qo'shildi
 
     @Transactional
     public Integer uploadAttachment(MultipartFile file) throws IOException {
@@ -51,25 +58,19 @@ public class ProductService {
         Category category = categoryRepository.findById(productDTO.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Kategoriya ID noto‘g‘ri yoki topilmadi!"));
 
-        List<ProductColor> colors = (productDTO.getColorIds() != null && !productDTO.getColorIds().isEmpty())
-                ? productColorRepository.findAllById(productDTO.getColorIds())
-                : new ArrayList<>();
+        ProductBrand productBrand = productBrandRepository.findById(productDTO.getProductBrandId())
+                .orElseThrow(() -> new RuntimeException("Brend topilmadi!"));
 
-        List<ProductSize> sizes = (productDTO.getSizeIds() != null && !productDTO.getSizeIds().isEmpty())
-                ? productSizeRepository.findAllById(productDTO.getSizeIds())
-                : new ArrayList<>();
+        ProductColor productColor = productColorRepository.findById(productDTO.getColorId())
+                .orElseThrow(() -> new RuntimeException("Rang topilmadi!"));
+
+        ProductSize productSize = productSizeRepository.findById(productDTO.getSizeId())
+                .orElseThrow(() -> new RuntimeException("O'lcham topilmadi!"));
 
         List<Attachment> attachments = (productDTO.getAttachmentIds() != null && !productDTO.getAttachmentIds().isEmpty())
                 ? attachmentRepository.findAllById(productDTO.getAttachmentIds())
                 : new ArrayList<>();
 
-        ProductBrand productBrand;
-        try {
-            productBrand = productDTO.getProductBrand() != null ?
-                    ProductBrand.valueOf(productDTO.getProductBrand().name()) : null;
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Noto‘g‘ri brend tanlandi: " + productDTO.getProductBrand());
-        }
 
         Product product = Product.builder()
                 .name(productDTO.getName())
@@ -77,12 +78,14 @@ public class ProductService {
                 .description(productDTO.getDescription())
                 .productBrand(productBrand)
                 .attachment(attachments)
-                .colors(colors)
-                .sizes(sizes)
+                .color(productColor)
+                .size(productSize)
                 .category(category)
+                .amount(productDTO.getAmount())
                 .build();
-
         productRepository.save(product);
+
+
     }
 
     public Product updateProduct(Integer id, ProductDTO productDTO) {
@@ -95,7 +98,11 @@ public class ProductService {
         product.setName(productDTO.getName());
         product.setPrice(productDTO.getPrice());
         product.setDescription(productDTO.getDescription());
-        product.setProductBrand(productDTO.getProductBrand());
+
+        ProductBrand productBrand = productBrandRepository.findById(productDTO.getProductBrandId())
+                .orElseThrow(() -> new RuntimeException("Brend topilmadi!"));
+        product.setProductBrand(productBrand);
+
         product.setCategory(category);
 
         if (productDTO.getAttachmentIds() != null) {
@@ -103,80 +110,95 @@ public class ProductService {
             product.setAttachment(attachments);
         }
 
-        if (productDTO.getColorIds() != null) {
-            List<ProductColor> colors = productColorRepository.findAllById(productDTO.getColorIds());
-            product.setColors(colors);
+        if (productDTO.getColorId() != null) {
+            ProductColor productColor = productColorRepository.findById(productDTO.getColorId())
+                    .orElseThrow(() -> new RuntimeException("Rang topilmadi!"));
+            product.setColor(productColor);
         }
 
-        if (productDTO.getSizeIds() != null) {
-            List<ProductSize> sizes = productSizeRepository.findAllById(productDTO.getSizeIds());
-            product.setSizes(sizes);
+        if (productDTO.getSizeId() != null) {
+            ProductSize productSize = productSizeRepository.findById(productDTO.getSizeId())
+                    .orElseThrow(() -> new RuntimeException("O'lcham topilmadi!"));
+            product.setSize(productSize);
         }
 
         return productRepository.save(product);
     }
-
-
 
     public void deleteProduct(Integer id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
         List<Attachment> attachments = product.getAttachment();
+
+        for (Attachment attachment : attachments) {
+            AttachmentContent content = attachmentContentRepository.findByAttachmentId(attachment.getId());
+            if (content != null) {
+                attachmentContentRepository.delete(content);
+            }
+        }
+
         attachmentRepository.deleteAll(attachments);
 
-        product.getColors().clear();
-        product.getSizes().clear();
+        product.setColor(null);
+        product.setSize(null);
         product.getLikedByUsers().clear();
         productRepository.save(product);
+
         productRepository.delete(product);
-        productRepository.deleteById(id);
     }
-    // ProductService.java, getAllProducts metodi
+
+
     public List<ProductDTO> getAllProducts() {
         List<Product> products = productRepository.findAll();
         return products.stream()
                 .map(product -> ProductDTO.builder()
-                        .id(product.getId())  // ID ni shu yerda qoʻshyapmiz
+                        .id(product.getId())
                         .name(product.getName())
                         .price(product.getPrice())
                         .description(product.getDescription())
-                        .productBrand(product.getProductBrand())
+                        .productBrandId(product.getProductBrand() != null ? product.getProductBrand().getId() : null)
                         .categoryId(product.getCategory().getId())
-                        .attachmentIds(product.getAttachment().stream()
-                                .map(Attachment::getId)
-                                .collect(Collectors.toList()))
-                        .colorIds(product.getColors().stream()
-                                .map(ProductColor::getId)
-                                .collect(Collectors.toList()))
-                        .sizeIds(product.getSizes().stream()
-                                .map(ProductSize::getId)
-                                .collect(Collectors.toList()))
-                        .likedByUsers(product.getLikedByUsers().stream()
-                                .map(User::getId)
-                                .collect(Collectors.toList()))
+                        .attachmentIds(product.getAttachment() != null ?
+                                product.getAttachment().stream().map(Attachment::getId).collect(Collectors.toList())
+                                : new ArrayList<>())
+                        .colorId(product.getColor() != null ? product.getColor().getId() : null)
+                        .sizeId(product.getSize() != null ? product.getSize().getId() : null)
+                        .likedByUsers(product.getLikedByUsers() != null ?
+                                product.getLikedByUsers().stream().map(User::getId).collect(Collectors.toList())
+                                : new ArrayList<>())
                         .build()
                 )
                 .collect(Collectors.toList());
     }
 
-
-
-
-
     public Optional<ProductDTO> getProductById(Integer id) {
         return productRepository.findById(id)
                 .map(product -> ProductDTO.builder()
+                        .id(product.getId())
                         .name(product.getName())
                         .price(product.getPrice())
                         .description(product.getDescription())
-                        .productBrand(product.getProductBrand())
-                        .categoryId(product.getCategory().getId())
-                        .attachmentIds(product.getAttachment().stream()
-                                .map(Attachment::getId)
-                                .collect(Collectors.toList()))
-                        .build());
+                        .amount(product.getAmount()) // Miqdorni qo'shdik
+                        .productBrandId(product.getProductBrand() != null ? product.getProductBrand().getId() : null)
+                        .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
+                        .colorId(product.getColor() != null ? product.getColor().getId() : null)
+                        .sizeId(product.getSize() != null ? product.getSize().getId() : null)
+                        .attachmentIds(product.getAttachment() != null ?
+                                product.getAttachment().stream().map(Attachment::getId).collect(Collectors.toList())
+                                : new ArrayList<>())
+                        .likedByUsers(product.getLikedByUsers() != null ?
+                                product.getLikedByUsers().stream().map(User::getId).collect(Collectors.toList())
+                                : new ArrayList<>())
+                        .productBrandName(product.getProductBrand() != null ? product.getProductBrand().getProductBrand() : "Noma’lum")
+                        .categoryName(product.getCategory() != null ? product.getCategory().getName() : "Noma’lum")
+                        .colorName(product.getColor() != null ? product.getColor().getProductColor() : "Noma’lum")
+                        .sizeName(product.getSize() != null ? product.getSize().getProductSize() : "Noma’lum")
+                        .build()
+                );
     }
+
+
 
     public void likeProduct(Integer productId, Integer userId) {
         Product product = productRepository.findById(productId)
@@ -205,22 +227,21 @@ public class ProductService {
                         .name(product.getName())
                         .price(product.getPrice())
                         .description(product.getDescription())
-                        .productBrand(product.getProductBrand())
+                        .productBrandId(product.getProductBrand() != null ? product.getProductBrand().getId() : null)
                         .categoryId(product.getCategory().getId())
-                        .attachmentIds(product.getAttachment().stream()
-                                .map(Attachment::getId)
-                                .collect(Collectors.toList()))
-                        .colorIds(product.getColors().stream()
-                                .map(ProductColor::getId)
-                                .collect(Collectors.toList()))
-                        .sizeIds(product.getSizes().stream()
-                                .map(ProductSize::getId)
-                                .collect(Collectors.toList()))
-                        .likedByUsers(product.getLikedByUsers().stream()
-                                .map(User::getId)
-                                .collect(Collectors.toList()))
+                        .attachmentIds(product.getAttachment() != null ?
+                                product.getAttachment().stream().map(Attachment::getId).collect(Collectors.toList())
+                                : new ArrayList<>())
+                        .colorId(product.getColor() != null ? product.getColor().getId() : null)
+                        .sizeId(product.getSize() != null ? product.getSize().getId() : null)
+                        .likedByUsers(product.getLikedByUsers() != null ?
+                                product.getLikedByUsers().stream().map(User::getId).collect(Collectors.toList())
+                                : new ArrayList<>())
                         .build())
                 .collect(Collectors.toList());
     }
 
+    public Product findById(Integer id) {
+        return productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+    }
 }

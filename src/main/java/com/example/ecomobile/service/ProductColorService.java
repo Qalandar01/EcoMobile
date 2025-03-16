@@ -15,4 +15,13 @@ public class ProductColorService {
     public List<ProductColor> getAllColors() {
         return productColorRepository.findAll();
     }
+
+    public ProductColor saveColor(ProductColor productColor) {
+        ProductColor save = productColorRepository.save(productColor);
+        return save ;
+    }
+
+    public String findByIdForName(Integer colorId) {
+        return productColorRepository.findById(colorId).map(ProductColor::getProductColor).orElse("Color not found");
+    }
 }

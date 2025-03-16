@@ -58,8 +58,12 @@ public class SecurityConfig {
 
                                 .requestMatchers("/api/category/**").permitAll()
                                 .requestMatchers("/api/file").permitAll()
+                                .requestMatchers("/api/brands/**").permitAll()
+                                .requestMatchers("/api/colors/**").permitAll()
+                                .requestMatchers("/api/sizes/**").permitAll()
                                 .requestMatchers("/api/**").permitAll()
-                                .requestMatchers("/api/product/**").hasRole("ADMIN")
+                                .requestMatchers("/api/products/save/**").hasRole("ADMIN")
+                                .requestMatchers("/api/products/**").hasRole("ADMIN")
                                 .requestMatchers("/api/order/**").hasAnyRole("USER", "ADMIN")
                                 .anyRequest().authenticated()
                 )

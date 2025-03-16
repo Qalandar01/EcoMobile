@@ -4,9 +4,7 @@ import com.example.ecomobile.entity.ProductSize;
 import com.example.ecomobile.service.ProductSizeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,5 +17,10 @@ public class ProductSizeController {
     @GetMapping
     public ResponseEntity<List<ProductSize>> getAllSizes() {
         return ResponseEntity.ok(productSizeService.getAllSizes());
+    }
+    @PostMapping("/save")
+    public ResponseEntity<ProductSize> saveSize(@RequestBody ProductSize productSize) {
+        ProductSize savedSize = productSizeService.saveSize(productSize);
+        return ResponseEntity.ok(savedSize);
     }
 }

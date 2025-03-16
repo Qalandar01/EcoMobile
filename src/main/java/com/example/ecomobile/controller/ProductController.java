@@ -5,9 +5,12 @@ import com.example.ecomobile.entity.Attachment;
 import com.example.ecomobile.entity.AttachmentContent;
 import com.example.ecomobile.entity.Product;
 import com.example.ecomobile.entity.User;
-import com.example.ecomobile.enums.ProductBrand;
-import com.example.ecomobile.repo.*;
-import com.example.ecomobile.service.ProductService;
+import com.example.ecomobile.repo.AttachmentContentRepository;
+import com.example.ecomobile.repo.AttachmentRepository;
+import com.example.ecomobile.repo.CategoryRepository;
+import com.example.ecomobile.repo.ProductRepository;
+import com.example.ecomobile.repo.UserRepository;
+import com.example.ecomobile.service.*;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,23 +31,30 @@ public class ProductController {
     private final ProductService productService;
     private final AttachmentRepository attachmentRepository;
     private final AttachmentContentRepository attachmentContentRepository;
-    private final CategoryRepository categoryRepository;
-    private final ProductRepository productRepository;
     private final UserRepository userRepository;
-
-
+    private final ProductBrandService productBrandService;
+    private final CategoryServise categoryServise;
+    private final ProductColorService productColorService;
+    private final ProductSizeService productSizeService;
 
     @PostMapping("/save")
     public ResponseEntity<String> saveProduct(
-                                                @RequestParam String name,
-                                              @RequestParam double price,
-                                              @RequestParam String description,
-                                              @RequestParam(required = false) Integer category,
-                                              @RequestParam ProductBrand productBrand,
-                                              @RequestParam List<Integer> colorIds,
-                                              @RequestParam List<Integer> sizeIds,
-                                              @RequestParam(required = false) MultipartFile[] attachments) {
+            @RequestParam String productName,
+            @RequestParam double price,
+            @RequestParam String description,
+            @RequestParam(required = false) Optional<Integer> category,
+            @RequestParam Integer productBrandId,
+            @RequestParam Integer colorId,
+            @RequestParam Integer sizeId,
+            @RequestParam Integer amount,
+            @RequestParam(required = false) MultipartFile[] attachments) {
         try {
+            // Tekshirish: Mahsulot nomi bo'sh bo'lmasligi kerak
+            if (productName.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Mahsulot nomi bo'sh bo'lmasligi kerak!");
+            }
+
+            // Fayllarni yuklash
             List<Integer> attachmentIds = new ArrayList<>();
             if (attachments != null) {
                 for (MultipartFile file : attachments) {
@@ -53,16 +63,24 @@ public class ProductController {
                 }
             }
 
-            ProductDTO productDTO = new ProductDTO();
-            productDTO.setName(name);
-            productDTO.setPrice(price);
-            productDTO.setDescription(description);
-            productDTO.setCategoryId(category);
-            productDTO.setProductBrand(productBrand);
-            productDTO.setColorIds(colorIds);
-            productDTO.setSizeIds(sizeIds);
-            productDTO.setAttachmentIds(attachmentIds);
+            // DTO yaratish
+            ProductDTO productDTO = ProductDTO.builder()
+                    .name(productName)
+                    .price(price)
+                    .description(description)
+                    .categoryId(category.orElse(null))
+                    .productBrandId(productBrandId)
+                    .colorId(colorId)
+                    .sizeId(sizeId)
+                    .attachmentIds(attachmentIds)
+                    .amount(amount)
+                    .productBrandName(productBrandService.findByIdForName(productBrandId))
+                    .categoryName(category.map(categoryServise::findByIdForName).orElse(null))
+                    .colorName(productColorService.findByIdForName(colorId))
+                    .sizeName(productSizeService.findByIdForSize(sizeId))
+                    .build();
 
+            // Mahsulotni saqlash
             productService.addProduct(productDTO);
             return ResponseEntity.ok("Mahsulot muvaffaqiyatli qo‘shildi!");
         } catch (IOException e) {
@@ -76,6 +94,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.getAllProducts());
     }
 
+
     @PostMapping("/{productId}/like")
     public ResponseEntity<String> likeProduct(@PathVariable Integer productId, @RequestParam Integer userId) {
         Optional<User> user = userRepository.findById(userId);
@@ -85,7 +104,6 @@ public class ProductController {
         productService.likeProduct(productId, userId);
         return ResponseEntity.ok("Like updated");
     }
-
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getProductById(@PathVariable Integer id) {
@@ -109,19 +127,22 @@ public class ProductController {
         if (filename == null) return "application/octet-stream";
         String lowerCaseFileName = filename.toLowerCase();
 
-        if (lowerCaseFileName.endsWith(".jpg") || lowerCaseFileName.endsWith(".jpeg")) return "image/jpeg";
-        if (lowerCaseFileName.endsWith(".png")) return "image/png";
-        if (lowerCaseFileName.endsWith(".gif")) return "image/gif";
-        if (lowerCaseFileName.endsWith(".webp")) return "image/webp";
-        if (lowerCaseFileName.endsWith(".pdf")) return "application/pdf";
+        if (lowerCaseFileName.endsWith(".jpg") || lowerCaseFileName.endsWith(".jpeg"))
+            return "image/jpeg";
+        if (lowerCaseFileName.endsWith(".png"))
+            return "image/png";
+        if (lowerCaseFileName.endsWith(".gif"))
+            return "image/gif";
+        if (lowerCaseFileName.endsWith(".webp"))
+            return "image/webp";
+        if (lowerCaseFileName.endsWith(".pdf"))
+            return "application/pdf";
 
         return "application/octet-stream";
     }
 
-
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable Integer id, @RequestBody ProductDTO productDTO) {
-
         Product updatedProduct = productService.updateProduct(id, productDTO);
         return ResponseEntity.ok(updatedProduct);
     }
@@ -137,7 +158,4 @@ public class ProductController {
         List<ProductDTO> products = productService.getProductsByCategory(categoryId);
         return ResponseEntity.ok(products);
     }
-
-
-
 }

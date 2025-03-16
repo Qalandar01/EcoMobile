@@ -1,11 +1,9 @@
 package com.example.ecomobile.dto;
 
-import com.example.ecomobile.enums.ProductBrand;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.util.List;
 
 @Data
@@ -13,14 +11,20 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class ProductDTO {
-    Integer id;
-    String name;
-    Double price;
-    String description;
-    ProductBrand productBrand;
-    List<Integer> attachmentIds;
-    Integer categoryId;
-    List<Integer> colorIds;
-    List<Integer> sizeIds;
+    private Integer id;
+    private String name;
+    private Double price;
+    private String description;
+    private Integer productBrandId;
+    private List<Integer> attachmentIds;
+    private Integer categoryId;
+    private Integer colorId;
+    private Integer sizeId;
     private List<Integer> likedByUsers;
+    private Integer amount;
+
+    private String productBrandName;
+    private String categoryName;
+    private String colorName;
+    private String sizeName;
 }

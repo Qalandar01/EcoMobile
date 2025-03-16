@@ -15,4 +15,12 @@ public class ProductSizeService {
     public List<ProductSize> getAllSizes() {
         return productSizeRepository.findAll();
     }
+
+    public ProductSize saveSize(ProductSize productSize) {
+        return productSizeRepository.save(productSize);
+    }
+
+    public String findByIdForSize(Integer sizeId) {
+        return productSizeRepository.findById(sizeId).map(ProductSize::getProductSize).orElse("Size not found");
+    }
 }

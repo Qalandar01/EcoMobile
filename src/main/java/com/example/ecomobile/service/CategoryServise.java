@@ -32,4 +32,7 @@ public class CategoryServise {
         categoryRepository.deleteById(id);
     }
 
+    public String findByIdForName(Integer category) {
+        return categoryRepository.findById(category).map(Category::getName).orElse("Noma'lum Category");
+    }
 }

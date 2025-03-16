@@ -1,9 +1,6 @@
 package com.example.ecomobile.entity;
 
 import com.example.ecomobile.base.BaseEntity;
-import com.example.ecomobile.enums.ColorName;
-import com.example.ecomobile.enums.ProductBrand;
-import com.example.ecomobile.enums.Size;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,14 +20,16 @@ public class Product extends BaseEntity {
 
     private String description;
 
-    @Enumerated(EnumType.STRING)
+    @ManyToOne
     private ProductBrand productBrand;
 
-    @ManyToMany
-    private List<ProductColor> colors;
+    @ManyToOne
+    private ProductColor color;
 
-    @ManyToMany
-    private List<ProductSize> sizes;
+    @ManyToOne
+    private ProductSize size;
+
+    private Integer amount;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Attachment> attachment;
@@ -46,7 +45,5 @@ public class Product extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private List<User> likedByUsers;
-
-
 
 }

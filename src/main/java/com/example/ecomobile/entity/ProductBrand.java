@@ -13,6 +13,4 @@ import lombok.NoArgsConstructor;
 
 public class ProductBrand extends BaseEntity {
     private String productBrand;
-
 }
-

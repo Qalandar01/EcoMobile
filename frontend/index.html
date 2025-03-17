@@ -18,6 +18,7 @@
             padding: 20px;
             max-width: 800px;
             margin: 40px auto;
+            position: relative;
         }
         .product-detail img {
             max-width: 100%;
@@ -27,6 +28,67 @@
         .product-info p {
             margin-bottom: 10px;
         }
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .quantity-control button {
+            padding: 5px 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            background-color: #f8f9fa;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .quantity-control input {
+            width: 50px;
+            text-align: center;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #28a745;
+            margin-top: 20px;
+        }
+        .btn-back {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+        .total-sum {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .btn-add-to-basket {
+            margin-top: 20px;
+            width: 100%;
+            padding: 10px;
+            font-size: 18px;
+        }
+        .rating-stars {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        .rating-stars .star {
+            cursor: pointer;
+            font-size: 24px;
+            color: #ddd;
+        }
+        .rating-stars .star.active {
+            color: #ffc107;
+        }
+        .average-rating {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -34,38 +96,154 @@
     <div id="productDetail" class="product-detail text-center">Yuklanmoqda...</div>
 </div>
 
+<!-- Axios va Bootstrap JS (carousel uchun kerak) -->
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('productId');
 
+    let product = {}; // Mahsulot ma'lumotlarini saqlash uchun global o'zgaruvchi
+
     function displayProductDetail(product) {
         const detailContainer = document.getElementById('productDetail');
 
-        let imageUrl = "https://via.placeholder.com/800x450?text=No+Image";
-        if (product.attachmentIds && product.attachmentIds.length > 0) {
-            imageUrl = `http://localhost:8080/api/products/file/${product.attachmentIds[0]}`;
+        // Rasm uchun HTML: agar bir nechta rasm bo'lsa, carousel ko'rsatiladi.
+        let imageHtml = "";
+        if (product.attachmentIds && product.attachmentIds.length > 1) {
+            const carouselId = "productCarousel";
+            imageHtml = `
+                <div id="${carouselId}" class="carousel slide" data-bs-interval="false">
+                    <div class="carousel-inner">
+                        ${product.attachmentIds.map((id, index) => `
+                            <div class="carousel-item ${index === 0 ? "active" : ""}">
+                                <img src="http://localhost:8080/api/products/file/${id}" class="d-block w-100" alt="Mahsulot rasmi">
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#${carouselId}" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Oldingi</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#${carouselId}" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Keyingi</span>
+                    </button>
+                </div>
+            `;
+        } else if (product.attachmentIds && product.attachmentIds.length === 1) {
+            imageHtml = `<img src="http://localhost:8080/api/products/file/${product.attachmentIds[0]}" alt="Mahsulot rasmi">`;
+        } else {
+            imageHtml = `<img src="https://via.placeholder.com/800x450?text=No+Image" alt="Mahsulot rasmi">`;
         }
 
+        // Reyting uchun HTML
+        let ratingHtml = `
+            <div class="rating-stars">
+                ${[1, 2, 3, 4, 5].map(star => `
+                    <span class="star" data-value="${star}" onclick="rateProduct(${star})">&#9733;</span>
+                `).join('')}
+            </div>
+            <div class="average-rating">O'rtacha reyting: <span id="averageRating">${product.averageRating || 0}</span></div>
+        `;
+
+        // Miqdorni boshqarish uchun HTML
+        let quantityHtml = `
+            <div class="quantity-control">
+                <button onclick="decreaseQuantity()">-</button>
+                <input type="number" id="quantity" value="1" min="1" max="${product.amount || 10}" readonly>
+                <button onclick="increaseQuantity()">+</button>
+            </div>
+            <div class="price" id="totalPrice">${product.price ? (product.price * 1).toLocaleString() + " so‘m" : 'N/A'}</div>
+            <div class="total-sum">Umumiy summa: <span id="totalSum">${product.price ? (product.price * 1).toLocaleString() + " so‘m" : 'N/A'}</span></div>
+        `;
+
         detailContainer.innerHTML = `
+            <a href="product.html" class="btn btn-primary btn-back">Orqaga qaytish</a>
             <h2 class="mb-3">${product.name || "Noma'lum mahsulot"}</h2>
-            <img src="${imageUrl}" alt="Mahsulot rasmi">
-            <div class="product-info mt-3">
+            ${imageHtml}
+            <div class="product-info mt-3 text-start">
                 <p><strong>Kategoriya:</strong> ${product.categoryName || 'N/A'}</p>
-                <p><strong>Narxi:</strong> ${product.price ? product.price + " so‘m" : 'N/A'}</p>
+                <p><strong>Narxi:</strong> ${product.price ? product.price.toLocaleString() + " so‘m" : 'N/A'}</p>
                 <p><strong>Brand:</strong> ${product.productBrandName || 'N/A'}</p>
                 <p><strong>Rang:</strong> ${product.colorName || 'N/A'}</p>
                 <p><strong>O‘lcham:</strong> ${product.sizeName || 'N/A'}</p>
                 <p><strong>Tavsif:</strong> ${product.description || 'Tavsif mavjud emas'}</p>
+                <p><strong>Mahsulot soni:</strong> ${product.amount || 'N/A'}</p>
             </div>
-            <a href="product.html" class="btn btn-primary mt-3">Orqaga qaytish</a>
+            ${ratingHtml}
+            ${quantityHtml}
+            <button class="btn btn-success btn-add-to-basket" onclick="addToBasket()">Savatchaga qo'shish</button>
         `;
+    }
+
+    function rateProduct(stars) {
+        const ratingData = {
+            starsCount: stars,
+            product: { id: productId },
+            user: { id: 1 } // Foydalanuvchi ID sini o'zgartiring
+        };
+
+        axios.post('http://localhost:8080/api/ratings', ratingData)
+            .then(response => {
+                alert("Reyting qo'shildi: " + stars + " yulduz");
+                updateAverageRating();
+            })
+            .catch(error => {
+                console.error("Reyting qo'shishda xatolik:", error);
+            });
+    }
+
+    function updateAverageRating() {
+        axios.get(`http://localhost:8080/api/products/${productId}/average-rating`)
+            .then(response => {
+                document.getElementById('averageRating').innerText = response.data.toFixed(1);
+            })
+            .catch(error => {
+                console.error("O'rtacha reytingni yangilashda xatolik:", error);
+            });
+    }
+
+    function updateTotalPrice() {
+        const quantity = parseInt(document.getElementById('quantity').value);
+        const totalPrice = quantity * product.price;
+        document.getElementById('totalPrice').innerText = totalPrice.toLocaleString() + " so‘m";
+        document.getElementById('totalSum').innerText = totalPrice.toLocaleString() + " so‘m";
+    }
+
+    function increaseQuantity() {
+        const quantityInput = document.getElementById('quantity');
+        let quantity = parseInt(quantityInput.value);
+        const maxQuantity = product.amount || 10;
+        if (quantity < maxQuantity) {
+            quantityInput.value = quantity + 1;
+            updateTotalPrice();
+        } else {
+            alert("Mahsulot soni chegarasidan oshib ketdi! Mavjud mahsulot soni: " + maxQuantity);
+        }
+    }
+
+    function decreaseQuantity() {
+        const quantityInput = document.getElementById('quantity');
+        let quantity = parseInt(quantityInput.value);
+        if (quantity > 1) {
+            quantityInput.value = quantity - 1;
+            updateTotalPrice();
+        }
+    }
+
+    function addToBasket() {
+        const quantity = parseInt(document.getElementById('quantity').value);
+        alert("Mahsulot savatchaga qo'shildi: " + quantity + " ta");
+        // Savatchaga qo'shish logikasi
+        window.location.href = "basket.html"; // basket.html sahifasiga yo'naltirish
     }
 
     if (productId) {
         axios.get(`http://localhost:8080/api/products/${productId}`)
             .then(response => {
-                displayProductDetail(response.data);
+                product = response.data; // Mahsulot ma'lumotlarini saqlash
+                displayProductDetail(product);
             })
             .catch(error => {
                 console.error("Mahsulotni yuklashda xatolik:", error);

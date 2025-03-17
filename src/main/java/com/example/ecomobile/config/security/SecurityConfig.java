@@ -61,6 +61,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/brands/**").permitAll()
                                 .requestMatchers("/api/colors/**").permitAll()
                                 .requestMatchers("/api/sizes/**").permitAll()
+                                .requestMatchers("/api/category/product-count/**").permitAll()
                                 .requestMatchers("/api/**").permitAll()
                                 .requestMatchers("/api/products/save/**").hasRole("ADMIN")
                                 .requestMatchers("/api/products/**").hasRole("ADMIN")

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +18,10 @@ public class ProductSizeService {
     }
 
     public ProductSize saveSize(ProductSize productSize) {
+        Optional<ProductSize> existingSize = productSizeRepository.findByProductSize(productSize.getProductSize());
+        if(existingSize.isPresent()){
+            return existingSize.get();
+        }
         return productSizeRepository.save(productSize);
     }
 

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +19,8 @@ public class ProductBrandService {
     }
 
     public ProductBrand saveBrand(ProductBrand productBrand) {
-        return productBrandRepository.save(productBrand);
+        Optional<ProductBrand> existingBrand = productBrandRepository.findByProductBrand(productBrand.getProductBrand());
+        return existingBrand.orElseGet(() -> productBrandRepository.save(productBrand));
     }
 
     public String findByIdForName(Integer productBrandId) {

@@ -3,6 +3,7 @@ package com.example.ecomobile.controller;
 import com.example.ecomobile.dto.CategoryProductCountDTO;
 import com.example.ecomobile.entity.Category;
 import com.example.ecomobile.repo.CategoryRepository;
+import com.example.ecomobile.service.CategoryServise;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,9 +14,11 @@ import java.util.List;
 public class CategoryController {
 
     private final CategoryRepository categoryRepository;
+    private final CategoryServise categoryServise;
 
-    public CategoryController(CategoryRepository categoryRepository) {
+    public CategoryController(CategoryRepository categoryRepository, CategoryServise categoryServise) {
         this.categoryRepository = categoryRepository;
+        this.categoryServise = categoryServise;
     }
 
     @GetMapping
@@ -46,7 +49,10 @@ public class CategoryController {
         categoryRepository.save(category); // Yangilangan obyektni saqlaymiz
     }
 
-
+    @GetMapping("/product-count")
+    public List<CategoryProductCountDTO> getCategoriesWithProductCount() {
+        return categoryServise.getCategoriesWithProductCount();
+    }
 
 
 

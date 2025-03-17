@@ -59,6 +59,9 @@
 </head>
 <body>
 
+<form action="reportAdmin.html">
+    <button class="btn btn-primary">Report Admin</button>
+</form>
 <!-- Header: Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark navbar-custom">
     <div class="container">
@@ -254,36 +257,23 @@
     }
 
     function loadCategories() {
-        axios.get("http://localhost:8080/api/category")
+        axios.get("http://localhost:8080/api/category/product-count")
             .then(res => {
-                let categoryList = document.getElementById("categoryList");
-                let productCategory = document.getElementById("productCategory");
-                categoryList.innerHTML = "";
-                if(productCategory){
-                    productCategory.innerHTML = '<option selected disabled>Select Category</option>';
-                }
-                categoryList.innerHTML += `<li class="list-group-item pointer" onclick="fetchProducts()">All Categories</li>`;
-                res.data.forEach(category => {
-                    let adminButtons = "";
-                    if (role === "ROLE_ADMIN") {
-                        adminButtons = `
-              <button class="btn btn-sm btn-warning me-1" onclick="editCategory(${category.id}, '${category.name}'); event.stopPropagation();">Edit</button>
-              <button class="btn btn-sm btn-danger" onclick="deleteCategory(${category.id}); event.stopPropagation();">Delete</button>
+                const categoryList = document.getElementById("categoryList");
+                categoryList.innerHTML = `
+                <li class="list-group-item pointer" onclick="fetchProducts()">Barcha kategoriyalar</li>
+                ${res.data.map(category => `
+                    <li class="list-group-item pointer"
+                        onclick="loadProductsByCategory(${category.id})">
+                        ${category.name}
+                        <span class="badge bg-secondary">
+                            ${category.productCount} <small>products</small>
+                        </span>
+                    </li>
+                `).join('')}
             `;
-                    }
-                    categoryList.innerHTML += `
-            <li class="list-group-item pointer d-flex justify-content-between align-items-center"
-                onclick="loadProductsByCategory(${category.id})">
-                <span>${category.name}</span>
-                <span>${adminButtons}</span>
-            </li>
-          `;
-                    if(productCategory){
-                        productCategory.innerHTML += `<option value="${category.id}">${category.name}</option>`;
-                    }
-                });
             })
-            .catch(() => alert("Failed to load categories!"));
+            .catch(() => console.error("Kategoriyalar yuklanmadi"));
     }
 
     function addCategory(event) {

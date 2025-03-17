@@ -3,6 +3,8 @@ package com.example.ecomobile.config;
 import com.example.ecomobile.entity.Role;
 import com.example.ecomobile.entity.User;
 import com.example.ecomobile.enums.RoleName;
+import com.example.ecomobile.repo.ProductColorRepository;
+import com.example.ecomobile.repo.ProductSizeRepository;
 import com.example.ecomobile.repo.RoleRepository;
 import com.example.ecomobile.repo.UserRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -17,11 +19,15 @@ public class DataLoader implements CommandLineRunner {
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ProductSizeRepository productSizeRepository;
+    private final ProductColorRepository productColorRepository;
 
-    public DataLoader(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public DataLoader(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, ProductSizeRepository productSizeRepository, ProductColorRepository productColorRepository) {
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.productSizeRepository = productSizeRepository;
+        this.productColorRepository = productColorRepository;
     }
 
     @Override
@@ -65,7 +71,6 @@ public class DataLoader implements CommandLineRunner {
         userRepository.save(user);
         userRepository.save(user1);
         userRepository.save(user2);
-
 
         System.out.println("✅ Data successfully loaded into the database!");
 

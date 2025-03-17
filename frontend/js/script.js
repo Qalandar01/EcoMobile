@@ -6,8 +6,8 @@ function handleLogin(event) {
 
     request.post("/login", {email, password})
         .then(response => {
-            alert("Login successful!");
-            localStorage.setItem("token", response.data.token);
+            alert("Login Successful!");
+            localStorage.setItem("token", response.data);
             window.location.href = "product.html";
         })
         .catch(error => {

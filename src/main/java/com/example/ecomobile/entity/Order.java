@@ -1,6 +1,7 @@
 package com.example.ecomobile.entity;
 
 import com.example.ecomobile.base.BaseEntity;
+import com.example.ecomobile.enums.OrderStatus;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,9 @@ public class Order extends BaseEntity {
 
     @ManyToOne
     private User user;
+
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
 
     @JsonManagedReference
     @OneToMany(mappedBy = "order",fetch = FetchType.EAGER)

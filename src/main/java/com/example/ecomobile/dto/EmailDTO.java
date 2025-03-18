@@ -6,7 +6,7 @@ import lombok.Value;
 
 @Value
 public class EmailDTO {
-    @Email
-    @NotBlank
+    @NotBlank(message = "Email cannot be empty")
+    @Email(message = "Invalid email format")
     String email;
 }

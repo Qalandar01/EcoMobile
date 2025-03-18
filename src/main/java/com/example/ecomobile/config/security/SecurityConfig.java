@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -37,6 +38,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import java.util.List;
 
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Bean
@@ -49,21 +51,11 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
                         req
-                                .requestMatchers("/api/login", "/api/file/**").permitAll()
+                                .requestMatchers("/api/login", "/api/file/**", "/api/category", "/api/verify-code",
+                                        "/api/forgot-password", "/api/set-new-password", "/api/category/","api/register-mail","api/verification",
+                                        "/api/file", "/api/categoryWithProQuantity","/login").permitAll()
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
-                                .requestMatchers("/api/verify-code").permitAll()
-                                .requestMatchers("/api/forgot-password").permitAll()
-                                .requestMatchers("/api/set-new-password").permitAll()
-
-                                .requestMatchers("/api/category/**").permitAll()
-                                .requestMatchers("/api/file").permitAll()
-                                .requestMatchers("/api/brands/**").permitAll()
-                                .requestMatchers("/api/colors/**").permitAll()
-                                .requestMatchers("/api/sizes/**").permitAll()
-                                .requestMatchers("/api/**").permitAll()
-                                .requestMatchers("/api/products/save/**").hasRole("ADMIN")
-                                .requestMatchers("/api/products/**").hasRole("ADMIN")
+                                .requestMatchers("/api/product/**").hasRole("ADMIN")
                                 .requestMatchers("/api/order/**").hasAnyRole("USER", "ADMIN")
                                 .anyRequest().authenticated()
                 )
@@ -74,6 +66,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 
 
     @Bean

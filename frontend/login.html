@@ -3,65 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
     <link rel="stylesheet" href="/frontend/css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+    <title>Sign Up & Login Page</title>
+    <style>
+    </style>
 </head>
 <body>
 
-<div id="reset-password-modal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeResetPasswordModal()">&times;</span>
-        <h3>Reset Your Password</h3>
-        <p>Please enter your new password.</p>
+<div class="container" id="container" >
+    <div class="left" >
+        <h1>WELCOME BACK!</h1>
+        <hr>
+        <br>
+        <p>Lorem ipsum dolor sit amet<br>consectetur adipisicing elit. <br>Delectus, rem?</p>
+    </div>
 
-        <input type="password" id="new-password" placeholder="Enter new password" required>
-        <p class="error-message" id="new-password-error"></p>
 
-        <input type="password" id="repeat-password" placeholder="Repeat new password" required>
-        <p class="error-message" id="repeat-password-error"></p>
+    <div class="right" id="signupForm">
+        <h2>Sign Up</h2>
+        <form onsubmit="handleRegister(event)">
+        <div class="input-box">
+            <input type="text" id="register-first-name" placeholder="Enter your first name" required>
+        </div>
+        <div class="input-box">
+            <input type="text" id="register-last-name" placeholder="Enter your last name" required>
+        </div>
+            <div class="input-box">
+                <input type="email" id="register-email" placeholder="Enter your email" required>
+        </div>
+            <div class="input-box password-container">
+                <input type="password" id="register-password" placeholder="Enter password" required>
+                <span class="toggle-password" onclick="togglePasswordVisibility('register-password', this)">👁️</span>
+            </div>
+            <div class="input-box password-container">
+                <input type="password" id="register-confirm-password" placeholder="Confirm password" required>
+                <span class="toggle-password" onclick="togglePasswordVisibility('register-confirm-password', this)">👁️</span>
+            </div>
+         <div class="input-box">
+             <input type="number" id="register-age" placeholder="Enter your age" required>
 
-        <button onclick="resetPassword()">Reset Password</button>
+        </div>
+         <div class="input-box">
+             <input type="tel" id="register-phone" placeholder="Enter your phone number" required>
+         </div>
+        <select id="register-gender" required>
+            <option value="" disabled selected>Select your gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+        </select>
+        <p class="error-message" id="register-error"></p>
+        <button type="submit">Sign Up</button>
+        </form>
+        <p class="login-link">Already have an account? <a onclick="toggleForm()">Login</a></p>
+    </div>
+    <div id="reset-password-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeResetPasswordModal()">&times;</span>
+            <h3>Reset Your Password</h3>
+            <p>Please enter your new password.</p>
+
+            <input type="password" id="new-password" placeholder="Enter new password" required>
+            <p class="error-message" id="new-password-error"></p>
+
+            <input type="password" id="repeat-password" placeholder="Repeat new password" required>
+            <p class="error-message" id="repeat-password-error"></p>
+
+            <button onclick="resetPassword()">Reset Password</button>
+        </div>
+    </div>
+
+    <div id="forgot-password-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3>Reset Password</h3>
+            <p>Enter your email to receive a reset code.</p>
+            <input type="email" id="reset-email" placeholder="Enter your email" required>
+            <p class="error-message" id="reset-email-error"></p>
+            <button onclick="sendResetCode()">Send Code</button>
+        </div>
+    </div>
+
+    <div id="verification-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeVerificationModal()">&times;</span>
+            <h3>Enter Verification Code</h3>
+            <p>We have sent a code to your email. Please enter it below:</p>
+            <input type="text" id="verification-code" placeholder="Enter code" required>
+            <p class="error-message" id="verification-error"></p>
+            <button onclick="handleVerification()">Verify</button>
+        </div>
+    </div>
+
+    <div id="confirmation-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeConfirmationModal()">&times;</span>
+            <h3>Enter Confirmation Code</h3>
+            <p>A confirmation code has been sent to your email. Please enter it below.</p>
+            <input type="text" id="confirmation-code" placeholder="Enter confirmation code" required>
+            <p class="error-message" id="confirmation-code-error"></p>
+            <button onclick="verifyCode()">Verify</button>
+        </div>
+    </div>
+
+    <div class="right" id="loginForm">
+        <h2>Login</h2>
+        <form onsubmit="handleLogin(event)" action="/login">
+        <div class="input-box">
+            <input type="email" id="email" placeholder="Enter Email" required>
+            <p class="error-message" id="email-error"></p>
+        </div>
+        <div class="input-box">
+            <input type="password" id="password" placeholder="Enter Password" required>
+            <p class="error-message" id="password-error"></p>
+        </div>
+        <button>Login</button>
+            </form>
+        <div class="forgot-password">
+            <a href="#" onclick="openModal()">Forgot Password?</a>
+        </div>
+        <p class="signup-link">Don’t have an account? <a onclick="toggleForm()">Sign Up</a></p>
+        <div class="google-signin">
+            <button class="btn btn-outline-dark google-btn" onclick="signInWithGoogle()">
+                <i class="bi bi-google"></i> Sign in with Google
+            </button>
+        </div>
+
+
     </div>
 </div>
-
-
-<div class="login-container">
-    <h2>Login</h2>
-    <form onsubmit="handleLogin(event)">
-        <input type="email" id="email" placeholder="Enter Email" required>
-        <p class="error-message" id="email-error"></p>
-        <input type="password" id="password" placeholder="Enter password" required>
-        <p class="error-message" id="password-error"></p>
-        <button type="submit">Login</button>
-    </form>
-    <div class="forgot-password">
-        <a href="#" onclick="openModal()">Forgot Password?</a>
-    </div>
-</div>
-<div id="forgot-password-modal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <h3>Reset Password</h3>
-        <p>Enter your email to receive a reset code.</p>
-        <input type="email" id="reset-email" placeholder="Enter your email" required>
-        <p class="error-message" id="reset-email-error"></p>
-        <button onclick="sendResetCode()">Send Code</button>
-    </div>
-</div>
-
-<div id="confirmation-modal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeConfirmationModal()">&times;</span>
-        <h3>Enter Confirmation Code</h3>
-        <p>A confirmation code has been sent to your email. Please enter it below.</p>
-        <input type="text" id="confirmation-code" placeholder="Enter confirmation code" required>
-        <p class="error-message" id="confirmation-code-error"></p>
-        <button onclick="verifyCode()">Verify</button>
-    </div>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="/frontend/js/request.js"></script>
 <script src="/frontend/js/script.js"></script>
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+<script>
+</script>
 </body>
 </html>

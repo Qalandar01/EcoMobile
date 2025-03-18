@@ -1,10 +1,327 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz">
 <head>
-    <meta charset="UTF-8">
-    <title>User</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mahsulotlar va Kategoriyalar</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        /* Navbar uchun qo'shimcha styling */
+        .navbar-custom {
+            margin-bottom: 20px;
+        }
+        /* Konteynerni responsiv qilish uchun max-width va 100% kenglik */
+        .container-custom {
+            max-width: 1200px;
+            width: 100%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .card img {
+            height: 200px;
+            width: 100%;
+            object-fit: cover;
+        }
+        .like-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+        .pointer { cursor: pointer; }
+        /* Media query: 768px dan kichik ekranlarda rasm balandligini kamaytirish */
+        @media (max-width: 768px) {
+            .card img {
+                height: 150px;
+            }
+            .card-body {
+                padding: 15px;
+            }
+        }
+        /* Media query: 576px dan kichik ekranlarda body paddingini kamaytirish */
+        @media (max-width: 576px) {
+            body {
+                padding: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
-<h1>Welcome User</h1>
+
+<form action="reportAdmin.html">
+    <button class="btn btn-primary">Report Admin</button>
+</form>
+<!-- Header: Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark navbar-custom">
+    <div class="container">
+        <a class="navbar-brand" href="#">MyStore</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+                aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <!-- Chap tomondagi tugmalar -->
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Basket</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Order</a>
+                </li>
+            </ul>
+            <!-- O'ng tomondagi foydalanuvchi rasmi va ism familiya -->
+            <ul class="navbar-nav">
+                <li class="nav-item d-flex align-items-center">
+                    <img src="https://via.placeholder.com/40" class="rounded-circle me-2" alt="User Image">
+                    <span class="text-white">Ism Familiya</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container-custom">
+    <div class="row">
+        <!-- Chap tomonda: Kategoriyalar -->
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header bg-dark text-white">Categories</div>
+                <div class="card-body">
+                    <ul id="categoryList" class="list-group mb-3"></ul>
+                    <form id="addCategoryForm" onsubmit="addCategory(event)" style="display: none;">
+                        <div class="input-group">
+                            <input type="text" id="categoryName" class="form-control" placeholder="New category name" required />
+                            <button type="submit" class="btn btn-dark">Add</button>
+                        </div>
+                    </form>
+                    <div id="adminCategoryButton" style="display: none;">
+                        <button class="btn btn-dark mt-2" onclick="toggleCategoryForm()">+ Add Category</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- O'ng tomonda: Mahsulotlar -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-dark text-white">Products</div>
+                <div class="card-body">
+                    <div class="row" id="productList"></div>
+                    <div class="text-end" id="adminProductButton" style="display: none;">
+                        <button class="btn btn-dark mt-3" onclick="openProductForm()">+ Add Product</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Axios va Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Foydalanuvchi ma'lumotlari va rol
+    let role = localStorage.getItem("role") || "ROLE_ADMIN";
+    let token = localStorage.getItem("token");
+    let currentUserId = 1;
+
+    if (role === "ROLE_ADMIN") {
+        document.getElementById("adminCategoryButton").style.display = "block";
+        document.getElementById("adminProductButton").style.display = "block";
+        document.getElementById("addCategoryForm").style.display = "none";
+    }
+
+    // Mahsulotlar uchun axios instance
+    const productRequest = axios.create({
+        baseURL: "http://localhost:8080/api/",
+        headers: { token: token }
+    });
+
+    async function fetchProducts() {
+        try {
+            const response = await productRequest.get('products');
+            const products = response.data;
+            console.log("Mahsulotlar:", products);
+            displayProducts(products);
+        } catch (error) {
+            console.error('Xatolik yuz berdi:', error);
+        }
+    }
+
+    function displayProducts(products) {
+        let productList = document.getElementById("productList");
+        productList.innerHTML = "";
+        products.forEach((product, index) => {
+            let productId = product.id || product.productId;
+            let carouselId = `carousel-${productId}-${index}`;
+            let isLiked = (product.likedByUsers || []).some(userId => userId === currentUserId);
+            let heartIcon = isLiked ? "❤️" : "🤍";
+            let imageContainerHtml = "";
+            if ((product.attachmentIds || []).length > 1) {
+                let carouselHtml = `
+          <div id="${carouselId}" class="carousel slide" data-bs-interval="false">
+            <div class="carousel-inner">
+              ${ (product.attachmentIds || []).map((attachmentId, i) => `
+                <div class="carousel-item ${i === 0 ? 'active' : ''}">
+                  <img src="http://localhost:8080/api/products/file/${attachmentId}" class="d-block w-100" alt="Mahsulot rasmi">
+                </div>
+              `).join('') }
+            </div>
+          </div>
+        `;
+                imageContainerHtml = `
+          <div class="position-relative">
+            ${carouselHtml}
+            <button class="like-button" onclick="toggleLike(${productId}, ${currentUserId})" style="color: ${isLiked ? 'red' : 'gray'};">${heartIcon}</button>
+          </div>
+          <button class="btn btn-secondary btn-sm mt-2" onclick="nextImage('${carouselId}')">Keyingi rasm</button>
+          <a class="cart-text" href="index.html?productId=${productId}">Mahsulot haqida</a>
+        `;
+            } else {
+                let singleImageHtml = (product.attachmentIds || []).map(attachmentId =>
+                    `<img src="http://localhost:8080/api/products/file/${attachmentId}" class="img-fluid" alt="Mahsulot rasmi">`
+                ).join("");
+                imageContainerHtml = `
+          <div class="position-relative">
+            ${singleImageHtml}
+            <button class="like-button" onclick="toggleLike(${productId}, ${currentUserId})" style="color: ${isLiked ? 'red' : 'gray'};">${heartIcon}</button>
+          </div>
+          <a class="cart-text" href="index.html?productId=${productId}">Mahsulot haqida</a>
+        `;
+            }
+            let adminButtons = "";
+            if (role === "ROLE_ADMIN") {
+                adminButtons = `
+          <div class="d-flex justify-content-between mt-2">
+            <!-- Admin uchun tugmalar -->
+          </div>
+        `;
+            }
+            productList.innerHTML += `
+        <div class="col-md-6 mb-3">
+          <div class="card">
+            <div class="card-body">
+              <p class="card-text"><strong>Kategoriya:</strong> ${product.categoryName || "N/A"}</p>
+              ${imageContainerHtml}
+              <h5 class="card-title mt-2">${product.name}</h5>
+              <p class="card-text"><strong>Narxi:</strong> ${product.price} so‘m</p>
+              <p class="card-text"><strong>Brand:</strong> ${product.productBrandName || "N/A"}</p>
+              <p class="card-text"><strong>Description:</strong> ${product.description || "N/A"}</p>
+            </div>
+            ${adminButtons}
+          </div>
+        </div>
+      `;
+        });
+        document.querySelectorAll('.carousel').forEach(carousel => {
+            new bootstrap.Carousel(carousel, { interval: false });
+        });
+    }
+
+
+    function nextImage(carouselId) {
+        const carouselElement = document.getElementById(carouselId);
+        if (carouselElement) {
+            const carouselInstance = new bootstrap.Carousel(carouselElement);
+            carouselInstance.next();
+        }
+    }
+
+
+    function toggleLike(productId, userId) {
+        if (!productId) {
+            console.error("Mahsulot id aniqlanmadi.");
+            return;
+        }
+        console.log("Like bosildi, product id:", productId);
+        productRequest.post(`products/${productId}/like?userId=${userId}`)
+            .then(response => {
+                console.log(`Mahsulot ${productId} foydalanuvchi ${userId} tomonidan like qilindi.`);
+                fetchProducts();
+            })
+            .catch(error => console.error('Like xatoligi:', error));
+    }
+
+    function loadCategories() {
+        axios.get("http://localhost:8080/api/category/product-count")
+            .then(res => {
+                const categoryList = document.getElementById("categoryList");
+                categoryList.innerHTML = `
+                <li class="list-group-item pointer" onclick="fetchProducts()">Barcha kategoriyalar</li>
+                ${res.data.map(category => `
+                    <li class="list-group-item pointer"
+                        onclick="loadProductsByCategory(${category.id})">
+                        ${category.name}
+                        <span class="badge bg-secondary">
+                            ${category.productCount} <small>products</small>
+                        </span>
+                    </li>
+                `).join('')}
+            `;
+            })
+            .catch(() => console.error("Kategoriyalar yuklanmadi"));
+    }
+
+    function addCategory(event) {
+        event.preventDefault();
+        let categoryName = document.getElementById("categoryName").value;
+        axios.post("http://localhost:8080/api/category", { name: categoryName })
+            .then(() => {
+                loadCategories();
+                document.getElementById("categoryName").value = "";
+                document.getElementById("addCategoryForm").style.display = "none";
+            })
+            .catch(err => alert("Failed to add category!"));
+    }
+
+    function deleteCategory(id) {
+        axios.delete(`http://localhost:8080/api/category/${id}`)
+            .then(() => loadCategories())
+            .catch(err => alert("Failed to delete category!"));
+    }
+
+    function editCategory(id, currentName) {
+        let newName = prompt("Edit Category Name", currentName);
+        if (newName && newName !== currentName) {
+            axios.put(`http://localhost:8080/api/category/${id}`, { name: newName })
+                .then(() => loadCategories())
+                .catch(err => alert("Failed to update category!"));
+        }
+    }
+
+    function toggleCategoryForm() {
+        const form = document.getElementById("addCategoryForm");
+        form.style.display = form.style.display === "none" ? "block" : "none";
+    }
+
+    function loadProductsByCategory(categoryId) {
+        productRequest.get(`products/category/${categoryId}`)
+            .then(response => {
+                displayProducts(response.data);
+            })
+            .catch(error => console.error("Xatolik:", error));
+    }
+
+    function openProductForm() {
+        window.location.href = "admin.html";
+    }
+
+    fetchProducts();
+    loadCategories();
+</script>
 </body>
 </html>

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,8 +18,11 @@ public class ProductColorService {
     }
 
     public ProductColor saveColor(ProductColor productColor) {
-        ProductColor save = productColorRepository.save(productColor);
-        return save ;
+        Optional<ProductColor> existingColor = productColorRepository.findByProductColor(productColor.getProductColor());
+        if(existingColor.isPresent()){
+            return existingColor.get();
+        }
+        return productColorRepository.save(productColor);
     }
 
     public String findByIdForName(Integer colorId) {

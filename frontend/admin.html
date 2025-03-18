@@ -7,40 +7,76 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .new-input { display: none; }
+        .container { max-width: 600px; }
     </style>
 </head>
-<body>
-<a href="product.html">Product page</a>
-<div class="container mt-5">
-    <h2>Mahsulot qo'shish</h2>
+<body class="bg-light">
+
+<div class="container mt-5 p-4 bg-white shadow rounded">
+    <h2 class="text-center mb-4">Mahsulot qo'shish</h2>
     <form id="productForm">
-        <input type="text" class="form-control mb-3" id="productName" placeholder="Mahsulot nomi" required>
-        <input type="number" step="0.01" class="form-control mb-3" id="price" placeholder="Narxi" required>
-        <textarea class="form-control mb-3" id="description" placeholder="Tavsif" rows="3"></textarea>
-        <select class="form-select mb-3" id="category">
-            <option value="" selected>Kategoriya</option>
-        </select>
-        <select class="form-select mb-3" id="brandSelect" required>
-            <option value="" disabled selected>Brend</option>
-            <option value="new">Yangi qo'shish</option>
-        </select>
-        <input type="text" class="form-control new-input mb-3" id="brandInput" placeholder="Yangi brend">
-        <select class="form-select mb-3" id="sizeSelect" required>
-            <option value="" disabled selected>O'lcham</option>
-            <option value="new">Yangi qo'shish</option>
-        </select>
-        <input type="text" class="form-control new-input mb-3" id="sizeInput" placeholder="Yangi o'lcham">
-        <select class="form-select mb-3" id="colorSelect" required>
-            <option value="" disabled selected>Rang</option>
-            <option value="new">Yangi qo'shish</option>
-        </select>
-        <input type="text" class="form-control new-input mb-3" id="colorInput" placeholder="Yangi rang">
-        <input type="number" class="form-control mb-3" id="productAmount" placeholder="Mahsulot soni" required>
-        <input type="file" class="form-control mb-3" id="attachments" multiple>
-        <button type="submit" class="btn btn-primary">Yuborish</button>
+        <div class="mb-3">
+            <label for="productName" class="form-label">Mahsulot nomi</label>
+            <input type="text" class="form-control" id="productName" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="price" class="form-label">Narxi</label>
+            <input type="number" step="0.01" class="form-control" id="price" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Tavsif</label>
+            <textarea class="form-control" id="description" rows="3"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="category" class="form-label">Kategoriya</label>
+            <select class="form-select" id="category"></select>
+        </div>
+
+        <div class="mb-3">
+            <label for="brandSelect" class="form-label">Brend</label>
+            <select class="form-select" id="brandSelect">
+                <option value="" selected disabled>Brend tanlang</option>
+                <option value="new">+ Yangi qo'shish</option>
+            </select>
+            <input type="text" class="form-control new-input mt-2" id="brandInput" placeholder="Yangi brend">
+        </div>
+
+        <div class="mb-3">
+            <label for="sizeSelect" class="form-label">O'lcham</label>
+            <select class="form-select" id="sizeSelect">
+                <option value="" selected disabled>O'lcham tanlang</option>
+                <option value="new">+ Yangi qo'shish</option>
+            </select>
+            <input type="text" class="form-control new-input mt-2" id="sizeInput" placeholder="Yangi o'lcham">
+        </div>
+
+        <div class="mb-3">
+            <label for="colorSelect" class="form-label">Rang</label>
+            <select class="form-select" id="colorSelect">
+                <option value="" selected disabled>Rang tanlang</option>
+                <option value="new">+ Yangi qo'shish</option>
+            </select>
+            <input type="text" class="form-control new-input mt-2" id="colorInput" placeholder="Yangi rang">
+        </div>
+
+        <div class="mb-3">
+            <label for="productAmount" class="form-label">Mahsulot soni</label>
+            <input type="number" class="form-control" id="productAmount" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="attachments" class="form-label">Rasm yuklash</label>
+            <input type="file" class="form-control" id="attachments" multiple>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Yuborish</button>
     </form>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -51,7 +87,6 @@
             color: "http://localhost:8080/api/colors"
         };
 
-        // Optionlarni yuklash funksiyasi
         const loadOptions = (url, selectId, key, label) => {
             axios.get(url)
                 .then(res => {
@@ -63,23 +98,16 @@
                 .catch(console.error);
         };
 
-        // category, brand, size va color uchun optionlarni yuklash
         Object.entries({ category: 'name', brandSelect: 'productBrand', sizeSelect: 'productSize', colorSelect: 'productColor' })
             .forEach(([id, label]) => {
                 loadOptions(endpoints[id.replace('Select', '')], id, 'id', label);
             });
 
-        // "Yangi qo'shish" tanlovida input maydonini ko'rsatish
         const toggleNewInput = (selectId, inputId) => {
             document.getElementById(selectId).addEventListener("change", e => {
                 const input = document.getElementById(inputId);
-                if (e.target.value === "new") {
-                    input.style.display = "block";
-                    input.required = true;
-                } else {
-                    input.style.display = "none";
-                    input.required = false;
-                }
+                input.style.display = e.target.value === "new" ? "block" : "none";
+                input.required = e.target.value === "new";
             });
         };
 
@@ -87,74 +115,41 @@
         toggleNewInput("sizeSelect", "sizeInput");
         toggleNewInput("colorSelect", "colorInput");
 
-        // Formani yuborish
         document.getElementById("productForm").addEventListener("submit", async e => {
             e.preventDefault();
             const getValue = id => document.getElementById(id).value;
             let formData = new FormData();
 
-            // Yangi brendni saqlash
-            let brandSelectValue = getValue("brandSelect");
-            let productBrandId;
-            if (brandSelectValue === "new") {
+            const saveNewOption = async (endpoint, inputId) => {
+                const inputValue = getValue(inputId);
+                if (!inputValue) return null;
                 try {
-                    const res = await axios.post(endpoints.brand + "/save", { productBrand: getValue("brandInput") });
-                    productBrandId = res.data.id;
+                    const res = await axios.post(endpoint + "/save", { name: inputValue });
+                    return res.data.id;
                 } catch (err) {
-                    console.error("Yangi brendni saqlashda xatolik:", err);
-                    return;
+                    console.error(`Xatolik: ${inputId} saqlanmadi`, err);
+                    return null;
                 }
-            } else {
-                productBrandId = brandSelectValue;
-            }
+            };
 
-            // Yangi o'lchamni saqlash
-            let sizeSelectValue = getValue("sizeSelect");
-            let sizeId;
-            if (sizeSelectValue === "new") {
-                try {
-                    const res = await axios.post(endpoints.size + "/save", { productSize: getValue("sizeInput") });
-                    sizeId = res.data.id;
-                } catch (err) {
-                    console.error("Yangi o'lchamni saqlashda xatolik:", err);
-                    return;
-                }
-            } else {
-                sizeId = sizeSelectValue;
-            }
+            const productBrandId = getValue("brandSelect") === "new" ? await saveNewOption(endpoints.brand, "brandInput") : getValue("brandSelect");
+            const sizeId = getValue("sizeSelect") === "new" ? await saveNewOption(endpoints.size, "sizeInput") : getValue("sizeSelect");
+            const colorId = getValue("colorSelect") === "new" ? await saveNewOption(endpoints.color, "colorInput") : getValue("colorSelect");
 
-            // Yangi rangni saqlash
-            let colorSelectValue = getValue("colorSelect");
-            let colorId;
-            if (colorSelectValue === "new") {
-                try {
-                    const res = await axios.post(endpoints.color + "/save", { productColor: getValue("colorInput") });
-                    colorId = res.data.id;
-                } catch (err) {
-                    console.error("Yangi rangni saqlashda xatolik:", err);
-                    return;
-                }
-            } else {
-                colorId = colorSelectValue;
-            }
-
-            // Yuboriladigan obyektni yaratamiz (JSON ko'rinishida logga chiqarish uchun)
             const formObj = {
                 productName: getValue("productName"),
                 price: getValue("price"),
                 description: getValue("description"),
                 amount: getValue("productAmount"),
                 category: getValue("category") || null,
-                productBrandId: productBrandId,
-                sizeId: sizeId,
-                colorId: colorId,
+                productBrandId,
+                sizeId,
+                colorId,
                 attachments: Array.from(document.getElementById("attachments").files).map(file => file.name)
             };
 
-            // JSON obyektini console ga chiqaramiz
-            console.log("Form JSON:", JSON.stringify(formObj, null, 2));
+            console.log("Yuborilayotgan ma'lumotlar:", JSON.stringify(formObj, null, 2));
 
-            // FormData ga boshqa maydonlarni qo'shamiz
             formData.append("productName", formObj.productName);
             formData.append("price", formObj.price);
             formData.append("description", formObj.description);

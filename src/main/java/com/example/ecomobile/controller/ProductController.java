@@ -49,7 +49,6 @@ public class ProductController {
             @RequestParam Integer amount,
             @RequestParam(required = false) MultipartFile[] attachments) {
         try {
-            // Tekshirish: Mahsulot nomi bo'sh bo'lmasligi kerak
             if (productName.trim().isEmpty()) {
                 return ResponseEntity.badRequest().body("Mahsulot nomi bo'sh bo'lmasligi kerak!");
             }
@@ -157,5 +156,10 @@ public class ProductController {
     public ResponseEntity<List<ProductDTO>> getProductsByCategory(@PathVariable Integer categoryId) {
         List<ProductDTO> products = productService.getProductsByCategory(categoryId);
         return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/{productId}/average-rating")
+    public Double getAverageRating(@PathVariable Integer productId) {
+        return productService.getAverageRating(productId);
     }
 }

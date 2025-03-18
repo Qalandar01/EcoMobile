@@ -2,14 +2,7 @@ package com.example.ecomobile.service;
 
 import com.example.ecomobile.dto.ProductDTO;
 import com.example.ecomobile.entity.*;
-import com.example.ecomobile.repo.AttachmentContentRepository;
-import com.example.ecomobile.repo.AttachmentRepository;
-import com.example.ecomobile.repo.CategoryRepository;
-import com.example.ecomobile.repo.ProductBrandRepository;
-import com.example.ecomobile.repo.ProductColorRepository;
-import com.example.ecomobile.repo.ProductRepository;
-import com.example.ecomobile.repo.ProductSizeRepository;
-import com.example.ecomobile.repo.UserRepository;
+import com.example.ecomobile.repo.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,6 +26,7 @@ public class ProductService {
     private final ProductSizeRepository productSizeRepository;
     private final UserRepository userRepository;
     private final ProductBrandRepository productBrandRepository; // qo'shildi
+    private final RatingRepository ratingRepository;
 
     @Transactional
     public Integer uploadAttachment(MultipartFile file) throws IOException {
@@ -243,5 +237,9 @@ public class ProductService {
 
     public Product findById(Integer id) {
         return productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+    }
+
+    public Double getAverageRating(Integer productId) {
+        return ratingRepository.findAverageRatingByProductId(productId).orElse(0.0);
     }
 }

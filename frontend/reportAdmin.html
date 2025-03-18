@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    <title>Manage Category, Product & Order</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        html { font-size: calc(14px + 0.5vw); }
+        body { font-size: 1rem; margin: 0; padding: 0; }
+        .navbar { background-color: #28a745; color: white; padding: 0.5rem 1rem; }
+        .navbar button { color: white; font-weight: bold; border: none; background: transparent; padding: 0.5rem 1rem; transition: 0.3s; cursor: pointer; font-size: 1rem; }
+        .navbar button:hover { color: #d4edda; background: rgba(255, 255, 255, 0.1); border-radius: 0.3rem; }
+        .profile-circle { width: 2.5rem; height: 2.5rem; border-radius: 50%; overflow: hidden; }
+        .profile-circle img { width: 100%; height: 100%; object-fit: cover; }
+        .user-info { display: flex; align-items: center; gap: 0.625rem; }
+        .table-container { margin: 1.25rem auto; width: 80%; }
+        @media (max-width: 768px) {
+            .table-container { width: 95%; }
+            .navbar button { padding: 0.5rem 0.8rem; font-size: 0.9rem; }
+        }
+        .modal-dialog { margin-top: 1.25rem; }
+        .section { display: none; } /* Barcha bo'limlarni boshlang'ichda yashirish */
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg bg-success">
+    <div class="container d-flex justify-content-between align-items-center">
+        <div>
+            <button id="btn-category" class="text-white">Category</button>
+            <button id="btn-product" class="text-white">Product</button>
+            <button id="btn-order" class="text-white">Order</button>
+            <button class="text-white">Report</button>
+
+        </div>
+        <div class="user-info">
+            <div class="profile-circle">
+                <img src="https://via.placeholder.com/40" alt="User Profile" />
+            </div>
+            <span class="text-white">Ilon Mask</span>
+        </div>
+    </div>
+</nav>
+
+<!-- 1) CATEGORY SECTION -->
+<div id="category-section" class="section">
+    <h3 class="text-center mt-3">Manage Category</h3>
+    <div class="d-flex justify-content-end mb-3 table-container">
+        <button class="btn btn-success" id="btn-add-category">Add Category</button>
+    </div>
+    <div class="table-container">
+        <table class="table table-bordered text-center">
+            <thead class="table-light">
+            <tr>
+                <th>Name</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody id="category-table-body">
+            <!-- Kategoriya ma’lumotlari shu yerga dinamik qo'shiladi -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- 2) PRODUCT SECTION -->
+<div id="product-section" class="section">
+    <h3 class="text-center mt-3">Manage Product</h3>
+    <div class="d-flex justify-content-end mb-3 table-container">
+        <button class="btn btn-success" id="btn-add-product">Add Product</button>
+    </div>
+    <div class="table-container">
+        <table class="table table-bordered text-center">
+            <thead class="table-light">
+            <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Category</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody id="product-table-body">
+            <!-- Mahsulot ma’lumotlari shu yerga dinamik qo'shiladi -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- 3) ORDER SECTION -->
+<div id="order-section" class="section">
+    <h3 class="text-center mt-3">Manage Order</h3>
+    <div class="table-container">
+        <table class="table table-bordered text-center">
+            <thead class="table-light">
+            <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Total Amount</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody id="order-table-body">
+            <!-- Buyurtma ma’lumotlari shu yerga dinamik qo'shiladi -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Edit Category Modal -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editCategoryModalLabel">Edit Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editCategoryForm">
+                    <div class="mb-3">
+                        <label for="editCategoryName" class="form-label">Category Name</label>
+                        <input type="text" class="form-control" id="editCategoryName" required />
+                    </div>
+                    <input type="hidden" id="editCategoryId" />
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveEditCategoryBtn">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Category Modal -->
+<div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-labelledby="deleteCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteCategoryModalLabel">Delete Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this category?</p>
+                <input type="hidden" id="deleteCategoryId" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteCategoryBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Axios va Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // -------------------- AXIOS INSTANCE --------------------
+    const request = axios.create({
+        baseURL: "http://localhost:8080/api",
+        headers: { token: localStorage.getItem("token") }
+    });
+
+    // -------------------- TOGGLE SECTIONS --------------------
+    function showSection(sectionId) {
+        // Barcha bo'limlarni yashirish
+        document.querySelectorAll('.section').forEach(section => {
+            section.style.display = 'none';
+        });
+        // Tanlangan bo'limni ko'rsatish
+        document.getElementById(sectionId).style.display = 'block';
+    }
+
+    // Navbar tugmalariga hodisa qo'shish
+    document.getElementById('btn-category').addEventListener('click', () => showSection('category-section'));
+    document.getElementById('btn-product').addEventListener('click', () => showSection('product-section'));
+    document.getElementById('btn-order').addEventListener('click', () => showSection('order-section'));
+
+    // -------------------- CATEGORY FUNCTIONS --------------------
+    function fetchCategories() {
+        request.get("category")
+            .then(response => {
+                const categories = response.data;
+                const tbody = document.getElementById("category-table-body");
+                tbody.innerHTML = "";
+                categories.forEach(cat => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${cat.name}</td>
+                        <td>
+                            <button class="btn btn-outline-primary" onclick="openEditCategoryModal(${cat.id}, '${cat.name}')">
+                                Edit
+                            </button>
+                            <button class="btn btn-outline-danger" onclick="openDeleteCategoryModal(${cat.id})">
+                                Delete
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            })
+            .catch(error => console.error("Error fetching categories:", error));
+    }
+
+    function openEditCategoryModal(id, name) {
+        document.getElementById("editCategoryId").value = id;
+        document.getElementById("editCategoryName").value = name;
+        new bootstrap.Modal(document.getElementById("editCategoryModal")).show();
+    }
+
+    document.getElementById("saveEditCategoryBtn").addEventListener("click", function () {
+        const id = document.getElementById("editCategoryId").value;
+        const newName = document.getElementById("editCategoryName").value;
+        request.put(`category/${id}`, { name: newName })
+            .then(() => {
+                bootstrap.Modal.getInstance(document.getElementById("editCategoryModal")).hide();
+                fetchCategories();
+            })
+            .catch(error => console.error("Error updating category:", error));
+    });
+
+    function openDeleteCategoryModal(id) {
+        document.getElementById("deleteCategoryId").value = id;
+        new bootstrap.Modal(document.getElementById("deleteCategoryModal")).show();
+    }
+
+    document.getElementById("confirmDeleteCategoryBtn").addEventListener("click", function () {
+        const id = document.getElementById("deleteCategoryId").value;
+        request.delete(`category/${id}`)
+            .then(() => {
+                bootstrap.Modal.getInstance(document.getElementById("deleteCategoryModal")).hide();
+                fetchCategories();
+            })
+            .catch(error => console.error("Error deleting category:", error));
+    });
+
+    document.getElementById("btn-add-category").addEventListener("click", function () {
+        const newName = prompt("Enter new category name:");
+        if (newName) {
+            request.post("category", { name: newName })
+                .then(() => fetchCategories())
+                .catch(error => console.error("Error adding category:", error));
+        }
+    });
+
+    // -------------------- INITIAL LOAD --------------------
+    showSection('category-section'); // Boshlang'ichda Category bo'limini ko'rsatish
+    fetchCategories();
+</script>
+</body>
+</html>

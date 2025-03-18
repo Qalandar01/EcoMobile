@@ -1,18 +1,23 @@
 package com.example.ecomobile.service;
 
+import com.example.ecomobile.dto.CategoryProductCountDTO;
 import com.example.ecomobile.entity.Category;
 import com.example.ecomobile.repo.CategoryRepository;
+import com.example.ecomobile.repo.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryServise {
 
     private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
 
-    public CategoryServise(CategoryRepository categoryRepository) {
+    public CategoryServise(CategoryRepository categoryRepository, ProductRepository productRepository) {
         this.categoryRepository = categoryRepository;
+        this.productRepository = productRepository;
     }
 
     public Category create(Category category) {
@@ -35,4 +40,16 @@ public class CategoryServise {
     public String findByIdForName(Integer category) {
         return categoryRepository.findById(category).map(Category::getName).orElse("Noma'lum Category");
     }
+
+    public List<CategoryProductCountDTO> getCategoriesWithProductCount() {
+        List<Category> categories = categoryRepository.findAll();
+        return categories.stream()
+                .map(category -> new CategoryProductCountDTO(
+                        category.getId(),
+                        category.getName(),
+                        productRepository.countProductsByCategory(category.getId())
+                ))
+                .collect(Collectors.toList());
+    }
+
 }

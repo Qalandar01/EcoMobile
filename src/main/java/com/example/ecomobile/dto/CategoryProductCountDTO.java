@@ -8,5 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CategoryProductCountDTO {
-     String name;
+     private Integer id;
+     private String name;
+     private Long productCount;
 }

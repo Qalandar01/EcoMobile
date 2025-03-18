@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mahsulot Tafsilotlari</title>
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        /* Umumiy uslub */
         body {
             font-family: Arial, sans-serif;
             background-color: #f8f9fa;
@@ -20,17 +22,15 @@
             margin: 40px auto;
             position: relative;
         }
-        .product-detail img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 4px;
-        }
-        .product-info p {
-            margin-bottom: 10px;
+        .btn-back {
+            position: absolute;
+            top: 20px;
+            left: 20px;
         }
         .quantity-control {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
             margin-top: 20px;
         }
@@ -55,24 +55,14 @@
             color: #28a745;
             margin-top: 20px;
         }
-        .btn-back {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-        }
         .total-sum {
             font-size: 20px;
             font-weight: bold;
             margin-top: 20px;
         }
-        .btn-add-to-basket {
-            margin-top: 20px;
-            width: 100%;
-            padding: 10px;
-            font-size: 18px;
-        }
         .rating-stars {
             display: flex;
+            justify-content: center;
             gap: 5px;
             margin-top: 10px;
         }
@@ -88,100 +78,118 @@
             font-size: 18px;
             font-weight: bold;
             margin-top: 10px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
 <div class="container">
+    <!-- Mahsulot tafsilotlari shu yerda ko'rsatiladi -->
     <div id="productDetail" class="product-detail text-center">Yuklanmoqda...</div>
 </div>
 
-<!-- Axios va Bootstrap JS (carousel uchun kerak) -->
+<!-- Axios va Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    // URL parametridan mahsulot ID sini olish
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('productId');
 
-    let product = {}; // Mahsulot ma'lumotlarini saqlash uchun global o'zgaruvchi
+    // Global o'zgaruvchi: mahsulot ma'lumotlari
+    let product = {};
 
+    /**
+     * displayProductDetail(product)
+     * Mahsulot tafsilotlarini sahifada ko'rsatadi.
+     */
     function displayProductDetail(product) {
         const detailContainer = document.getElementById('productDetail');
 
-        // Rasm uchun HTML: agar bir nechta rasm bo'lsa, carousel ko'rsatiladi.
+        // Agar bir nechta rasm mavjud bo'lsa, carousel shaklida ko'rsatish
         let imageHtml = "";
         if (product.attachmentIds && product.attachmentIds.length > 1) {
             const carouselId = "productCarousel";
             imageHtml = `
-                <div id="${carouselId}" class="carousel slide" data-bs-interval="false">
-                    <div class="carousel-inner">
-                        ${product.attachmentIds.map((id, index) => `
-                            <div class="carousel-item ${index === 0 ? "active" : ""}">
-                                <img src="http://localhost:8080/api/products/file/${id}" class="d-block w-100" alt="Mahsulot rasmi">
-                            </div>
-                        `).join('')}
-                    </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#${carouselId}" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Oldingi</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#${carouselId}" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Keyingi</span>
-                    </button>
+          <div id="${carouselId}" class="carousel slide" data-bs-interval="false">
+            <div class="carousel-inner">
+              ${product.attachmentIds.map((id, index) => `
+                <div class="carousel-item ${index === 0 ? "active" : ""}">
+                  <img src="http://localhost:8080/api/products/file/${id}" class="d-block w-100" alt="Mahsulot rasmi">
                 </div>
-            `;
+              `).join('')}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#${carouselId}" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Oldingi</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#${carouselId}" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Keyingi</span>
+            </button>
+          </div>
+        `;
         } else if (product.attachmentIds && product.attachmentIds.length === 1) {
             imageHtml = `<img src="http://localhost:8080/api/products/file/${product.attachmentIds[0]}" alt="Mahsulot rasmi">`;
         } else {
             imageHtml = `<img src="https://via.placeholder.com/800x450?text=No+Image" alt="Mahsulot rasmi">`;
         }
 
-        // Reyting uchun HTML
+        // Reyting uchun HTML: 5 ta yulduz ko'rsatiladi
         let ratingHtml = `
-            <div class="rating-stars">
-                ${[1, 2, 3, 4, 5].map(star => `
-                    <span class="star" data-value="${star}" onclick="rateProduct(${star})">&#9733;</span>
-                `).join('')}
-            </div>
-            <div class="average-rating">O'rtacha reyting: <span id="averageRating">${product.averageRating || 0}</span></div>
-        `;
+        <div class="rating-stars">
+          ${[1, 2, 3, 4, 5].map(star => `
+            <span class="star" data-value="${star}" onclick="rateProduct(${star})">&#9733;</span>
+          `).join('')}
+        </div>
+        <div class="average-rating">O'rtacha reyting: <span id="averageRating">${product.averageRating || 0}</span></div>
+      `;
 
-        // Miqdorni boshqarish uchun HTML
+        // Mahsulot miqdorini boshqarish va narx ko'rsatish
         let quantityHtml = `
-            <div class="quantity-control">
-                <button onclick="decreaseQuantity()">-</button>
-                <input type="number" id="quantity" value="1" min="1" max="${product.amount || 10}" readonly>
-                <button onclick="increaseQuantity()">+</button>
-            </div>
-            <div class="price" id="totalPrice">${product.price ? (product.price * 1).toLocaleString() + " so‘m" : 'N/A'}</div>
-            <div class="total-sum">Umumiy summa: <span id="totalSum">${product.price ? (product.price * 1).toLocaleString() + " so‘m" : 'N/A'}</span></div>
-        `;
+        <div class="quantity-control">
+          <button onclick="decreaseQuantity()">-</button>
+          <input type="number" id="quantity" value="1" min="1" max="${product.amount || 10}" readonly>
+          <button onclick="increaseQuantity()">+</button>
+        </div>
+        <div class="price" id="totalPrice">
+          ${product.price ? (product.price * 1).toLocaleString() + " so‘m" : 'N/A'}
+        </div>
+        <div class="total-sum">
+          Umumiy summa: <span id="totalSum">${product.price ? (product.price * 1).toLocaleString() + " so‘m" : 'N/A'}</span>
+        </div>
+      `;
 
+        // To'liq sahifa mazmuni: "Orqaga qaytish" tugmasi, mahsulot tafsilotlari, reyting, miqdor boshqaruvi va savatchaga qo'shish tugmasi
         detailContainer.innerHTML = `
-            <a href="product.html" class="btn btn-primary btn-back">Orqaga qaytish</a>
-            <h2 class="mb-3">${product.name || "Noma'lum mahsulot"}</h2>
-            ${imageHtml}
-            <div class="product-info mt-3 text-start">
-                <p><strong>Kategoriya:</strong> ${product.categoryName || 'N/A'}</p>
-                <p><strong>Narxi:</strong> ${product.price ? product.price.toLocaleString() + " so‘m" : 'N/A'}</p>
-                <p><strong>Brand:</strong> ${product.productBrandName || 'N/A'}</p>
-                <p><strong>Rang:</strong> ${product.colorName || 'N/A'}</p>
-                <p><strong>O‘lcham:</strong> ${product.sizeName || 'N/A'}</p>
-                <p><strong>Tavsif:</strong> ${product.description || 'Tavsif mavjud emas'}</p>
-                <p><strong>Mahsulot soni:</strong> ${product.amount || 'N/A'}</p>
-            </div>
-            ${ratingHtml}
-            ${quantityHtml}
-            <button class="btn btn-success btn-add-to-basket" onclick="addToBasket()">Savatchaga qo'shish</button>
-        `;
+        <a href="product.html" class="btn btn-primary btn-back">Orqaga qaytish</a>
+        <h2 class="mb-3">${product.name || "Noma'lum mahsulot"}</h2>
+        ${imageHtml}
+        <div class="product-info mt-3 text-start">
+          <p><strong>Kategoriya:</strong> ${product.categoryName || 'N/A'}</p>
+          <p><strong>Narxi:</strong> ${product.price ? product.price.toLocaleString() + " so‘m" : 'N/A'}</p>
+          <p><strong>Brand:</strong> ${product.productBrandName || 'N/A'}</p>
+          <p><strong>Rang:</strong> ${product.colorName || 'N/A'}</p>
+          <p><strong>O‘lcham:</strong> ${product.sizeName || 'N/A'}</p>
+          <p><strong>Tavsif:</strong> ${product.description || 'Tavsif mavjud emas'}</p>
+          <p><strong>Mahsulot soni:</strong> ${product.amount || 'N/A'}</p>
+        </div>
+        ${ratingHtml}
+        ${quantityHtml}
+        <button class="btn btn-success btn-add-to-basket" onclick="addToBasket()">Savatchaga qo'shish</button>
+      `;
     }
 
+    /**
+     * rateProduct(stars)
+     * Foydalanuvchi reyting berish tugmasini bosganda chaqiriladi.
+     * localStorage-dan foydalanuvchi ID sini oladi va backendga reyting ma'lumotini yuboradi.
+     */
     function rateProduct(stars) {
         const ratingData = {
             starsCount: stars,
             product: { id: productId },
-            user: { id: 1 } // Foydalanuvchi ID sini o'zgartiring
+            user: { id: localStorage.getItem("userId") || null }
         };
 
         axios.post('http://localhost:8080/api/ratings', ratingData)
@@ -194,6 +202,7 @@
             });
     }
 
+    // Yangilangan o'rtacha reytingni qayta yuklash
     function updateAverageRating() {
         axios.get(`http://localhost:8080/api/products/${productId}/average-rating`)
             .then(response => {
@@ -204,6 +213,7 @@
             });
     }
 
+    // Mahsulot miqdoriga qarab umumiy narxni yangilash
     function updateTotalPrice() {
         const quantity = parseInt(document.getElementById('quantity').value);
         const totalPrice = quantity * product.price;
@@ -211,6 +221,7 @@
         document.getElementById('totalSum').innerText = totalPrice.toLocaleString() + " so‘m";
     }
 
+    // Miqdorni oshirish
     function increaseQuantity() {
         const quantityInput = document.getElementById('quantity');
         let quantity = parseInt(quantityInput.value);
@@ -223,6 +234,7 @@
         }
     }
 
+    // Miqdorni kamaytirish
     function decreaseQuantity() {
         const quantityInput = document.getElementById('quantity');
         let quantity = parseInt(quantityInput.value);
@@ -232,17 +244,51 @@
         }
     }
 
+    /**
+     * addToBasket()
+     * Savatchaga qo'shish tugmasi bosilganda chaqiriladi.
+     * Foydalanuvchi ID va tokenini localStorage dan oladi; agar mavjud bo'lmasa, login sahifasiga yo'naltiradi.
+     * So'ng mahsulot va miqdor ma'lumotlarini backendga Authorization header orqali yuboradi.
+     */
     function addToBasket() {
         const quantity = parseInt(document.getElementById('quantity').value);
-        alert("Mahsulot savatchaga qo'shildi: " + quantity + " ta");
-        // Savatchaga qo'shish logikasi
-        window.location.href = "basket.html"; // basket.html sahifasiga yo'naltirish
+        const basketItem = {
+            productId: product.id,
+            productName: product.name,
+            price: product.price,
+            quantity: quantity
+        };
+
+        // Foydalanuvchi ID va tokenini localStorage dan olish
+        const userId = localStorage.getItem("userId");
+        const token = localStorage.getItem("token");
+
+        if (!userId || !token) {
+            alert("Iltimos, avvalo tizimga kiring!");
+            window.location.href = "login.html";
+            return;
+        }
+
+        axios.post(`http://localhost:8080/api/basket/add?userId=${userId}`, basketItem, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        })
+            .then(response => {
+                alert(response.data);
+                // Savatcha sahifasiga yo'naltirish
+                window.location.href = "basket.html";
+            })
+            .catch(error => {
+                console.error("Savatchaga qo'shishda xatolik:", error);
+            });
     }
 
+    // Agar mahsulot ID mavjud bo'lsa, backenddan mahsulot ma'lumotlarini olamiz
     if (productId) {
         axios.get(`http://localhost:8080/api/products/${productId}`)
             .then(response => {
-                product = response.data; // Mahsulot ma'lumotlarini saqlash
+                product = response.data;
                 displayProductDetail(product);
             })
             .catch(error => {

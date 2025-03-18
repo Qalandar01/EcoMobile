@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Savatcha</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+        .basket-table {
+            margin-top: 20px;
+        }
+        .total-sum {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <h1 class="mb-4">Savatcha</h1>
+    <form action="product.html" class="basket-table">
+        <button class="btn btn-secondary ">Back</button>
+    </form>
+    <div id="basketContainer">Yuklanmoqda...</div>
+    <div class="mt-3 d-flex justify-content-between">
+        <button class="btn btn-danger" onclick="clearBasket()">Savatchani Tozalash</button>
+        <button class="btn btn-success" onclick="checkout()">Checkout</button>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+        alert("Iltimos, tizimga kiring!");
+        window.location.href = "login.html";
+    }
+
+    function loadBasket() {
+        axios.get(`http://localhost:8080/api/basket/${userId}`)
+            .then(response => {
+                const basket = response.data;
+                displayBasket(basket);
+            })
+            .catch(error => {
+                console.error("Savatchani olishda xatolik:", error);
+                document.getElementById("basketContainer").innerHTML = '<p class="text-danger">Savatchani olishda xatolik yuz berdi.</p>';
+            });
+    }
+
+    // 3. Savatchani HTML jadvalga chiqarish
+    function displayBasket(basket) {
+        if (!basket || !basket.items || basket.items.length === 0) {
+            document.getElementById("basketContainer").innerHTML = '<p>Savatcha bo\'sh!</p>';
+            return;
+        }
+
+        let tableHtml = `
+        <table class="table table-bordered basket-table">
+          <thead>
+            <tr>
+              <th>Mahsulot nomi</th>
+              <th>Narxi</th>
+              <th>Miqdori</th>
+              <th>Jami summa</th>
+              <th>Amallar</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+        let totalSum = 0;
+        basket.items.forEach(item => {
+            const subtotal = item.price * item.quantity;
+            totalSum += subtotal;
+            tableHtml += `
+          <tr>
+            <td>${item.productName}</td>
+            <td>${item.price.toLocaleString()} so‘m</td>
+            <td>${item.quantity}</td>
+            <td>${subtotal.toLocaleString()} so‘m</td>
+            <td>
+              <button class="btn btn-sm btn-danger" onclick="removeItem(${item.productId})">O'chirish</button>
+            </td>
+          </tr>
+        `;
+        });
+        tableHtml += `
+          </tbody>
+        </table>
+        <div class="total-sum">Umumiy summa: ${totalSum.toLocaleString()} so‘m</div>
+      `;
+        document.getElementById("basketContainer").innerHTML = tableHtml;
+    }
+
+    function removeItem(productId) {
+        axios.delete(`http://localhost:8080/api/basket/${userId}/item/${productId}`)
+            .then(response => {
+                alert("Mahsulot savatchadan o'chirildi!");
+                loadBasket();
+            })
+            .catch(error => {
+                console.error("Mahsulotni o'chirishda xatolik:", error);
+                alert("Mahsulotni o'chirishda xatolik yuz berdi!");
+            });
+    }
+
+    function clearBasket() {
+        axios.delete(`http://localhost:8080/api/basket/${userId}`)
+            .then(response => {
+                alert("Savatcha tozalandi!");
+                loadBasket();
+            })
+            .catch(error => {
+                console.error("Savatchani tozalashda xatolik:", error);
+                alert("Savatchani tozalashda xatolik yuz berdi!");
+            });
+    }
+
+    function checkout() {
+        alert("Checkout jarayoni ishga tushdi!");
+    }
+
+    window.onload = loadBasket;
+</script>
+</body>
+</html>

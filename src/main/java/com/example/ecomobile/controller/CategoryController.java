@@ -45,8 +45,8 @@ public class CategoryController {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found!"));
 
-        category.setName(categoryProductCountDTO.getName()); // Eski obyektning nomini yangilaymiz
-        categoryRepository.save(category); // Yangilangan obyektni saqlaymiz
+        category.setName(categoryProductCountDTO.getName());
+        categoryRepository.save(category);
     }
 
     @GetMapping("/product-count")

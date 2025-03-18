@@ -15,15 +15,11 @@ import java.util.List;
 @Builder
 
 public class Basket {
-    private List<BasketItem> basketItems = new ArrayList<>();
-    private Double totalSum;
-    private Integer userId;
+    private String userId;
+    private List<BasketItem> items;
 
-    public Double getTotalSum() {
-        Double sum = 0.0;
-        for (BasketItem item : basketItems) {
-            sum += item.getProduct().getPrice() * item.getQuantity();
-        }
-        return sum;
+    public Basket(String userId) {
+        this.userId = userId;
+        this.items = new ArrayList<>();
     }
 }

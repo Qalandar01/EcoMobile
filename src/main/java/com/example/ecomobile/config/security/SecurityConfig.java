@@ -55,7 +55,7 @@ public class SecurityConfig {
                                         "/api/products/**","api/register-mail","api/verification",
                                         "/api/file","/api/basket/**", "/api/brands/**","/api/category/product-count/**",
                                         "/api/colors/**", "/api/order/**", "/api/locations/**" ,"/api/user/**" ,"/file/**","/api/sizes/**" ,"/api/user/**","/api/categoryWithProQuantity","/api/ratings",
-                                        "/login").permitAll()
+                                        "/login","/api/auth/**").permitAll()
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                                 .requestMatchers("/api/products/save/").hasRole("ADMIN")

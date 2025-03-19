@@ -76,7 +76,7 @@ public class AuthController {
 
         String token = jwtService.generateToken(userRepository.findByEmail(email).orElseThrow());
 
-        return ResponseEntity.status(301).location(URI.create("http://localhost:63342/EcoMobile/frontend/product.html?_ijt=a6iqsgkk7lsb4385c4tmunn6ap&_ij_reload=RELOAD_ON_SAVE&token="+token)).build();
+        return ResponseEntity.status(301).location(URI.create("http://localhost:63342/EcoMobile/frontend/product.html?_ijt=f7s6h6iqmtadr66cvqv9uhduuv&_ij_reload=RELOAD_ON_SAVE&token="+token)).build();
 
     }
 

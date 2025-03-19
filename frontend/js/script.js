@@ -275,5 +275,14 @@ function clearInputs() {
     document.getElementById('register-phone').value = "";
     document.getElementById('register-gender').selectedIndex = 0;
 }
+function signInWithGoogle(){
+    request({
+        url: "auth/oauth2",
+        method:"GET"
+    }).then(res=>{
+        window.location.href = res.data.authorizationUrl;
+    })
+}
+
 
 

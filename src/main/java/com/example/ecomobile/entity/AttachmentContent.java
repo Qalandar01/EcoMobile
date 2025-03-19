@@ -20,3 +20,4 @@ public class AttachmentContent extends BaseEntity {
     @ManyToOne
     private Attachment attachment;
 }
+

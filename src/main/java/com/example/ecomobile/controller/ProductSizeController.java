@@ -16,8 +16,10 @@ public class ProductSizeController {
 
     @GetMapping
     public ResponseEntity<List<ProductSize>> getAllSizes() {
-        return ResponseEntity.ok(productSizeService.getAllSizes());
+        List<ProductSize> sizes = productSizeService.getAllSizes();
+        return ResponseEntity.ok(sizes);
     }
+
     @PostMapping("/save")
     public ResponseEntity<ProductSize> saveSize(@RequestBody ProductSize productSize) {
         ProductSize savedSize = productSizeService.saveSize(productSize);

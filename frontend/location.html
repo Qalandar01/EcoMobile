@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Manzillar</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Manzillar</h2>
+    <form id="locationForm">
+        <div class="mb-3">
+            <label class="form-label">Viloyat</label>
+            <input type="text" class="form-control" id="region" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Tuman</label>
+            <input type="text" class="form-control" id="district" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Ko'cha</label>
+            <input type="text" class="form-control" id="street" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Uy raqami</label>
+            <input type="text" class="form-control" id="home" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Manzil qo'shish</button>
+    </form>
+
+    <div class="mt-5">
+        <h3>Mening manzillarim</h3>
+        <ul id="locationsList" class="list-group"></ul>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    const userId = localStorage.getItem("userId");
+    const backendBaseUrl = "http://localhost:8080"; // Backend server manzili
+
+    document.getElementById("locationForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const locationData = {
+            region: document.getElementById("region").value,
+            district: document.getElementById("district").value,
+            street: document.getElementById("street").value,
+            home: document.getElementById("home").value
+        };
+
+        try {
+            await axios.post(`${backendBaseUrl}/api/locations`, locationData, { headers: { userId } });
+            alert("Manzil muvaffaqiyatli qo'shildi!");
+            loadLocations(); // Manzillar ro'yxatini yangilash
+        } catch (error) {
+            alert("Xatolik: " + error.response.data);
+        }
+    });
+
+    async function loadLocations() {
+        try {
+            const response = await axios.get(`${backendBaseUrl}/api/locations`, { headers: { userId } });
+            const locations = response.data;
+
+            const locationsList = document.getElementById("locationsList");
+            locationsList.innerHTML = locations.map(location => `
+                <li class="list-group-item">
+                    ${location.region}, ${location.district}, ${location.street}, ${location.home}
+                    <button class="btn btn-sm btn-danger float-end" onclick="deleteLocation(${location.id})">O'chirish</button>
+                </li>
+            `).join("");
+        } catch (error) {
+            console.error("Manzillarni yuklashda xatolik:", error);
+        }
+    }
+
+    async function deleteLocation(locationId) {
+        try {
+            await axios.delete(`${backendBaseUrl}/api/locations/${locationId}`, { headers: { userId } });
+            alert("Manzil muvaffaqiyatli o'chirildi!");
+            loadLocations();
+        } catch (error) {
+            alert("Xatolik: " + error.response.data);
+        }
+    }
+
+    loadLocations();
+</script>
+</body>
+</html>

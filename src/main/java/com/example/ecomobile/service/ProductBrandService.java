@@ -14,15 +14,14 @@ public class ProductBrandService {
 
     private final ProductBrandRepository productBrandRepository;
 
-    public List<ProductBrand> getAllBrands() {
-        return productBrandRepository.findAll();
-    }
-
     public ProductBrand saveBrand(ProductBrand productBrand) {
         Optional<ProductBrand> existingBrand = productBrandRepository.findByProductBrand(productBrand.getProductBrand());
         return existingBrand.orElseGet(() -> productBrandRepository.save(productBrand));
     }
 
+    public List<ProductBrand> getAllBrands() {
+        return productBrandRepository.findAll();
+    }
     public String findByIdForName(Integer productBrandId) {
         return productBrandRepository.findById(productBrandId)
                 .map(ProductBrand::getProductBrand)

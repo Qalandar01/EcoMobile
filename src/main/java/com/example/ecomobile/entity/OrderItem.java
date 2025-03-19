@@ -1,27 +1,28 @@
 package com.example.ecomobile.entity;
 
-
-import com.example.ecomobile.base.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-public class OrderItem extends BaseEntity {
+public class OrderItem {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
     private Integer quantity;
 
     @ManyToOne
+    @JoinColumn(nullable = false)
     private Product product;
 
-    @JsonBackReference
     @ManyToOne
+    @JoinColumn( nullable = false)
     private Order order;
 }

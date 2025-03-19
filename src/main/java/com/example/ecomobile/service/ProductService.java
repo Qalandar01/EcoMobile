@@ -242,4 +242,34 @@ public class ProductService {
     public Double getAverageRating(Integer productId) {
         return ratingRepository.findAverageRatingByProductId(productId).orElse(0.0);
     }
+
+    public List<ProductDTO> getFavouriteProducts(Integer userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Foydalanuvchi topilmadi"));
+
+        List<Product> favouriteProducts = productRepository.findByLikedByUsersContaining(user);
+
+        return favouriteProducts.stream()
+                .map(product -> ProductDTO.builder()
+                        .id(product.getId())
+                        .name(product.getName())
+                        .price(product.getPrice())
+                        .description(product.getDescription())
+                        .productBrandId(product.getProductBrand() != null ? product.getProductBrand().getId() : null)
+                        .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
+                        .attachmentIds(product.getAttachment() != null ?
+                                product.getAttachment().stream().map(Attachment::getId).collect(Collectors.toList())
+                                : new ArrayList<>())
+                        .colorId(product.getColor() != null ? product.getColor().getId() : null)
+                        .sizeId(product.getSize() != null ? product.getSize().getId() : null)
+                        .likedByUsers(product.getLikedByUsers() != null ?
+                                product.getLikedByUsers().stream().map(User::getId).collect(Collectors.toList())
+                                : new ArrayList<>())
+                        .productBrandName(product.getProductBrand() != null ? product.getProductBrand().getProductBrand() : "Noma’lum")
+                        .categoryName(product.getCategory() != null ? product.getCategory().getName() : "Noma’lum")
+                        .colorName(product.getColor() != null ? product.getColor().getProductColor() : "Noma’lum")
+                        .sizeName(product.getSize() != null ? product.getSize().getProductSize() : "Noma’lum")
+                        .build())
+                .collect(Collectors.toList());
+    }
 }

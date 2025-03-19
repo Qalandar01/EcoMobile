@@ -9,10 +9,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -47,18 +45,17 @@ public class SecurityConfig {
                                                    MyFilter myFilter,
                                                    AuthenticationManager authenticationManager) throws Exception {
 
-
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
                         req
-                                .requestMatchers("/api/login", "/api/file/**", "/api/verify-code",
-                                        "/api/forgot-password", "/api/set-new-password", "/api/category/**",
-                                        "/api/products/**", "api/register-mail", "api/verification",
-                                        "/api/file", "/api/basket/**", "/api/brands/**", "/api/category/product-count/**",
-                                        "/api/colors/**", "/api/sizes/**", "/api/categoryWithProQuantity",
-                                        "login","/api/auth/**").permitAll()
+                                .requestMatchers("/api/login", "/api/file/**","/api/verify-code",
+                                        "/api/forgot-password", "/api/set-new-password","/api/category/**",
+                                        "/api/products/**","api/register-mail","api/verification",
+                                        "/api/file","/api/basket/**", "/api/brands/**","/api/category/product-count/**",
+                                        "/api/colors/**", "/api/order/**", "/api/locations/**" ,"/api/user/**" ,"/file/**","/api/sizes/**" ,"/api/user/**","/api/categoryWithProQuantity","/api/ratings",
+                                        "/login").permitAll()
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                                 .requestMatchers("/api/products/save/").hasRole("ADMIN")

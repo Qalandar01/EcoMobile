@@ -39,7 +39,7 @@ public class DataLoader implements CommandLineRunner {
                 .roleName(RoleName.ROLE_ADMIN)
                 .build();
         Role role2 =Role.builder()
-                .roleName(RoleName.ROLE_USER)
+                .roleName(RoleName.ROLE_ADMIN)
                 .build();
         roleRepository.save(role);
         roleRepository.save(role1);

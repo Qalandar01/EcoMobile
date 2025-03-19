@@ -9,17 +9,22 @@ function handleLogin(event) {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
-    request.post("/login", {email, password})
+    request.post("/login", { email, password })
         .then(response => {
             alert("Login successful!");
-            localStorage.setItem("token", response.data);
-            localStorage.setItem("userId", response.data.id)
-            window.location.href = "admin.html";
+
+            // Token va foydalanuvchi ID sini localStorage ga saqlash
+            localStorage.setItem("token", response.data.token);
+            localStorage.setItem("userId", response.data.userId);
+
+            console.log("User ID:", localStorage.getItem("userId"));
+            window.location.href = "product.html"
         })
         .catch(error => {
-            document.getElementById("email-error").textContent = error.response?.data?.message || "Invalid email or password";
-            document.getElementById("password-error").textContent = " ";
+            console.error("Login failed", error);
+            alert("Login failed! Check your credentials.");
         });
+
 }
 
 function openModal() {
@@ -270,16 +275,5 @@ function clearInputs() {
     document.getElementById('register-phone').value = "";
     document.getElementById('register-gender').selectedIndex = 0;
 }
-
-
-function signInWithGoogle(){
-    request({
-        url: "auth/oauth2",
-        method:"GET"
-    }).then(res=>{
-        window.location.href = res.data.authorizationUrl;
-    })
-}
-
 
 

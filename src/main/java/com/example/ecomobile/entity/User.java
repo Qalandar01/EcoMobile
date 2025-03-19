@@ -2,6 +2,7 @@ package com.example.ecomobile.entity;
 
 import com.example.ecomobile.base.BaseEntity;
 import com.example.ecomobile.enums.Gender;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,10 +39,12 @@ public class User extends BaseEntity implements UserDetails {
     @ManyToOne
     private Attachment attachment;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference // Bu yerda seriyalizatsiyani boshqarish uchun qo'shildi
+    private List<Location> locations;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    private List<Location> locations ;
-
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Order> orders;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -52,6 +55,7 @@ public class User extends BaseEntity implements UserDetails {
     public String getUsername() {
         return this.email;
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -9,8 +9,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -44,47 +46,19 @@ public class SecurityConfig {
                                                    CustomUsersDetailsService customUsersDetailsService,
                                                    MyFilter myFilter,
                                                    AuthenticationManager authenticationManager) throws Exception {
-//        http
-//                .csrf(AbstractHttpConfigurer::disable)
-//                .cors(AbstractHttpConfigurer::disable)
-//                .authorizeHttpRequests(req ->
-//                        req
-//                                .requestMatchers("/api/login", "/api/file/**").permitAll()
-//                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-//
-//                                .requestMatchers("/api/verify-code").permitAll()
-//                                .requestMatchers("/api/forgot-password").permitAll()
-//                                .requestMatchers("/api/set-new-password").permitAll()
-//
-//                                .requestMatchers("/api/category/**").permitAll()
-//                                .requestMatchers("/api/basket/**").permitAll()
-//                                .requestMatchers("/api/file").permitAll()
-//                                .requestMatchers("/api/brands/**").permitAll()
-//                                .requestMatchers("/api/colors/**").permitAll()
-//                                .requestMatchers("/api/sizes/**").permitAll()
-//                                .requestMatchers("/api/category/product-count/**").permitAll()
-//                                .requestMatchers("/api/**").permitAll()
-//                                .requestMatchers("/api/products/save/**").hasRole("ADMIN")
-//                                .requestMatchers("/api/products/**").hasRole("ADMIN")
-//                                .requestMatchers("/api/order/**").hasAnyRole("USER", "ADMIN")
-//                                .anyRequest().authenticated()
-//                )
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .authenticationManager(authenticationManager)
-//                .userDetailsService(customUsersDetailsService)
-//                .addFilterBefore(myFilter, UsernamePasswordAuthenticationFilter.class);
+
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
                         req
-                                .requestMatchers("/api/login", "/api/file/**","/api/verify-code",
-                                        "/api/forgot-password", "/api/set-new-password","/api/category/**",
-                                        "/api/products/**","api/register-mail","api/verification",
-                                        "/api/file","/api/basket/**", "/api/brands/**","/api/category/product-count/**",
-                                        "/api/colors/**", "/api/sizes/**" ,"/api/categoryWithProQuantity",
-                                        "login").permitAll()
+                                .requestMatchers("/api/login", "/api/file/**", "/api/verify-code",
+                                        "/api/forgot-password", "/api/set-new-password", "/api/category/**",
+                                        "/api/products/**", "api/register-mail", "api/verification",
+                                        "/api/file", "/api/basket/**", "/api/brands/**", "/api/category/product-count/**",
+                                        "/api/colors/**", "/api/sizes/**", "/api/categoryWithProQuantity",
+                                        "login","/api/auth/**").permitAll()
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                                 .requestMatchers("/api/products/save/").hasRole("ADMIN")

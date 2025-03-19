@@ -13,6 +13,7 @@ function handleLogin(event) {
         .then(response => {
             alert("Login successful!");
             localStorage.setItem("token", response.data);
+            localStorage.setItem("userId", response.data.id)
             window.location.href = "admin.html";
         })
         .catch(error => {
@@ -269,5 +270,16 @@ function clearInputs() {
     document.getElementById('register-phone').value = "";
     document.getElementById('register-gender').selectedIndex = 0;
 }
+
+
+function signInWithGoogle(){
+    request({
+        url: "auth/oauth2",
+        method:"GET"
+    }).then(res=>{
+        window.location.href = res.data.authorizationUrl;
+    })
+}
+
 
 

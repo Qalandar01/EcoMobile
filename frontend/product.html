@@ -347,6 +347,14 @@
 
     fetchProducts();
     loadCategories();
+    getTokenFromUrl()
+    function getTokenFromUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        let token =  urlParams.get('token'); // Replace 'token' with your parameter name
+        if (token){
+            localStorage.setItem("token",token);
+        }
+    }
 </script>
 </body>
 </html>

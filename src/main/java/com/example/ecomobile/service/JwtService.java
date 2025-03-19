@@ -96,4 +96,14 @@ public class JwtService {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
+
+    public String extractUsername(String token) {
+        try {
+            Claims claims = getClaims(token);
+            return claims.getSubject();
+        } catch (JwtException e) {
+            System.out.println("Error extracting username: " + e.getMessage());
+            return null;
+        }
+    }
 }

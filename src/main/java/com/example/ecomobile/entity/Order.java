@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -20,16 +21,17 @@ import java.util.List;
 public class Order extends BaseEntity {
 
 
-    @ManyToOne
-    private Location location;
-
-    @ManyToOne
-    private User user;
-
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
-    @JsonManagedReference
-    @OneToMany(mappedBy = "order",fetch = FetchType.EAGER)
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "location_id", nullable = false)
+    private Location location;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<OrderItem> orderItems;
 }

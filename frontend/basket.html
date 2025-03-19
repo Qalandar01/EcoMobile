@@ -127,10 +127,29 @@
             });
     }
 
-    function checkout() {
-        alert("Checkout jarayoni ishga tushdi!");
-    }
+    async function checkout() {
+        try {
+            // 1. Manzil mavjudligini tekshirish
+            const { data: location } = await axios.get("/api/locations", {
+                headers: { userId }
+            });
 
+            // 2. Buyurtma yaratish
+            const { data: order } = await axios.post("/api/orders", {}, {
+                headers: { userId }
+            });
+
+            // 3. Buyurtma sahifasiga yo'naltirish
+            window.location.href = "order.html";
+        } catch (error) {
+            if (error.response?.status === 404) {
+                // Manzil topilmagan holatda
+                window.location.href = "location.html";
+            } else {
+                alert("Buyurtma yaratishda xatolik: " + error.message);
+            }
+        }
+    }
     window.onload = loadBasket;
 </script>
 </body>

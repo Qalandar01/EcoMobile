@@ -84,19 +84,15 @@
 </head>
 <body>
 <div class="container">
-    <!-- Mahsulot tafsilotlari shu yerda ko'rsatiladi -->
     <div id="productDetail" class="product-detail text-center">Yuklanmoqda...</div>
 </div>
 
-<!-- Axios va Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // URL parametridan mahsulot ID sini olish
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('productId');
 
-    // Global o'zgaruvchi: mahsulot ma'lumotlari
     let product = {};
 
     /**
@@ -106,7 +102,6 @@
     function displayProductDetail(product) {
         const detailContainer = document.getElementById('productDetail');
 
-        // Agar bir nechta rasm mavjud bo'lsa, carousel shaklida ko'rsatish
         let imageHtml = "";
         if (product.attachmentIds && product.attachmentIds.length > 1) {
             const carouselId = "productCarousel";
@@ -135,7 +130,6 @@
             imageHtml = `<img src="https://via.placeholder.com/800x450?text=No+Image" alt="Mahsulot rasmi">`;
         }
 
-        // Reyting uchun HTML: 5 ta yulduz ko'rsatiladi
         let ratingHtml = `
         <div class="rating-stars">
           ${[1, 2, 3, 4, 5].map(star => `
@@ -145,7 +139,6 @@
         <div class="average-rating">O'rtacha reyting: <span id="averageRating">${product.averageRating || 0}</span></div>
       `;
 
-        // Mahsulot miqdorini boshqarish va narx ko'rsatish
         let quantityHtml = `
         <div class="quantity-control">
           <button onclick="decreaseQuantity()">-</button>
@@ -160,7 +153,6 @@
         </div>
       `;
 
-        // To'liq sahifa mazmuni: "Orqaga qaytish" tugmasi, mahsulot tafsilotlari, reyting, miqdor boshqaruvi va savatchaga qo'shish tugmasi
         detailContainer.innerHTML = `
         <a href="product.html" class="btn btn-primary btn-back">Orqaga qaytish</a>
         <h2 class="mb-3">${product.name || "Noma'lum mahsulot"}</h2>
@@ -186,10 +178,16 @@
      * localStorage-dan foydalanuvchi ID sini oladi va backendga reyting ma'lumotini yuboradi.
      */
     function rateProduct(stars) {
+        const userId = parseInt(localStorage.getItem("userId")); // userId ni Integer ga o'tkazish
+        if (isNaN(userId)) {
+            alert("Foydalanuvchi ID topilmadi. Iltimos, tizimga kirishni tekshiring.");
+            return;
+        }
+
         const ratingData = {
             starsCount: stars,
             product: { id: productId },
-            user: { id: localStorage.getItem("userId") || null }
+            user: { id: userId } // Integer tipida userId
         };
 
         axios.post('http://localhost:8080/api/ratings', ratingData)
@@ -202,7 +200,6 @@
             });
     }
 
-    // Yangilangan o'rtacha reytingni qayta yuklash
     function updateAverageRating() {
         axios.get(`http://localhost:8080/api/products/${productId}/average-rating`)
             .then(response => {
@@ -213,7 +210,6 @@
             });
     }
 
-    // Mahsulot miqdoriga qarab umumiy narxni yangilash
     function updateTotalPrice() {
         const quantity = parseInt(document.getElementById('quantity').value);
         const totalPrice = quantity * product.price;
@@ -221,7 +217,6 @@
         document.getElementById('totalSum').innerText = totalPrice.toLocaleString() + " so‘m";
     }
 
-    // Miqdorni oshirish
     function increaseQuantity() {
         const quantityInput = document.getElementById('quantity');
         let quantity = parseInt(quantityInput.value);
@@ -234,7 +229,6 @@
         }
     }
 
-    // Miqdorni kamaytirish
     function decreaseQuantity() {
         const quantityInput = document.getElementById('quantity');
         let quantity = parseInt(quantityInput.value);
@@ -259,7 +253,6 @@
             quantity: quantity
         };
 
-        // Foydalanuvchi ID va tokenini localStorage dan olish
         const userId = localStorage.getItem("userId");
         const token = localStorage.getItem("token");
 
@@ -276,7 +269,6 @@
         })
             .then(response => {
                 alert(response.data);
-                // Savatcha sahifasiga yo'naltirish
                 window.location.href = "basket.html";
             })
             .catch(error => {
@@ -284,7 +276,6 @@
             });
     }
 
-    // Agar mahsulot ID mavjud bo'lsa, backenddan mahsulot ma'lumotlarini olamiz
     if (productId) {
         axios.get(`http://localhost:8080/api/products/${productId}`)
             .then(response => {

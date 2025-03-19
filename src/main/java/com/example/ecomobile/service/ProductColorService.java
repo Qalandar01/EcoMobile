@@ -19,13 +19,12 @@ public class ProductColorService {
 
     public ProductColor saveColor(ProductColor productColor) {
         Optional<ProductColor> existingColor = productColorRepository.findByProductColor(productColor.getProductColor());
-        if(existingColor.isPresent()){
-            return existingColor.get();
-        }
-        return productColorRepository.save(productColor);
+        return existingColor.orElseGet(() -> productColorRepository.save(productColor));
     }
 
     public String findByIdForName(Integer colorId) {
-        return productColorRepository.findById(colorId).map(ProductColor::getProductColor).orElse("Color not found");
+        return productColorRepository.findById(colorId)
+                .map(ProductColor::getProductColor)
+                .orElse("Rang topilmadi");
     }
 }

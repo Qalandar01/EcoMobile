@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Settings</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .container {
+            max-width: 600px;
+            margin-top: 2rem;
+        }
+        .form-control {
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary {
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .navbar-nav .nav-link {
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Profile Settings</a>
+        <a class="btn btn-outline-light me-3" href="product.html">Back to Menu</a>
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img id="navbarProfileImage" class="rounded-circle me-2" alt="User Image" style="width: 40px; height: 40px;">
+                    <span class="text-white" id="navbarUsername">Ism Familiya</span>
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="settings.html">Settings</a></li>
+                    <li><a class="dropdown-item" href="favourite-products.html">Favourite Products</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="login.html" onclick="logout()">Logout</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <form id="userForm" class="bg-white p-4 rounded shadow">
+        <div class="mb-3">
+            <label for="firstname" class="form-label">First Name</label>
+            <input type="text" class="form-control" id="firstname" placeholder="First Name">
+        </div>
+        <div class="mb-3">
+            <label for="lastname" class="form-label">Last Name</label>
+            <input type="text" class="form-control" id="lastname" placeholder="Last Name">
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" placeholder="Email">
+        </div>
+        <div class="mb-3">
+            <label for="phone" class="form-label">Phone</label>
+            <input type="text" class="form-control" id="phone" placeholder="Phone">
+        </div>
+        <div class="mb-3">
+            <label for="age" class="form-label">Age</label>
+            <input type="number" class="form-control" id="age" placeholder="Age">
+        </div>
+        <div class="mb-3">
+            <label for="gender" class="form-label">Gender</label>
+            <select class="form-control" id="gender">
+                <option value="MALE">Male</option>
+                <option value="FEMALE">Female</option>
+                <option value="OTHER">Other</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="profileImage" class="form-label">Profile Image</label>
+            <input type="file" class="form-control" id="profileImage" accept="image/*">
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Update</button>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    const userId = localStorage.getItem("userId");
+    const token = localStorage.getItem("token");
+    document.getElementById("navbarProfileImage").src = `http://localhost:8080/file/user/${userId}`;
+    if (!userId || !token) {
+        window.location.href = "login.html";
+    }
+
+    // Foydalanuvchi ma'lumotlarini olish
+    axios.get(`http://localhost:8080/api/user/${userId}`, {
+        headers: { token }
+    })
+        .then(response => {
+            const user = response.data;
+            document.getElementById("firstname").value = user.firstname || '';
+            document.getElementById("lastname").value = user.lastname || '';
+            document.getElementById("email").value = user.email || '';
+            document.getElementById("phone").value = user.phone || '';
+            document.getElementById("age").value = user.age || '';
+            document.getElementById("gender").value = user.gender
+
+            // Agar attachment mavjud bo'lsa, navbar profil rasmiga uni o'rnatamiz
+            if (user.attachmentId) {
+                document.getElementById("navbarProfileImage").src = `http://localhost:8080/file/user/${userId}`;
+            }
+            document.getElementById("navbarUsername").textContent = `${user.firstname} ${user.lastname}`;
+        })
+        .catch(error => {
+            console.error("Error fetching user details:", error);
+        });
+
+    // Formani yuborish
+    document.getElementById("userForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const formData = new FormData();
+        const userDTO = {
+            firstname: document.getElementById("firstname").value,
+            lastname: document.getElementById("lastname").value,
+            email: document.getElementById("email").value,
+            phone: document.getElementById("phone").value,
+            age: parseInt(document.getElementById("age").value, 10),
+            gender: document.getElementById("gender").value
+        };
+        formData.append("userDTO", new Blob([JSON.stringify(userDTO)], { type: "application/json" }));
+
+        const profileImageFile = document.getElementById("profileImage").files[0];
+        if (profileImageFile) {
+            formData.append("profileImage", profileImageFile);
+        }
+
+        axios.put(`http://localhost:8080/api/user/${userId}`, formData, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(response => {
+                alert("Profile updated successfully!");
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error("Error updating profile:", error);
+            });
+    });
+
+    // Logout funksiyasi
+    function logout() {
+        localStorage.removeItem("token");
+        localStorage.removeItem("userId");
+        window.location.href = "login.html";
+    }
+</script>
+</body>
+</html>

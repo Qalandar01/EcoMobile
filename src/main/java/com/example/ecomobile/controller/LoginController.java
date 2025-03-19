@@ -20,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.Executors;
@@ -54,12 +55,16 @@ public class LoginController {
         var authenticationToken = new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword());
         Authentication authenticate = authenticationManager.authenticate(authenticationToken);
 
-
         CustomUserDetails customUserDetails = (CustomUserDetails) authenticate.getPrincipal();
         User user = customUserDetails.getUser();
-        System.out.println(user.getRoles().toString());
 
-        return ResponseEntity.ok(jwtService.generateToken(user));
+        String token = jwtService.generateToken(user);
+
+        // User ID va tokenni JSON sifatida qaytaramiz
+        return ResponseEntity.ok(Map.of(
+                "token", token,
+                "userId", user.getId()  // User ID ni ham qaytaramiz
+        ));
     }
 
     @PostMapping("/forgot-password")

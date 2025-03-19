@@ -14,14 +14,21 @@ import java.util.List;
 public class ProductColorController {
     private final ProductColorService productColorService;
 
+
     @GetMapping
     public ResponseEntity<List<ProductColor>> getAllColors() {
-        return ResponseEntity.ok(productColorService.getAllColors());
+        List<ProductColor> colors = productColorService.getAllColors();
+        return ResponseEntity.ok(colors);
     }
 
     @PostMapping("/save")
     public ResponseEntity<ProductColor> saveColor(@RequestBody ProductColor productColor) {
-        ProductColor savedColor = productColorService.saveColor(productColor);
-        return ResponseEntity.ok(savedColor);
+        try {
+            ProductColor savedColor = productColorService.saveColor(productColor);
+            return ResponseEntity.ok(savedColor);
+        } catch (Exception e) {
+            System.err.println("Xatolik yuz berdi: " + e.getMessage());
+            return ResponseEntity.status(500).build();
+        }
     }
 }

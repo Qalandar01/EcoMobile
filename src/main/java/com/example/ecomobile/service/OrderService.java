@@ -1,65 +1,143 @@
 package com.example.ecomobile.service;
 
-import com.example.ecomobile.dto.OrderDTO;
-import com.example.ecomobile.dto.OrderFilter;
-import com.example.ecomobile.dto.OrderStatusDTO;
-import com.example.ecomobile.dto.OrderWithTotalPagesDTO;
-import com.example.ecomobile.entity.Order;
-import com.example.ecomobile.entity.OrderItem;
+import com.example.ecomobile.custom.Basket;
+import com.example.ecomobile.custom.BasketItem;
+import com.example.ecomobile.dto.OrderItemResponse;
+import com.example.ecomobile.dto.OrderRequest;
+import com.example.ecomobile.dto.OrderResponse;
+import com.example.ecomobile.entity.*;
 import com.example.ecomobile.enums.OrderStatus;
-import com.example.ecomobile.repo.OrderItemRepository;
+import com.example.ecomobile.exeption.ResourceNotFoundException;
+import com.example.ecomobile.repo.LocationRepository;
 import com.example.ecomobile.repo.OrderRepository;
-import com.example.ecomobile.specifications.OrderSpecification;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.ResponseEntity;
+import com.example.ecomobile.repo.ProductRepository;
+import com.example.ecomobile.repo.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class OrderService {
-
     private final OrderRepository orderRepository;
-    private final OrderItemRepository orderItemRepository;
+    private final BasketService basketService;
+    private final UserRepository userRepository;
+    private final LocationRepository locationRepository;
+    private final ProductRepository productRepository;
 
-    public OrderService(OrderRepository orderRepository, OrderItemRepository orderItemRepository) {
-        this.orderRepository = orderRepository;
-        this.orderItemRepository = orderItemRepository;
-    }
+    public OrderResponse createOrder(OrderRequest request, Integer userId) {
+        // 1. Foydalanuvchini topish
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-    public HttpEntity<?> getAll(OrderFilter orderFilter) {
-        Specification<Order> orderSpecification = OrderSpecification.orderSpecification(orderFilter);
-        PageRequest pageRequest = PageRequest.of(orderFilter.getPage()-1, orderFilter.getSize());
-        Page<Order> all = orderRepository.findAll(orderSpecification, pageRequest);
-        List<OrderDTO> orderDTOS = new ArrayList<>();
-        for (Order order : all.getContent()) {
-            double sum = order.getOrderItems().stream().mapToDouble((item) -> item.getQuantity() * item.getProduct().getPrice()).sum();
-            OrderDTO orderDTO = new OrderDTO(order.getStatus().name(),order.getId(),order.getOrderItems(),sum,order.getLocation().toString(),order.getCreatedAt());
-            orderDTOS.add(orderDTO);
+        // 2. Savatchani olish
+        Basket basket = basketService.getBasket(userId.toString());
+        if (basket.getItems().isEmpty()) {
+            throw new RuntimeException("Savatcha bo'sh");
         }
 
+        // 3. Manzilni yaratish yoki yangilash
+        Location location = locationRepository.save(
+                Location.builder()
+                        .region(request.getRegion())
+                        .district(request.getDistrict())
+                        .street(request.getStreet())
+                        .home(request.getHome())
+                        .build()
+        );
 
-        return ResponseEntity.ok(new OrderWithTotalPagesDTO(orderDTOS,all.getTotalPages()));
-    }
+        // 4. Buyurtma yaratish
+        Order order = Order.builder()
+                .user(user)
+                .location(location)
+                .status(OrderStatus.NEW)
+                .orderItems(new ArrayList<>())
+                .build();
 
-    public HttpEntity<?> getItemsById(Integer id) {
-        List<OrderItem> items = orderItemRepository.findOrderItemsByOrder_Id(id);
-        return ResponseEntity.ok(items);
-    }
+        // 5. Buyurtma elementlarini qo'shish
+        for (BasketItem basketItem : basket.getItems()) {
+            Product product = productRepository.findById(basketItem.getProductId())
+                    .orElseThrow(() -> new RuntimeException("Mahsulot topilmadi"));
 
-    public HttpEntity<?> changeStatus(OrderStatusDTO statusDTO) {
-        Optional<Order> optionalOrder = orderRepository.findById(statusDTO.getOrderId());
-        if (optionalOrder.isEmpty()){
-            return ResponseEntity.badRequest().build();
+            order.setOrderItems(List.of(
+                    OrderItem.builder()
+                            .product(product)
+                            .quantity(basketItem.getQuantity())
+                            .order(order)
+                            .build())
+            );
         }
-        Order order = optionalOrder.get();
-        order.setStatus(OrderStatus.valueOf(statusDTO.getStatus()));
-        orderRepository.save(order);
-        return ResponseEntity.ok().build();
+
+        // 6. Buyurtmani saqlash va savatchani tozalash
+        Order savedOrder = orderRepository.save(order);
+        basketService.clearBasket(userId.toString());
+
+        return mapToOrderResponse(savedOrder);
+    }
+
+//    private OrderResponse mapToOrderResponse(Order order) {
+//        return OrderResponse.builder()
+//                .id(order.getId())
+//                .createdDate(order.getCreatedDate())
+//                .status(order.getStatus())
+//                .location(order.getLocation().toString())
+//                .items(order.getOrderItems().stream()
+//                        .map(this::mapToOrderItemResponse)
+//                        .toList())
+//                .build();
+//    }
+
+
+    public List<OrderResponse> getUserOrders(Integer userId) {
+        // 1. Foydalanuvchini topish
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Foydalanuvchi topilmadi"));
+
+        // 2. Foydalanuvchining barcha buyurtmalarini olish
+        List<Order> orders = orderRepository.findByUserId(userId);
+
+        // 3. Har bir buyurtmani OrderResponse ga aylantirish
+        return orders.stream()
+                .map(this::mapToOrderResponse)
+                .toList();
+    }
+
+    /**
+     * Order ni OrderResponse ga aylantirish
+     */
+    private OrderResponse mapToOrderResponse(Order order) {
+        return OrderResponse.builder()
+                .id(order.getId())
+                .createdDate(LocalDateTime.now())
+                .status(OrderStatus.NEW.name())
+                .location(order.getLocation().toString())
+                .items(order.getOrderItems().stream()
+                        .map(this::mapToOrderItemResponse)
+                        .toList())
+                .totalAmount(calculateTotalAmount(order.getOrderItems())) // Umumiy summani hisoblash
+                .build();
+    }
+
+    /**
+     * OrderItem ni OrderItemResponse ga aylantirish
+     */
+    private OrderItemResponse mapToOrderItemResponse(OrderItem item) {
+        return OrderItemResponse.builder()
+                .productName(item.getProduct().getName())
+                .quantity(item.getQuantity())
+                .price(item.getProduct().getPrice())
+                .build();
+    }
+
+    /**
+     * Buyurtma uchun umumiy summani hisoblash
+     */
+    private Double calculateTotalAmount(List<OrderItem> orderItems) {
+        return orderItems.stream()
+                .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
+                .sum();
     }
 }

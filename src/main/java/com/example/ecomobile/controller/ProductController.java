@@ -162,4 +162,11 @@ public class ProductController {
     public Double getAverageRating(@PathVariable Integer productId) {
         return productService.getAverageRating(productId);
     }
+
+    @GetMapping("/favourite-products/{userId}")
+    public ResponseEntity<List<ProductDTO>> getFavouriteProducts(@PathVariable Integer userId) {
+        List<ProductDTO> favouriteProducts = productService.getFavouriteProducts(userId);
+        return ResponseEntity.ok(favouriteProducts);
+    }
+
 }

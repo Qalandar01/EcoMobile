@@ -19,13 +19,12 @@ public class ProductSizeService {
 
     public ProductSize saveSize(ProductSize productSize) {
         Optional<ProductSize> existingSize = productSizeRepository.findByProductSize(productSize.getProductSize());
-        if(existingSize.isPresent()){
-            return existingSize.get();
-        }
-        return productSizeRepository.save(productSize);
+        return existingSize.orElseGet(() -> productSizeRepository.save(productSize));
     }
 
     public String findByIdForSize(Integer sizeId) {
-        return productSizeRepository.findById(sizeId).map(ProductSize::getProductSize).orElse("Size not found");
+        return productSizeRepository.findById(sizeId)
+                .map(ProductSize::getProductSize)
+                .orElse("O'lcham topilmadi");
     }
 }

@@ -15,10 +15,10 @@ import java.util.List;
 @Builder
 
 public class Basket {
-    private String userId;
+    private Integer userId;
     private List<BasketItem> items;
 
-    public Basket(String userId) {
+    public Basket(Integer userId) {
         this.userId = userId;
         this.items = new ArrayList<>();
     }

@@ -22,13 +22,14 @@ public class ProductColorController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<ProductColor> saveColor(@RequestBody ProductColor productColor) {
-        try {
-            ProductColor savedColor = productColorService.saveColor(productColor);
-            return ResponseEntity.ok(savedColor);
-        } catch (Exception e) {
-            System.err.println("Xatolik yuz berdi: " + e.getMessage());
-            return ResponseEntity.status(500).build();
+    public ResponseEntity<?> saveColor(@RequestBody ProductColor productColor) {
+        if (productColor == null ||
+                productColor.getProductColor() == null ||
+                productColor.getProductColor().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Product color maydoni bo‘sh bo‘lmasligi kerak.");
         }
+        ProductColor savedColor = productColorService.saveColor(productColor);
+        return ResponseEntity.ok(savedColor);
     }
+
 }

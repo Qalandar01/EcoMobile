@@ -26,5 +26,4 @@ public class BaseEntity {
     @UpdateTimestamp
     private LocalDate updatedAt;
 
-    // assign user here
 }

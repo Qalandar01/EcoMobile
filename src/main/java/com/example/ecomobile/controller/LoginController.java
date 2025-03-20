@@ -5,7 +5,9 @@ import com.example.ecomobile.dto.EmailConfirmationDTO;
 import com.example.ecomobile.dto.EmailDTO;
 import com.example.ecomobile.dto.LoginDTO;
 import com.example.ecomobile.dto.ResetPasswordDTO;
+import com.example.ecomobile.entity.Role;
 import com.example.ecomobile.entity.User;
+import com.example.ecomobile.enums.RoleName;
 import com.example.ecomobile.repo.UserRepository;
 import com.example.ecomobile.service.JwtService;
 import com.example.ecomobile.service.LoginService;
@@ -57,15 +59,21 @@ public class LoginController {
 
         CustomUserDetails customUserDetails = (CustomUserDetails) authenticate.getPrincipal();
         User user = customUserDetails.getUser();
+        System.out.println(user.getRoles().toString());
 
         String token = jwtService.generateToken(user);
+        String roleName = user.getRoles().stream()
+                .findFirst()
+                .map(role -> role.getRoleName().name())
+                .orElse("ROLE_USER");
 
-        // User ID va tokenni JSON sifatida qaytaramiz
         return ResponseEntity.ok(Map.of(
                 "token", token,
-                "userId", user.getId()  // User ID ni ham qaytaramiz
+                "userId", user.getId(),
+                "roleName", roleName
         ));
     }
+
 
     @PostMapping("/forgot-password")
     public HttpEntity<?> sendEmail(@Valid @RequestBody EmailDTO email) {

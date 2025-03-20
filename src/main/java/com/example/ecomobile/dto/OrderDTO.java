@@ -1,21 +1,18 @@
 package com.example.ecomobile.dto;
 
 import com.example.ecomobile.entity.OrderItem;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Value
+@Builder
 public class OrderDTO {
-    private String status;
-    private Integer id;
-    private List<OrderItem> orderItems;
-    private Double total;
-    private String location;
-    private LocalDate date;
+     String status;
+     Integer id;
+     List<OrderItemDTO> orderItems;
+     Double total;
+     Integer locationId;
+     LocalDate date;
 }

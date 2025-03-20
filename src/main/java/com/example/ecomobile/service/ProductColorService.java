@@ -21,7 +21,6 @@ public class ProductColorService {
         Optional<ProductColor> existingColor = productColorRepository.findByProductColor(productColor.getProductColor());
         return existingColor.orElseGet(() -> productColorRepository.save(productColor));
     }
-
     public String findByIdForName(Integer colorId) {
         return productColorRepository.findById(colorId)
                 .map(ProductColor::getProductColor)

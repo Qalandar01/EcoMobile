@@ -16,9 +16,17 @@ function handleLogin(event) {
             // Token va foydalanuvchi ID sini localStorage ga saqlash
             localStorage.setItem("token", response.data.token);
             localStorage.setItem("userId", response.data.userId);
+            localStorage.setItem("userRole", response.data.roleName)
+            const userRole=localStorage.getItem("userRole")
+            if (userRole==='ROLE_ADMIN') {
+                window.location.href="reportAdmin.html"
+            }else if (userRole==='ROLE_SUPER_ADMIN'){
+                window.location.href="superAdmin.html"
+            }else {
+                window.location.href="product.html"
+            }
 
             console.log("User ID:", localStorage.getItem("userId"));
-            window.location.href = "product.html"
         })
         .catch(error => {
             console.error("Login failed", error);

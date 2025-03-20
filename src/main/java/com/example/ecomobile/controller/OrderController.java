@@ -1,32 +1,41 @@
 package com.example.ecomobile.controller;
 
-import com.example.ecomobile.dto.OrderRequest;
-import com.example.ecomobile.dto.OrderResponse;
+import com.example.ecomobile.dto.OrderDTO;
+import com.example.ecomobile.dto.OrderItemDTO;
 import com.example.ecomobile.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
 public class OrderController {
+
     private final OrderService orderService;
 
-    @PostMapping
-    public ResponseEntity<OrderResponse> createOrder(
-            @RequestBody OrderRequest request,
-            @RequestHeader("userId") Integer userId
+    @PostMapping("/create-from-basket")
+    public ResponseEntity<OrderDTO> createFromBasket(
+            @RequestHeader("userId") Integer userId,
+            @RequestParam Integer locationId
     ) {
-        return ResponseEntity.ok(orderService.createOrder(request, userId));
+        OrderDTO orderDTO = orderService.createOrderFromBasket(userId, locationId);
+        return ResponseEntity.ok(orderDTO);
     }
 
-    @GetMapping("/user")
-    public ResponseEntity<List<OrderResponse>> getUserOrders(
-            @RequestHeader("userId") Integer userId
-    ) {
-        return ResponseEntity.ok(orderService.getUserOrders(userId));
+    @GetMapping("/{orderId}")
+    public ResponseEntity<OrderDTO> getById(@PathVariable Integer orderId) {
+        return ResponseEntity.ok(orderService.getOrderById(orderId));
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<OrderDTO>> getByUser(@PathVariable Integer userId) {
+        return ResponseEntity.ok(orderService.getOrdersByUser(userId));
+    }
+
+    @GetMapping("/{orderId}/items")
+    public ResponseEntity<List<OrderItemDTO>> getItems(@PathVariable Integer orderId) {
+        return ResponseEntity.ok(orderService.getOrderItems(orderId));
     }
 }

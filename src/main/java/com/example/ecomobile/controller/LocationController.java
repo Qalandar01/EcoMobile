@@ -15,7 +15,6 @@ public class LocationController {
 
     private final LocationService locationService;
 
-    // Yangi manzil qo'shish (header orqali)
     @PostMapping
     public ResponseEntity<Location> addLocation(
             @RequestBody LocationRequest request,
@@ -24,13 +23,12 @@ public class LocationController {
         return ResponseEntity.ok(locationService.addLocation(request, userId));
     }
 
-    // Foydalanuvchining barcha manzillarini olish (header orqali)
     @GetMapping
     public ResponseEntity<List<Location>> getLocations(@RequestHeader("userId") Integer userId) {
+        System.out.println(locationService.getLocationsByUserId(userId));
         return ResponseEntity.ok(locationService.getLocationsByUserId(userId));
     }
 
-    // Manzilni yangilash (header orqali)
     @PutMapping("/{locationId}")
     public ResponseEntity<Location> updateLocation(
             @PathVariable Integer locationId,
@@ -40,7 +38,6 @@ public class LocationController {
         return ResponseEntity.ok(locationService.updateLocation(locationId, userId, request));
     }
 
-    // Manzilni o'chirish (header orqali)
     @DeleteMapping("/{locationId}")
     public ResponseEntity<Void> deleteLocation(
             @PathVariable Integer locationId,

@@ -16,7 +16,6 @@ public class ProductSizeService {
     public List<ProductSize> getAllSizes() {
         return productSizeRepository.findAll();
     }
-
     public ProductSize saveSize(ProductSize productSize) {
         Optional<ProductSize> existingSize = productSizeRepository.findByProductSize(productSize.getProductSize());
         return existingSize.orElseGet(() -> productSizeRepository.save(productSize));

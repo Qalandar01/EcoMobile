@@ -54,7 +54,7 @@ public class SecurityConfig {
                                         "/api/forgot-password", "/api/set-new-password","/api/category/**",
                                         "/api/products/**","api/register-mail","api/verification",
                                         "/api/file","/api/basket/**", "/api/brands/**","/api/category/product-count/**",
-                                        "/api/colors/**", "/api/order/**", "/api/locations/**" ,"/api/user/**" ,"/file/**","/api/sizes/**" ,"/api/user/**","/api/categoryWithProQuantity","/api/ratings",
+                                        "/api/colors/**", "/api/orders/**", "/api/locations/**" ,"/api/user/**" ,"/file/**","/api/sizes/**" ,"/api/user/**","/api/categoryWithProQuantity","/api/ratings",
                                         "/login","/api/auth/**").permitAll()
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 

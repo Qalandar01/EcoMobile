@@ -68,4 +68,20 @@ public class User extends BaseEntity implements UserDetails {
     public int hashCode() {
         return getClass().hashCode();
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "firstname='" + firstname + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", phone='" + phone + '\'' +
+                ", age=" + age +
+                ", gender=" + gender +
+                ", roles=" + roles +
+                ", attachment=" + attachment +
+                ", locations=" + locations +
+                '}';
+    }
 }

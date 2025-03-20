@@ -21,8 +21,14 @@ public class ProductSizeController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<ProductSize> saveSize(@RequestBody ProductSize productSize) {
+    public ResponseEntity<?> saveSize(@RequestBody ProductSize productSize) {
+        if (productSize == null ||
+                productSize.getProductSize() == null ||
+                productSize.getProductSize().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Product size maydoni bo‘sh bo‘lmasligi kerak.");
+        }
         ProductSize savedSize = productSizeService.saveSize(productSize);
         return ResponseEntity.ok(savedSize);
     }
+
 }

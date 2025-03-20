@@ -193,6 +193,7 @@
         axios.post('http://localhost:8080/api/ratings', ratingData)
             .then(response => {
                 alert("Reyting qo'shildi: " + stars + " yulduz");
+
                 updateAverageRating();
             })
             .catch(error => {

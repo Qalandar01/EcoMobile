@@ -30,15 +30,25 @@
 
     <div class="mt-5">
         <h3>Mening manzillarim</h3>
-        <ul id="locationsList" class="list-group"></ul>
+        <select id="locationsSelect" class="form-select mb-3">
+            <option value="">Manzil tanlang</option>
+        </select>
+        <button id="selectLocationBtn" class="btn btn-success" disabled>Tanlangan manzilni tanlash</button>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     const userId = localStorage.getItem("userId");
-    const backendBaseUrl = "http://localhost:8080"; // Backend server manzili
+    const backendBaseUrl = "http://localhost:8080"; // Backend serveringizning URL manzili
 
+    // Foydalanuvchi tizimga kirmagan bo'lsa, login sahifasiga yo'naltirish
+    if (!userId) {
+        alert("Iltimos, tizimga kiring!");
+        window.location.href = "login.html";
+    }
+
+    // Manzil qo'shish formasi
     document.getElementById("locationForm").addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -52,40 +62,54 @@
         try {
             await axios.post(`${backendBaseUrl}/api/locations`, locationData, { headers: { userId } });
             alert("Manzil muvaffaqiyatli qo'shildi!");
-            loadLocations(); // Manzillar ro'yxatini yangilash
+            await loadLocations(); // Manzillar ro'yxatini yangilash
         } catch (error) {
             alert("Xatolik: " + error.response.data);
         }
     });
 
+    // Manzillarni yuklash funksiyasi
     async function loadLocations() {
         try {
             const response = await axios.get(`${backendBaseUrl}/api/locations`, { headers: { userId } });
             const locations = response.data;
 
-            const locationsList = document.getElementById("locationsList");
-            locationsList.innerHTML = locations.map(location => `
-                <li class="list-group-item">
+            // Kelgan JSON ma'lumotlarni konsolga chiqarish
+            console.log("Backenddan kelgan ma'lumotlar:", locations);
+
+            const locationsSelect = document.getElementById("locationsSelect");
+            locationsSelect.innerHTML = '<option value="">Manzil tanlang</option>' +
+                locations.map(location => `
+                <option value="${location.id}">
                     ${location.region}, ${location.district}, ${location.street}, ${location.home}
-                    <button class="btn btn-sm btn-danger float-end" onclick="deleteLocation(${location.id})">O'chirish</button>
-                </li>
+                </option>
             `).join("");
+
+            // Agar manzillar mavjud bo'lsa, tanlash tugmasini faollashtirish
+            if (locations.length > 0) {
+                document.getElementById("selectLocationBtn").disabled = false;
+            }
         } catch (error) {
             console.error("Manzillarni yuklashda xatolik:", error);
         }
     }
 
-    async function deleteLocation(locationId) {
-        try {
-            await axios.delete(`${backendBaseUrl}/api/locations/${locationId}`, { headers: { userId } });
-            alert("Manzil muvaffaqiyatli o'chirildi!");
-            loadLocations();
-        } catch (error) {
-            alert("Xatolik: " + error.response.data);
+    // Tanlangan manzilni order.html sahifasiga yuborish
+    document.getElementById("selectLocationBtn").addEventListener("click", async () => {
+        const selectedLocationId = document.getElementById("locationsSelect").value;
+        if (selectedLocationId) {
+            // Manzillarni yuklash
+            await loadLocations();
+            window.location.href = `order.html?locationId=${selectedLocationId}`;
+        } else {
+            alert("Iltimos, manzil tanlang!");
         }
-    }
+    });
 
-    loadLocations();
+    // Sahifa yuklanganda manzillarni yuklash
+    document.addEventListener("DOMContentLoaded", async () => {
+        await loadLocations();
+    });
 </script>
 </body>
 </html>

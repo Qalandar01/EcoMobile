@@ -1,143 +1,131 @@
 package com.example.ecomobile.service;
 
 import com.example.ecomobile.custom.Basket;
-import com.example.ecomobile.custom.BasketItem;
-import com.example.ecomobile.dto.OrderItemResponse;
-import com.example.ecomobile.dto.OrderRequest;
-import com.example.ecomobile.dto.OrderResponse;
+import com.example.ecomobile.dto.OrderDTO;
+import com.example.ecomobile.dto.OrderItemDTO;
 import com.example.ecomobile.entity.*;
 import com.example.ecomobile.enums.OrderStatus;
-import com.example.ecomobile.exeption.ResourceNotFoundException;
-import com.example.ecomobile.repo.LocationRepository;
-import com.example.ecomobile.repo.OrderRepository;
-import com.example.ecomobile.repo.ProductRepository;
-import com.example.ecomobile.repo.UserRepository;
-import lombok.RequiredArgsConstructor;
+import com.example.ecomobile.repo.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-
+import java.util.stream.Collectors;
 @Service
-@RequiredArgsConstructor
+@Transactional
 public class OrderService {
-    private final OrderRepository orderRepository;
-    private final BasketService basketService;
-    private final UserRepository userRepository;
-    private final LocationRepository locationRepository;
-    private final ProductRepository productRepository;
 
-    public OrderResponse createOrder(OrderRequest request, Integer userId) {
-        // 1. Foydalanuvchini topish
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    @Autowired
+    private BasketService basketService;
 
-        // 2. Savatchani olish
-        Basket basket = basketService.getBasket(userId.toString());
-        if (basket.getItems().isEmpty()) {
-            throw new RuntimeException("Savatcha bo'sh");
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private LocationRepository locationRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private OrderItemRepository orderItemRepository;
+
+    public OrderDTO createOrderFromBasket(Integer userId, Integer locationId) {
+        // 1. Savatchani olish
+        Basket basket = basketService.getBasket(userId);
+        if (basket == null || basket.getItems().isEmpty()) {
+            throw new RuntimeException("Savatcha bo'sh!");
         }
 
-        // 3. Manzilni yaratish yoki yangilash
-        Location location = locationRepository.save(
-                Location.builder()
-                        .region(request.getRegion())
-                        .district(request.getDistrict())
-                        .street(request.getStreet())
-                        .home(request.getHome())
-                        .build()
-        );
+        // 2. Foydalanuvchi va manzilni tekshirish
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Foydalanuvchi topilmadi"));
+        Location location = locationRepository.findById(locationId)
+                .orElseThrow(() -> new RuntimeException("Manzil topilmadi"));
 
-        // 4. Buyurtma yaratish
-        Order order = Order.builder()
-                .user(user)
-                .location(location)
-                .status(OrderStatus.NEW)
-                .orderItems(new ArrayList<>())
-                .build();
+        // 3. Yangi buyurtma obyektini yaratish
+        Order order = new Order();
+        order.setUser(user);
+        order.setLocation(location);
+        order.setStatus(OrderStatus.NEW);
+        order.setOrderDate(LocalDateTime.now());
 
-        // 5. Buyurtma elementlarini qo'shish
-        for (BasketItem basketItem : basket.getItems()) {
+        // 4. Basketdagi har bir mahsulot uchun OrderItem yaratish
+        List<OrderItem> orderItems = basket.getItems().stream().map(basketItem -> {
             Product product = productRepository.findById(basketItem.getProductId())
-                    .orElseThrow(() -> new RuntimeException("Mahsulot topilmadi"));
+                    .orElseThrow(() -> new RuntimeException("Mahsulot topilmadi: " + basketItem.getProductId()));
+            OrderItem orderItem = new OrderItem();
+            orderItem.setProduct(product);
+            orderItem.setQuantity(basketItem.getQuantity());
+            orderItem.setOrder(order); // Order bilan bog'lash
+            return orderItem;
+        }).collect(Collectors.toList());
 
-            order.setOrderItems(List.of(
-                    OrderItem.builder()
-                            .product(product)
-                            .quantity(basketItem.getQuantity())
-                            .order(order)
-                            .build())
-            );
-        }
+        // 5. Yaratilgan orderItemlarni order obyektiga o'rnatish
+        order.setOrderItems(orderItems);
 
-        // 6. Buyurtmani saqlash va savatchani tozalash
-        Order savedOrder = orderRepository.save(order);
-        basketService.clearBasket(userId.toString());
-
-        return mapToOrderResponse(savedOrder);
-    }
-
-//    private OrderResponse mapToOrderResponse(Order order) {
-//        return OrderResponse.builder()
-//                .id(order.getId())
-//                .createdDate(order.getCreatedDate())
-//                .status(order.getStatus())
-//                .location(order.getLocation().toString())
-//                .items(order.getOrderItems().stream()
-//                        .map(this::mapToOrderItemResponse)
-//                        .toList())
-//                .build();
-//    }
-
-
-    public List<OrderResponse> getUserOrders(Integer userId) {
-        // 1. Foydalanuvchini topish
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Foydalanuvchi topilmadi"));
-
-        // 2. Foydalanuvchining barcha buyurtmalarini olish
-        List<Order> orders = orderRepository.findByUserId(userId);
-
-        // 3. Har bir buyurtmani OrderResponse ga aylantirish
-        return orders.stream()
-                .map(this::mapToOrderResponse)
-                .toList();
-    }
-
-    /**
-     * Order ni OrderResponse ga aylantirish
-     */
-    private OrderResponse mapToOrderResponse(Order order) {
-        return OrderResponse.builder()
-                .id(order.getId())
-                .createdDate(LocalDateTime.now())
-                .status(OrderStatus.NEW.name())
-                .location(order.getLocation().toString())
-                .items(order.getOrderItems().stream()
-                        .map(this::mapToOrderItemResponse)
-                        .toList())
-                .totalAmount(calculateTotalAmount(order.getOrderItems())) // Umumiy summani hisoblash
-                .build();
-    }
-
-    /**
-     * OrderItem ni OrderItemResponse ga aylantirish
-     */
-    private OrderItemResponse mapToOrderItemResponse(OrderItem item) {
-        return OrderItemResponse.builder()
-                .productName(item.getProduct().getName())
-                .quantity(item.getQuantity())
-                .price(item.getProduct().getPrice())
-                .build();
-    }
-
-    /**
-     * Buyurtma uchun umumiy summani hisoblash
-     */
-    private Double calculateTotalAmount(List<OrderItem> orderItems) {
-        return orderItems.stream()
+        // 6. Umumiy summani hisoblash
+        Double total = orderItems.stream()
                 .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
                 .sum();
+        order.setTotal(total);
+
+        // 7. Order va uning itemlarini cascade orqali saqlash
+        // saveAndFlush orqali order id'si darhol generatsiya qilinishini ta'minlaymiz
+        Order savedOrder = orderRepository.saveAndFlush(order);
+        System.out.println("savedOrder = " + savedOrder);
+
+        // 8. Savatchani tozalash
+        basketService.clearBasket(userId);
+
+        return mapToDTO(savedOrder);
+    }
+
+
+    public OrderDTO getOrderById(Integer orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Buyurtma topilmadi"));
+        return mapToDTO(order);
+    }
+
+    public List<OrderDTO> getOrdersByUser(Integer userId) {
+        List<Order> orders = orderRepository.findByUserId(userId);
+        return orders.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<OrderItemDTO> getOrderItems(Integer orderId) {
+        List<OrderItem> items = orderItemRepository.findByOrderId(orderId);
+        return items.stream()
+                .map(this::mapToItemDTO)
+                .collect(Collectors.toList());
+    }
+
+    private OrderDTO mapToDTO(Order order) {
+        return OrderDTO.builder()
+                .id(order.getId())
+                .status(order.getStatus().name())
+                .total(order.getTotal())
+                .locationId(order.getLocation().getId())
+                .date(order.getOrderDate().toLocalDate())
+                .orderItems(order.getOrderItems().stream()
+                        .map(this::mapToItemDTO)
+                        .collect(Collectors.toList()))
+                .build();
+    }
+
+    private OrderItemDTO mapToItemDTO(OrderItem item) {
+        return OrderItemDTO.builder()
+                .productId(item.getProduct().getId())
+                .productName(item.getProduct().getName())
+                .price(item.getProduct().getPrice())
+                .quantity(item.getQuantity())
+                .build();
     }
 }

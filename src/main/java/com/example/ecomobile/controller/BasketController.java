@@ -13,19 +13,20 @@ public class BasketController {
     @Autowired
     private BasketService basketService;
     @PostMapping("/add")
-    public String addToBasket(@RequestParam String userId, @RequestBody BasketItem basketItem) {
+    public String addToBasket(@RequestParam Integer userId, @RequestBody BasketItem basketItem) {
         basketService.addItemToBasket(userId, basketItem);
         return "Mahsulot savatchaga qo'shildi";
     }
 
     @GetMapping("/{userId}")
-    public Object getBasket(@PathVariable String userId) {
+    public Object getBasket(@PathVariable Integer userId) {
         return basketService.getBasket(userId);
     }
 
-    @DeleteMapping("/{userId}")
-    public String clearBasket(@PathVariable String userId) {
-        basketService.clearBasket(userId);
-        return "Savatcha tozalandi";
+    @DeleteMapping("/{userId}/item/{productId}")
+    public String removeItem(@PathVariable Integer userId, @PathVariable Integer productId) {
+        basketService.removeItemFromBasket(userId, productId);
+        return "Mahsulot savatchadan o'chirildi";
     }
+
 }

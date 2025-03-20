@@ -22,9 +22,15 @@ public class ProductBrandController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<ProductBrand> saveBrand(@RequestBody ProductBrand productBrand) {
+    public ResponseEntity<?> saveBrand(@RequestBody ProductBrand productBrand) {
+        if (productBrand == null ||
+                productBrand.getProductBrand() == null ||
+                productBrand.getProductBrand().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Product brand maydoni bo‘sh bo‘lmasligi kerak.");
+        }
         ProductBrand savedBrand = productBrandService.saveBrand(productBrand);
         return ResponseEntity.ok(savedBrand);
     }
+
 }
 

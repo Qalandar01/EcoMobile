@@ -79,15 +79,9 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-    const urlParams = new URLSearchParams(window.location.search);
 
-    const token = urlParams.get("token");
-
-    if (token) {
-        localStorage.setItem("token",token)
-    } else {
-        console.log("Token not found");
-    }
+    // Agar token localStorage da saqlangan bo'lsa, shu yerdan oling
+    let token = localStorage.getItem("token");
 
     document.addEventListener("DOMContentLoaded", () => {
         const endpoints = {
@@ -97,6 +91,7 @@
             color: "http://localhost:8080/api/colors"
         };
 
+        // Kategoriya, brend, size, rang listlarini yuklash
         const loadOptions = (url, selectId, key, label) => {
             axios.get(url)
                 .then(res => {
@@ -108,73 +103,111 @@
                 .catch(console.error);
         };
 
-        Object.entries({ category: 'name', brandSelect: 'productBrand', sizeSelect: 'productSize', colorSelect: 'productColor' })
-            .forEach(([id, label]) => {
-                loadOptions(endpoints[id.replace('Select', '')], id, 'id', label);
-            });
+        // Kategoriya => name
+        // brandSelect => productBrand
+        // sizeSelect => productSize
+        // colorSelect => productColor
+        Object.entries({
+            category: 'name',
+            brandSelect: 'productBrand',
+            sizeSelect: 'productSize',
+            colorSelect: 'productColor'
+        }).forEach(([id, label]) => {
+            loadOptions(endpoints[id.replace('Select', '')], id, 'id', label);
+        });
 
+        // "new" tanlanganda inputni ko'rsatish
         const toggleNewInput = (selectId, inputId) => {
             document.getElementById(selectId).addEventListener("change", e => {
                 const input = document.getElementById(inputId);
-                input.style.display = e.target.value === "new" ? "block" : "none";
-                input.required = e.target.value === "new";
+                input.style.display = (e.target.value === "new") ? "block" : "none";
+                input.required = (e.target.value === "new");
             });
         };
 
         toggleNewInput("brandSelect", "brandInput");
-        toggleNewInput("sizeSelect", "sizeInput");
+        toggleNewInput("sizeSelect",  "sizeInput");
         toggleNewInput("colorSelect", "colorInput");
 
+        // Formni submit qilish
         document.getElementById("productForm").addEventListener("submit", async e => {
             e.preventDefault();
+
             const getValue = id => document.getElementById(id).value;
             let formData = new FormData();
 
-            const saveNewOption = async (endpoint, inputId) => {
-                const inputValue = getValue(inputId);
-                if (!inputValue) return null;
+            // Yangi optionni saqlash funksiyasi
+            const saveNewOption = async (endpoint, inputId, fieldName) => {
+                const inputValue = document.getElementById(inputId).value;
+                if (!inputValue) return null; // Bo'sh bo'lsa
+
+                const payload = {};
+                payload[fieldName] = inputValue;  // masalan { productBrand: "Samsung" }
+
                 try {
-                    const res = await axios.post(endpoint + "/save", { name: inputValue });
-                    return res.data.id;
+                    const res = await axios.post(endpoint + "/save", payload);
+                    return res.data.id;  // Saqlangan entityning ID-si
                 } catch (err) {
                     console.error(`Xatolik: ${inputId} saqlanmadi`, err);
                     return null;
                 }
             };
 
-            const productBrandId = getValue("brandSelect") === "new" ? await saveNewOption(endpoints.brand, "brandInput") : getValue("brandSelect");
-            const sizeId = getValue("sizeSelect") === "new" ? await saveNewOption(endpoints.size, "sizeInput") : getValue("sizeSelect");
-            const colorId = getValue("colorSelect") === "new" ? await saveNewOption(endpoints.color, "colorInput") : getValue("colorSelect");
+            // Agar "new" bo'lsa, yangi brendni, o'lchamni yoki rangni saqlaymiz
+            const productBrandId = (getValue("brandSelect") === "new")
+                ? await saveNewOption(endpoints.brand, "brandInput", "productBrand")
+                : getValue("brandSelect");
 
+            const sizeId = (getValue("sizeSelect") === "new")
+                ? await saveNewOption(endpoints.size, "sizeInput", "productSize")
+                : getValue("sizeSelect");
+
+            const colorId = (getValue("colorSelect") === "new")
+                ? await saveNewOption(endpoints.color, "colorInput", "productColor")
+                : getValue("colorSelect");
+
+            // Agar "new" tanlangan bo'lsa, lekin input bo'sh bo'lsa, xatolik
+            if (!productBrandId || !sizeId || !colorId) {
+                alert("Iltimos, brend, o'lcham yoki rangni to'liq kiriting!");
+                return;
+            }
+
+            // Form obyektini tayyorlash
             const formObj = {
                 productName: getValue("productName"),
-                price: getValue("price"),
+                price:       getValue("price"),
                 description: getValue("description"),
-                amount: getValue("productAmount"),
-                category: getValue("category") || null,
+                amount:      getValue("productAmount"),
+                category:    getValue("category") || null,
                 productBrandId,
                 sizeId,
                 colorId,
                 attachments: Array.from(document.getElementById("attachments").files).map(file => file.name)
             };
 
-            console.log("Yuborilayotgan ma'lumotlar:", JSON.stringify(formObj, null, 2));
+            // FormData ga qo'shish
+            formData.append("productName",     formObj.productName);
+            formData.append("price",           formObj.price);
+            formData.append("description",     formObj.description);
+            formData.append("amount",          formObj.amount);
+            formData.append("category",        formObj.category);
+            formData.append("productBrandId",  formObj.productBrandId);
+            formData.append("sizeId",          formObj.sizeId);
+            formData.append("colorId",         formObj.colorId);
 
-            formData.append("productName", formObj.productName);
-            formData.append("price", formObj.price);
-            formData.append("description", formObj.description);
-            formData.append("amount", formObj.amount);
-            formData.append("category", formObj.category);
-            formData.append("productBrandId", formObj.productBrandId);
-            formData.append("sizeId", formObj.sizeId);
-            formData.append("colorId", formObj.colorId);
+            // Fayllarni qo'shish
+            const files = document.getElementById("attachments").files;
+            for (let i = 0; i < files.length; i++) {
+                formData.append("attachments", files[i]);
+            }
 
-            Array.from(document.getElementById("attachments").files)
-                .forEach(file => formData.append("attachments", file));
-
+            // Ma'lumotlarni backendga yuborish
             axios.post("http://localhost:8080/api/products/save", formData)
-                .then(() => alert("Mahsulot muvaffaqiyatli qo'shildi!"))
-                .catch(console.error);
+                .then(() => {
+                    alert("Mahsulot muvaffaqiyatli qo'shildi!");
+                    // Istasangiz, shu yerda formani tozalash yoki boshqa sahifaga o'tish mumkin
+                })
+                .catch(err => console.error(err));
         });
     });
 </script>

@@ -1,5 +1,6 @@
 package com.example.ecomobile.config;
 
+import com.example.ecomobile.entity.ProductBrand;
 import com.example.ecomobile.entity.Role;
 import com.example.ecomobile.entity.User;
 import com.example.ecomobile.enums.RoleName;
@@ -71,6 +72,7 @@ public class DataLoader implements CommandLineRunner {
         userRepository.save(user);
         userRepository.save(user1);
         userRepository.save(user2);
+
 
         System.out.println("✅ Data successfully loaded into the database!");
 

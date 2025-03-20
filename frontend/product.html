@@ -119,7 +119,6 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li><a class="dropdown-item" href="settings.html">Settings</a></li>
-                        <li><a class="dropdown-item" href="favourite-products.html">Favourite Products</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="login.html" onclick="logout()">Logout</a></li>
                     </ul>
@@ -219,68 +218,77 @@
     function displayProducts(products) {
         let productList = document.getElementById("productList");
         productList.innerHTML = "";
+
         products.forEach((product, index) => {
             let productId = product.id || product.productId;
             let carouselId = `carousel-${productId}-${index}`;
-            let isLiked = (product.likedByUsers || []).some(userId => userId === userId);
+
+            // Foydalanuvchi ushbu mahsulotni like bosganligini tekshirish
+            let isLiked = (product.likedByUsers || []).includes(userId);
             let heartIcon = isLiked ? "❤️" : "🤍";
+
             let imageContainerHtml = "";
             if ((product.attachmentIds || []).length > 1) {
                 let carouselHtml = `
-          <div id="${carouselId}" class="carousel slide" data-bs-interval="false">
-            <div class="carousel-inner">
-              ${ (product.attachmentIds || []).map((attachmentId, i) => `
-                <div class="carousel-item ${i === 0 ? 'active' : ''}">
-                  <img src="http://localhost:8080/api/products/file/${attachmentId}" class="d-block w-100" alt="Mahsulot rasmi">
+                <div id="${carouselId}" class="carousel slide" data-bs-interval="false">
+                    <div class="carousel-inner">
+                        ${(product.attachmentIds || []).map((attachmentId, i) => `
+                            <div class="carousel-item ${i === 0 ? 'active' : ''}">
+                                <img src="http://localhost:8080/api/products/file/${attachmentId}" class="d-block w-100" alt="Mahsulot rasmi">
+                            </div>
+                        `).join('')}
+                    </div>
                 </div>
-              `).join('') }
-            </div>
-          </div>
-        `;
+            `;
+
                 imageContainerHtml = `
-          <div class="position-relative">
-            ${carouselHtml}
-            <button class="like-button" onclick="toggleLike(${productId}, ${userId})" style="color: ${isLiked ? 'red' : 'gray'};">${heartIcon}</button>
-          </div>
-          <button class="btn btn-secondary btn-sm mt-2" onclick="nextImage('${carouselId}')">Keyingi rasm</button>
-          <a class="cart-text" href="index.html?productId=${productId}">Mahsulot haqida</a>
-        `;
+                <div class="position-relative">
+                    ${carouselHtml}
+                    <button id="like-btn-${productId}" class="like-button" onclick="toggleLike(${productId})" style="color: ${isLiked ? 'red' : 'gray'};">${heartIcon}</button>
+                </div>
+                <button class="btn btn-secondary btn-sm mt-2" onclick="nextImage('${carouselId}')">Keyingi rasm</button>
+                <a class="cart-text" href="index.html?productId=${productId}">Mahsulot haqida</a>
+            `;
             } else {
                 let singleImageHtml = (product.attachmentIds || []).map(attachmentId =>
                     `<img src="http://localhost:8080/api/products/file/${attachmentId}" class="img-fluid" alt="Mahsulot rasmi">`
                 ).join("");
+
                 imageContainerHtml = `
-          <div class="position-relative">
-            ${singleImageHtml}
-            <button class="like-button" onclick="toggleLike(${productId}, ${userId})" style="color: ${isLiked ? 'red' : 'gray'};">${heartIcon}</button>
-          </div>
-          <a class="cart-text" href="index.html?productId=${productId}">Mahsulot haqida</a>
-        `;
+                <div class="position-relative">
+                    ${singleImageHtml}
+                    <button id="like-btn-${productId}" class="like-button" onclick="toggleLike(${productId})" style="color: ${isLiked ? 'red' : 'gray'};">${heartIcon}</button>
+                </div>
+                <a class="cart-text" href="index.html?productId=${productId}">Mahsulot haqida</a>
+            `;
             }
+
             let adminButtons = "";
             if (role === "ROLE_ADMIN") {
                 adminButtons = `
-          <div class="d-flex justify-content-between mt-2">
-            <!-- Admin uchun tugmalar -->
-          </div>
-        `;
+                <div class="d-flex justify-content-between mt-2">
+                    <!-- Admin uchun tugmalar -->
+                </div>
+            `;
             }
+
             productList.innerHTML += `
-        <div class="col-md-6 mb-3">
-          <div class="card">
-            <div class="card-body">
-              <p class="card-text"><strong>Kategoriya:</strong> ${product.categoryName || "N/A"}</p>
-              ${imageContainerHtml}
-              <h5 class="card-title mt-2">${product.name}</h5>
-              <p class="card-text"><strong>Narxi:</strong> ${product.price} so‘m</p>
-              <p class="card-text"><strong>Brand:</strong> ${product.productBrandName || "N/A"}</p>
-              <p class="card-text"><strong>Description:</strong> ${product.description || "N/A"}</p>
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <p class="card-text"><strong>Kategoriya:</strong> ${product.categoryName || "N/A"}</p>
+                        ${imageContainerHtml}
+                        <h5 class="card-title mt-2">${product.name}</h5>
+                        <p class="card-text"><strong>Narxi:</strong> ${product.price} so‘m</p>
+                        <p class="card-text"><strong>Brand:</strong> ${product.productBrandName || "N/A"}</p>
+                        <p class="card-text"><strong>Description:</strong> ${product.description || "N/A"}</p>
+                    </div>
+                    ${adminButtons}
+                </div>
             </div>
-            ${adminButtons}
-          </div>
-        </div>
-      `;
+        `;
         });
+
         document.querySelectorAll('.carousel').forEach(carousel => {
             new bootstrap.Carousel(carousel, { interval: false });
         });
@@ -296,19 +304,26 @@
     }
 
 
-    function toggleLike(productId, userId) {
-        if (!productId) {
-            console.error("Mahsulot id aniqlanmadi.");
-            return;
+    async function toggleLike(productId) {
+        try {
+            const response = await axios.post(`http://localhost:8080/api/products/${productId}/like?userId=${userId}`);
+
+            if (response.status === 200) {
+                let likeButton = document.getElementById(`like-btn-${productId}`);
+                if (likeButton.innerText === "🤍") {
+                    likeButton.innerText = "❤️";
+                    likeButton.style.color = "red";
+                } else {
+                    likeButton.innerText = "🤍";
+                    likeButton.style.color = "gray";
+                }
+                console.log("Like muvaffaqiyatli o'zgartirildi.");
+            }
+        } catch (error) {
+            console.error("Like xatosi:", error.response ? error.response.data : error.message);
         }
-        console.log("Like bosildi, product id:", productId);
-        productRequest.post(`products/${productId}/like?userId=${userId}`)
-            .then(response => {
-                console.log(`Mahsulot ${productId} foydalanuvchi ${userId} tomonidan like qilindi.`);
-                fetchProducts();
-            })
-            .catch(error => console.error('Like xatoligi:', error));
     }
+
 
     function loadCategories() {
         axios.get("http://localhost:8080/api/category/product-count")

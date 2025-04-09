@@ -3,122 +3,447 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Favourite Mahsulotlar</title>
+  <title>Sevimli Mahsulotlar | MyStore</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --secondary: #6b7280;
+      --dark: #1f2937;
+      --light: #f9fafb;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --border-radius: 12px;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
     body {
-      font-family: 'Arial', sans-serif;
-      background-color: #f8f9fa;
-      padding: 20px;
+      font-family: 'Poppins', sans-serif;
+      background-color: #f5f7fa;
+      color: var(--dark);
+      line-height: 1.6;
     }
-    .navbar-custom {
-      margin-bottom: 20px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--primary);
     }
-    .container-custom {
-      max-width: 1200px;
-      width: 100%;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+
+    .navbar {
+      box-shadow: var(--shadow);
+      padding: 1rem 0;
     }
-    .card {
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    .nav-link {
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: var(--border-radius);
+      transition: all 0.3s ease;
     }
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+
+    .nav-link:hover, .nav-link.active {
+      background-color: rgba(37, 99, 235, 0.1);
+      color: var(--primary);
     }
-    .card img {
-      height: 200px;
-      width: 100%;
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
       object-fit: cover;
-      border-radius: 8px 8px 0 0;
+      border: 2px solid var(--primary);
     }
-    .like-button {
+
+    .dropdown-menu {
+      border: none;
+      box-shadow: var(--shadow-lg);
+      border-radius: var(--border-radius);
+    }
+
+    .dropdown-item {
+      padding: 0.5rem 1.5rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .dropdown-item:hover {
+      background-color: rgba(37, 99, 235, 0.1);
+      color: var(--primary);
+    }
+
+    .main-container {
+      margin-top: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .page-title {
+      font-weight: 700;
+      font-size: 1.75rem;
+      color: var(--dark);
+      margin: 0;
+    }
+
+    .product-card {
+      border: none;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: all 0.3s ease;
+      margin-bottom: 1.5rem;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background-color: white;
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .product-img-container {
+      height: 240px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .product-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .product-card:hover .product-img {
+      transform: scale(1.05);
+    }
+
+    .like-btn {
       position: absolute;
       top: 10px;
       right: 10px;
-      font-size: 24px;
-      background: transparent;
+      z-index: 2;
+      background: rgba(255, 255, 255, 0.8);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       border: none;
-      cursor: pointer;
-      color: #ff4757;
+      color: var(--danger);
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
     }
-    .like-button:hover {
-      color: #ff6b81;
-    }
-    .pointer { cursor: pointer; }
-    .badge-custom {
-      background-color: #6c757d;
+
+    .like-btn:hover, .like-btn.active {
+      background: var(--danger);
       color: white;
-      padding: 5px 10px;
+    }
+
+    .product-body {
+      padding: 1.25rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .product-category {
+      font-size: 0.85rem;
+      color: var(--secondary);
+      margin-bottom: 0.5rem;
+      display: inline-block;
+      background-color: rgba(37, 99, 235, 0.1);
+      padding: 0.25rem 0.75rem;
       border-radius: 20px;
     }
-    .btn-custom {
-      background-color: #007bff;
+
+    .product-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+      color: var(--dark);
+    }
+
+    .product-price {
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 1.25rem;
+      margin: 0.5rem 0;
+    }
+
+    .product-description {
+      font-size: 0.9rem;
+      color: var(--secondary);
+      margin-bottom: 1rem;
+      flex-grow: 1;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .product-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .product-brand {
+      font-size: 0.85rem;
+      color: var(--secondary);
+      display: flex;
+      align-items: center;
+    }
+
+    .product-brand i {
+      margin-right: 0.5rem;
+      color: var(--primary);
+    }
+
+    .btn-view {
+      background-color: var(--primary);
       color: white;
       border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      transition: background-color 0.3s ease;
+      padding: 0.5rem 1rem;
+      border-radius: var(--border-radius);
+      font-weight: 500;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+      text-decoration: none;
     }
-    .btn-custom:hover {
-      background-color: #0056b3;
+
+    .btn-view:hover {
+      background-color: var(--primary-hover);
+      color: white;
     }
+
+    .carousel-control-prev, .carousel-control-next {
+      width: 40px;
+      height: 40px;
+      background-color: rgba(0, 0, 0, 0.5);
+      border-radius: 50%;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+
+    .carousel-control-prev {
+      left: 10px;
+    }
+
+    .carousel-control-next {
+      right: 10px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      background-color: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+    }
+
+    .empty-state i {
+      font-size: 4rem;
+      color: var(--secondary);
+      margin-bottom: 1.5rem;
+    }
+
+    .empty-state h4 {
+      color: var(--dark);
+      margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+      color: var(--secondary);
+      margin-bottom: 1.5rem;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .loading-spinner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 300px;
+    }
+
+    .spinner-border {
+      width: 3rem;
+      height: 3rem;
+      color: var(--primary);
+    }
+
+    /* Toast notification */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1100;
+    }
+
+    .custom-toast {
+      background-color: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      margin-bottom: 10px;
+      min-width: 300px;
+      max-width: 400px;
+      animation: slideIn 0.3s ease-out forwards;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .toast-header {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .toast-body {
+      padding: 1rem;
+    }
+
+    .toast-title {
+      font-weight: 600;
+      margin: 0;
+      flex-grow: 1;
+    }
+
+    .toast-close {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 0;
+      margin-left: 10px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 992px) {
+      .product-img-container {
+        height: 220px;
+      }
+    }
+
     @media (max-width: 768px) {
-      .card img {
-        height: 150px;
+      .product-img-container {
+        height: 200px;
       }
-      .card-body {
-        padding: 15px;
+
+      .product-title {
+        font-size: 1rem;
+      }
+
+      .product-price {
+        font-size: 1.1rem;
+      }
+
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .page-title {
+        margin-bottom: 1rem;
       }
     }
+
     @media (max-width: 576px) {
-      body {
-        padding: 10px;
+      .product-img-container {
+        height: 180px;
       }
     }
   </style>
 </head>
 <body>
 
+<!-- Toast container for notifications -->
+<div class="toast-container" id="toastContainer"></div>
+
 <!-- Header: Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark navbar-custom">
+<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
   <div class="container">
-    <a class="navbar-brand" href="product.html">MyStore</a>
+    <a class="navbar-brand d-flex align-items-center" href="product.html">
+      <i class="fas fa-store-alt me-2"></i>
+      MyStore
+    </a>
+
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
             aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
+
     <div class="collapse navbar-collapse" id="navbarContent">
-      <!-- Chap tomondagi tugmalar -->
+      <!-- Left side navigation -->
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="product.html">Home</a>
+          <a class="nav-link" href="product.html">
+            <i class="fas fa-home me-1"></i> Bosh sahifa
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="basket.html">Basket</a>
+          <a class="nav-link" href="basket.html">
+            <i class="fas fa-shopping-cart me-1"></i> Savat
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="orderManagemand.html">Order</a>
+          <a class="nav-link" href="myOrders.html">
+            <i class="fas fa-clipboard-list me-1"></i> Buyurtmalar
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="favourite-products.html">
+            <i class="fas fa-heart me-1"></i> Sevimlilar
+          </a>
         </li>
       </ul>
-      <!-- O'ng tomondagi foydalanuvchi rasmi va ism familiya -->
-      <ul class="navbar-nav ms-auto">
+
+      <!-- Right side: User profile -->
+      <ul class="navbar-nav">
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <img id="navbarProfileImage" class="rounded-circle me-2" alt="User Image" style="width: 40px; height: 40px;">
-            <span class="text-white" id="navbarUsername">Ism Familiya</span>
+            <img id="navbarProfileImage" class="rounded-circle user-avatar me-2" alt="User Image">
+            <span class="d-none d-lg-inline" id="navbarUsername">Ism Familiya</span>
           </a>
-          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" href="settings.html">Settings</a></li>
-            <li><a class="dropdown-item" href="favourite-products.html">Favourite Products</a></li>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="settings.html"><i class="fas fa-user-cog me-2"></i> Profil</a></li>
+            <li><a class="dropdown-item" href="favourite-products.html"><i class="fas fa-heart me-2"></i> Sevimlilar</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="login.html" onclick="logout()">Logout</a></li>
+            <li><a class="dropdown-item" href="login.html" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i> Chiqish</a></li>
           </ul>
         </li>
       </ul>
@@ -126,16 +451,35 @@
   </div>
 </nav>
 
-<div class="container-custom">
-  <div class="row">
-    <div class="col-md-12">
-      <div class="card">
-        <div class="card-header bg-dark text-white">Favourite Mahsulotlar</div>
-        <div class="card-body">
-          <div class="row" id="favouriteProductList"></div>
-        </div>
-      </div>
+<!-- Main Content -->
+<div class="container main-container">
+  <div class="page-header">
+    <h1 class="page-title">
+      <i class="fas fa-heart me-2 text-danger"></i> Sevimli Mahsulotlar
+    </h1>
+    <a href="product.html" class="btn btn-outline-primary">
+      <i class="fas fa-arrow-left me-2"></i> Mahsulotlarga qaytish
+    </a>
+  </div>
+
+  <!-- Loading spinner (initially visible) -->
+  <div id="loadingSpinner" class="loading-spinner">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Yuklanmoqda...</span>
     </div>
+  </div>
+
+  <!-- Products grid (initially hidden) -->
+  <div class="row" id="favouriteProductList" style="display: none;"></div>
+
+  <!-- Empty state (initially hidden) -->
+  <div id="emptyState" class="empty-state" style="display: none;">
+    <i class="fas fa-heart-broken"></i>
+    <h4>Sevimli mahsulotlar yo'q</h4>
+    <p>Siz hali hech qanday mahsulotni sevimlilar ro'yxatiga qo'shmagansiz. Mahsulotlar sahifasiga o'ting va yurak belgisini bosib, sevimli mahsulotlaringizni qo'shing.</p>
+    <a href="product.html" class="btn btn-primary">
+      <i class="fas fa-shopping-bag me-2"></i> Mahsulotlarni ko'rish
+    </a>
   </div>
 </div>
 
@@ -143,74 +487,229 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+  // Foydalanuvchi ma'lumotlari
   const userId = localStorage.getItem("userId");
   const token = localStorage.getItem("token");
 
+  // Check user authentication
   if (!userId || !token) {
     window.location.href = "login.html";
   }
 
+  // Load user data
+  if (userId && token) {
+    axios.get(`http://localhost:8080/api/user/${userId}`, {
+      headers: { token: token }
+    })
+            .then(response => {
+              const user = response.data;
+              document.getElementById("navbarUsername").textContent = `${user.firstname} ${user.lastname}`;
+
+              if (user.attachmentId) {
+                document.getElementById("navbarProfileImage").src = `http://localhost:8080/file/${user.attachmentId}`;
+              } else {
+                document.getElementById("navbarProfileImage").src = "https://via.placeholder.com/40";
+              }
+            })
+            .catch(error => {
+              console.error("Error fetching user details:", error);
+              showToast("Foydalanuvchi ma'lumotlarini yuklashda xatolik", "danger");
+            });
+  }
+
+  // Show toast notification
+  function showToast(message, type = "info", title = "Xabar") {
+    const toastContainer = document.getElementById('toastContainer');
+    const toastId = 'toast-' + Date.now();
+
+    const toastHTML = `
+      <div class="custom-toast" id="${toastId}">
+        <div class="toast-header bg-${type} text-white">
+          <h6 class="toast-title">${title}</h6>
+          <button type="button" class="toast-close" onclick="closeToast('${toastId}')">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="toast-body">
+          ${message}
+        </div>
+      </div>
+    `;
+
+    toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+      closeToast(toastId);
+    }, 5000);
+  }
+
+  // Close toast notification
+  function closeToast(toastId) {
+    const toast = document.getElementById(toastId);
+    if (toast) {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateX(100%)';
+      setTimeout(() => {
+        toast.remove();
+      }, 300);
+    }
+  }
+
+  // Format price with thousands separator
+  function formatPrice(price) {
+    return price ? price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") : "0";
+  }
+
+  // Toggle like status
+  async function toggleLike(productId, button) {
+    try {
+      // Optimistic UI update - remove the product card
+      const productCard = button.closest('.product-card-wrapper');
+
+      // Fade out animation
+      productCard.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+      productCard.style.opacity = '0';
+      productCard.style.transform = 'translateY(-10px)';
+
+      // Send request to server
+      const response = await axios.post(`http://localhost:8080/api/products/${productId}/like?userId=${userId}`, {}, {
+        headers: { token: token }
+      });
+
+      // After animation completes, remove the element
+      setTimeout(() => {
+        productCard.remove();
+
+        // Check if there are any products left
+        const remainingProducts = document.querySelectorAll('.product-card-wrapper');
+        if (remainingProducts.length === 0) {
+          document.getElementById('favouriteProductList').style.display = 'none';
+          document.getElementById('emptyState').style.display = 'block';
+        }
+
+        showToast("Mahsulot sevimlilar ro'yxatidan olib tashlandi", "success");
+      }, 300);
+
+    } catch (error) {
+      console.error("Like xatosi:", error.response?.data || error.message);
+      showToast("Mahsulotni sevimlilardan olib tashlashda xatolik yuz berdi", "danger");
+    }
+  }
+
+  // Display favourite products
   function displayFavouriteProducts(products) {
-    let favouriteProductList = document.getElementById("favouriteProductList");
-    favouriteProductList.innerHTML = "";
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const favouriteProductList = document.getElementById('favouriteProductList');
+    const emptyState = document.getElementById('emptyState');
+
+    // Hide loading spinner
+    loadingSpinner.style.display = 'none';
+
+    // Check if there are any products
+    if (products.length === 0) {
+      emptyState.style.display = 'block';
+      return;
+    }
+
+    // Show products container
+    favouriteProductList.style.display = 'flex';
+
+    // Clear previous content
+    favouriteProductList.innerHTML = '';
+
+    // Add products
     products.forEach((product, index) => {
-      let productId = product.id || product.productId;
-      let carouselId = `carousel-${productId}-${index}`;
-      let isLiked = (product.likedByUsers || []).some(userId => userId === currentUserId);
-      let heartIcon = isLiked ? "❤️" : "🤍";
-      let imageContainerHtml = "";
-      if ((product.attachmentIds || []).length > 1) {
-        let carouselHtml = `
-          <div id="${carouselId}" class="carousel slide" data-bs-interval="false">
-            <div class="carousel-inner">
-              ${ (product.attachmentIds || []).map((attachmentId, i) => `
-                <div class="carousel-item ${i === 0 ? 'active' : ''}">
-                  <img src="http://localhost:8080/api/products/file/${attachmentId}" class="d-block w-100" alt="Mahsulot rasmi">
-                </div>
-              `).join('') }
+      const productId = product.id || product.productId;
+      const carouselId = `carousel-${productId}-${index}`;
+
+      // Create image HTML
+      let imageHtml = '';
+      const attachments = product.attachmentIds || [];
+
+      if (attachments.length > 1) {
+        // Multiple images - create carousel
+        imageHtml = `
+          <div class="product-img-container">
+            <div id="${carouselId}" class="carousel slide h-100" data-bs-interval="false">
+              <div class="carousel-inner h-100">
+                ${attachments.map((id, i) => `
+                  <div class="carousel-item h-100 ${i === 0 ? 'active' : ''}">
+                    <img src="http://localhost:8080/api/products/file/${id}" class="product-img w-100" alt="${product.name}">
+                  </div>
+                `).join('')}
+              </div>
+              <button class="carousel-control-prev" type="button" data-bs-target="#${carouselId}" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#${carouselId}" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+              </button>
             </div>
+            <button class="like-btn active" onclick="toggleLike(${productId}, this)">
+              <i class="fas fa-heart"></i>
+            </button>
           </div>
         `;
-        imageContainerHtml = `
-          <div class="position-relative">
-            ${carouselHtml}
-            <button class="like-button" onclick="toggleLike(${productId}, ${currentUserId})" style="color: ${isLiked ? 'red' : 'gray'};">${heartIcon}</button>
+      } else if (attachments.length === 1) {
+        // Single image
+        imageHtml = `
+          <div class="product-img-container">
+            <img src="http://localhost:8080/api/products/file/${attachments[0]}" class="product-img w-100" alt="${product.name}">
+            <button class="like-btn active" onclick="toggleLike(${productId}, this)">
+              <i class="fas fa-heart"></i>
+            </button>
           </div>
-          <button class="btn btn-secondary btn-sm mt-2" onclick="nextImage('${carouselId}')">Keyingi rasm</button>
-          <a class="cart-text" href="index.html?productId=${productId}">Mahsulot haqida</a>
         `;
       } else {
-        let singleImageHtml = (product.attachmentIds || []).map(attachmentId =>
-                `<img src="http://localhost:8080/api/products/file/${attachmentId}" class="img-fluid" alt="Mahsulot rasmi">`
-        ).join("");
-        imageContainerHtml = `
-          <div class="position-relative">
-            ${singleImageHtml}
-            <button class="like-button" onclick="toggleLike(${productId}, ${currentUserId})" style="color: ${isLiked ? 'red' : 'gray'};">${heartIcon}</button>
+        // No image
+        imageHtml = `
+          <div class="product-img-container">
+            <img src="https://via.placeholder.com/300x200?text=No+Image" class="product-img w-100" alt="No Image">
+            <button class="like-btn active" onclick="toggleLike(${productId}, this)">
+              <i class="fas fa-heart"></i>
+            </button>
           </div>
-          <a class="cart-text" href="index.html?productId=${productId}">Mahsulot haqida</a>
         `;
       }
+
+      // Add product card
       favouriteProductList.innerHTML += `
-        <div class="col-md-6 mb-3">
-          <div class="card">
-            <div class="card-body">
-              <p class="card-text"><strong>Kategoriya:</strong> ${product.categoryName || "N/A"}</p>
-              ${imageContainerHtml}
-              <h5 class="card-title mt-2">${product.name}</h5>
-              <p class="card-text"><strong>Narxi:</strong> ${product.price} so‘m</p>
-              <p class="card-text"><strong>Brand:</strong> ${product.productBrandName || "N/A"}</p>
-              <p class="card-text"><strong>Description:</strong> ${product.description || "N/A"}</p>
+        <div class="col-xl-3 col-lg-4 col-md-6 product-card-wrapper">
+          <div class="product-card">
+            ${imageHtml}
+            <div class="product-body">
+              <span class="product-category">${product.categoryName || "N/A"}</span>
+              <h5 class="product-title">${product.name}</h5>
+              <p class="product-price">${formatPrice(product.price)} so'm</p>
+              <p class="product-description">${product.description || "Mavjud emas"}</p>
+              <div class="product-meta">
+                <div class="product-brand">
+                  <i class="fas fa-tag"></i> ${product.productBrand || "N/A"}
+                </div>
+                <a href="index.html?productId=${productId}" class="btn-view">
+                  <i class="fas fa-eye me-1"></i> Ko'rish
+                </a>
+              </div>
             </div>
           </div>
         </div>
       `;
     });
+
+    // Initialize carousels
     document.querySelectorAll('.carousel').forEach(carousel => {
-      new bootstrap.Carousel(carousel, { interval: false });
+      new bootstrap.Carousel(carousel, {
+        interval: false,
+        touch: true,
+        wrap: false
+      });
     });
   }
 
+  // Load favourite products
   function loadFavouriteProducts() {
     axios.get(`http://localhost:8080/api/products/favourite-products/${userId}`, {
       headers: { token: token }
@@ -220,10 +719,24 @@
             })
             .catch(error => {
               console.error("Favourite mahsulotlarni yuklashda xatolik:", error);
+              document.getElementById('loadingSpinner').style.display = 'none';
+              showToast("Sevimli mahsulotlarni yuklashda xatolik yuz berdi", "danger");
             });
   }
 
-  loadFavouriteProducts();
+  // Logout function
+  function logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("role");
+    window.location.href = "login.html";
+  }
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', function() {
+    loadFavouriteProducts();
+  });
 </script>
 </body>
 </html>
+

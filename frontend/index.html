@@ -6,6 +6,8 @@
     <title>Mahsulot Tafsilotlari</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
     <style>
         /* Umumiy uslub */
         body {
@@ -80,12 +82,344 @@
             margin-top: 10px;
             text-align: center;
         }
+        /* Rang va o'lcham tanlovlari uchun uslublar */
+        .color-options, .size-options {
+            margin: 20px 0;
+        }
+        .color-options h4, .size-options h4 {
+            margin-bottom: 10px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .color-option-items, .size-option-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .color-item {
+            width: 80px;
+            height: 100px;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        .color-item.active {
+            border: 2px solid #000;
+        }
+        .color-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .size-item {
+            min-width: 60px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .size-item.active {
+            border: 2px solid #000;
+            background-color: #f8f9fa;
+        }
+        .size-item.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border: 1px dashed #ddd;
+        }
+
+        #chatBox {
+            height: 300px;
+            border: 1px solid #ccc;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+        .message {
+            margin-bottom: 10px;
+        }
+        .user-message {
+            text-align: right;
+            color: blue;
+        }
+        .other-message {
+            text-align: left;
+            color: green;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        .debug-info {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 20px;
+            font-family: monospace;
+        }
+
+        .chat-top {
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .chat-icon-top {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background-color 0.3s ease;
+        }
+
+        .chat-icon-top:hover {
+            background-color: #0056b3;
+        }
+
+        /* Chat Modal Styles */
+        .chat-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .chat-modal {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            width: 350px;
+            height: 500px;
+            transition: all 0.3s;
+        }
+
+        .chat-modal.expanded {
+            width: 850px;
+            height: 600px;
+        }
+
+        .chat-header {
+            background-color: #2196F3;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header h3 {
+            font-size: 18px;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .chat-header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-header-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .chat-body {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        .chat-messages-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #e5ddd5;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+CjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0iI2U1ZGRkNSI+PC9yZWN0Pgo8Y2lyY2xlIGN4PSIzIiBjeT0iNC41IiByPSIxLjUiIGZpbGw9InJnYmEoMCwwLDAsMC4wMikiPjwvY2lyY2xlPgo8Y2lyY2xlIGN4PSIxMyIgY3k9IjE2LjUiIHI9IjEuNSIgZmlsbD0icmdiYSgwLDAsMCwwLjAyKSI+PC9jaXJjbGU+Cjwvc3ZnPg==');
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 7.5px;
+            position: relative;
+            word-wrap: break-word;
+        }
+        .chat-input-container {
+            padding: 10px 15px;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 20px;
+            background-color: white;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+
+        .chat-input:focus {
+            outline: none;
+        }
+
+        .chat-send-btn {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-send-btn:disabled {
+            background-color: #b0bec5;
+            cursor: not-allowed;
+        }
+        .no-messages i {
+            font-size: 50px;
+            margin-bottom: 15px;
+            color: #b0bec5;
+        }
+
+        /* Responsive dizayn */
+        @media (max-width: 900px) {
+            .chat-modal.expanded {
+                width: 90%;
+                height: 600px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .chat-modal {
+                width: 90%;
+                height: 80vh;
+            }
+
+            .chat-body {
+                flex-direction: column;
+            }
+
+            .chat-sidebar {
+                width: 100%;
+                height: 30%;
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+            }
+
+            .chat-messages-container {
+                height: 70%;
+            }
+        }
+
+        /* Animatsiyalar */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chat-modal-overlay.visible {
+            display: flex;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* Debug panel */
+        #debugOutput {
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 20px;
+        }
+
+        .system-message {
+            color: #9e9e9e;
+            font-style: italic;
+            text-align: center;
+            margin: 10px 0;
+        }
+
     </style>
 </head>
 <body>
 <div class="container">
     <div id="productDetail" class="product-detail text-center">Yuklanmoqda...</div>
 </div>
+<!-- Chat Modal -->
+<div id="chatModalOverlay" class="chat-modal-overlay">
+    <div id="chatModal" class="chat-modal">
+        <div class="chat-header">
+            <h3>Sotuvchilar bilan chat</h3>
+            <div class="chat-header-actions">
+                <button class="chat-header-btn" onclick="toggleChatSize()">
+                    <i id="expandIcon" class="fas fa-expand"></i>
+                </button>
+                <button class="chat-header-btn" onclick="closeChatModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="chat-body">
+            <!-- Xabarlar qismi -->
+            <div class="chat-messages-container">
+                <div id="chatBox" class="chat-messages">
+                    <div class="system-message">Chat ulanmoqda...</div>
+                </div>
+
+                <div class="chat-input-container">
+                    <input type="text" id="messageInput" class="chat-input" placeholder="Xabar yozing..." disabled>
+                    <button id="sendButton" class="chat-send-btn" onclick="sendMessage()" disabled>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Debug panel -->
+<div id="debugOutput" style="display: none;"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -94,6 +428,27 @@
     const productId = urlParams.get('productId');
 
     let product = {};
+    let productVariants = [];
+    let selectedColor = '';
+    let selectedSize = '';
+    let chatId;
+    let socket;
+
+    // Debug ma'lumotlarini ko'rsatish
+    function logDebug(message) {
+        const debugOutput = document.getElementById("debugOutput");
+        const timestamp = new Date().toLocaleTimeString();
+        debugOutput.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+        console.log(message);
+    }
+
+    // URL dan productId ni olish
+    function getProductId() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('productId');
+        logDebug(`URL dan olingan productId: ${productId}`);
+        return productId; // Agar productId bo'lmasa,
+    }
 
     /**
      * displayProductDetail(product)
@@ -106,79 +461,296 @@
         if (product.attachmentIds && product.attachmentIds.length > 1) {
             const carouselId = "productCarousel";
             imageHtml = `
-          <div id="${carouselId}" class="carousel slide" data-bs-interval="false">
-            <div class="carousel-inner">
-              ${product.attachmentIds.map((id, index) => `
-                <div class="carousel-item ${index === 0 ? "active" : ""}">
-                  <img src="http://localhost:8080/api/products/file/${id}" class="d-block w-100" alt="Mahsulot rasmi">
+                <div id="${carouselId}" class="carousel slide" data-bs-interval="false">
+                    <div class="carousel-inner">
+                        ${product.attachmentIds.map((id, index) => `
+                            <div class="carousel-item ${index === 0 ? "active" : ""}">
+                                <img src="http://localhost:8080/api/products/file/${id}" class="d-block w-100" alt="Mahsulot rasmi">
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#${carouselId}" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Oldingi</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#${carouselId}" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Keyingi</span>
+                    </button>
                 </div>
-              `).join('')}
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#${carouselId}" data-bs-slide="prev">
-              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-              <span class="visually-hidden">Oldingi</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#${carouselId}" data-bs-slide="next">
-              <span class="carousel-control-next-icon" aria-hidden="true"></span>
-              <span class="visually-hidden">Keyingi</span>
-            </button>
-          </div>
-        `;
+            `;
         } else if (product.attachmentIds && product.attachmentIds.length === 1) {
-            imageHtml = `<img src="http://localhost:8080/api/products/file/${product.attachmentIds[0]}" alt="Mahsulot rasmi">`;
+            imageHtml = `<img src="http://localhost:8080/api/products/file/${product.attachmentIds[0]}" alt="Mahsulot rasmi" class="img-fluid">`;
         } else {
-            imageHtml = `<img src="https://via.placeholder.com/800x450?text=No+Image" alt="Mahsulot rasmi">`;
+            imageHtml = `<img src="https://via.placeholder.com/800x450?text=No+Image" alt="Mahsulot rasmi" class="img-fluid">`;
         }
 
         let ratingHtml = `
-        <div class="rating-stars">
-          ${[1, 2, 3, 4, 5].map(star => `
-            <span class="star" data-value="${star}" onclick="rateProduct(${star})">&#9733;</span>
-          `).join('')}
-        </div>
-        <div class="average-rating">O'rtacha reyting: <span id="averageRating">${product.averageRating || 0}</span></div>
-      `;
+            <div class="rating-stars">
+                ${[1, 2, 3, 4, 5].map(star => `
+                    <span class="star" data-value="${star}" onclick="rateProduct(${star})">&#9733;</span>
+                `).join('')}
+            </div>
+            <div class="average-rating">O'rtacha reyting: <span id="averageRating">${product.averageRating || 0}</span></div>
+        `;
 
         let quantityHtml = `
-        <div class="quantity-control">
-          <button onclick="decreaseQuantity()">-</button>
-          <input type="number" id="quantity" value="1" min="1" max="${product.amount || 10}" readonly>
-          <button onclick="increaseQuantity()">+</button>
-        </div>
-        <div class="price" id="totalPrice">
-          ${product.price ? (product.price * 1).toLocaleString() + " so‘m" : 'N/A'}
-        </div>
-        <div class="total-sum">
-          Umumiy summa: <span id="totalSum">${product.price ? (product.price * 1).toLocaleString() + " so‘m" : 'N/A'}</span>
-        </div>
-      `;
+            <div class="quantity-control">
+                <button onclick="decreaseQuantity()">-</button>
+                <input type="number" id="quantity" value="1" min="1" max="${product.amount || 10}" readonly>
+                <button onclick="increaseQuantity()">+</button>
+            </div>
+            <div class="price" id="totalPrice">
+                ${product.price ? (product.price * 1).toLocaleString() + " so'm" : 'N/A'}
+            </div>
+            <div class="total-sum">
+                Umumiy summa: <span id="totalSum">${product.price ? (product.price * 1).toLocaleString() + " so'm" : 'N/A'}</span>
+            </div>
+        `;
+
+        // Rang va o'lcham tanlovlari
+        let colorOptionsHtml = '';
+        let sizeOptionsHtml = '';
+
+        if (productVariants && productVariants.length > 0) {
+            // Ranglar uchun
+            const availableColors = productVariants[0].available_colors || [];
+            if (availableColors.length > 0) {
+                selectedColor = availableColors[0]; // Default rang
+
+                colorOptionsHtml = `
+                    <div class="color-options text-start">
+                        <h4>Rang: <span id="selectedColorText">${selectedColor}</span></h4>
+                        <div class="color-option-items">
+                            ${availableColors.map((color, index) => `
+                                <div class="color-item ${index === 0 ? 'active' : ''}" data-color="${color}" onclick="selectColor('${color}')">
+                                    <img src="http://localhost:8080/api/products/file/${getColorImageId(color)}"
+                                         onerror="this.src='https://via.placeholder.com/80x100?text=${color}'"
+                                         alt="${color}">
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // O'lchamlar uchun
+            const availableSizes = productVariants[0].available_sizes || [];
+            if (availableSizes.length > 0) {
+                selectedSize = availableSizes[0]; // Default o'lcham
+
+                sizeOptionsHtml = `
+                    <div class="size-options text-start">
+                        <h4>Kiyim o'lchami: <span id="selectedSizeText">${selectedSize}</span></h4>
+                        <div class="size-option-items">
+                            ${availableSizes.map((size, index) => `
+                                <div class="size-item ${index === 0 ? 'active' : ''}" data-size="${size}" onclick="selectSize('${size}')">
+                                    ${size}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+        }
 
         detailContainer.innerHTML = `
-        <a href="product.html" class="btn btn-primary btn-back">Orqaga qaytish</a>
-        <h2 class="mb-3">${product.name || "Noma'lum mahsulot"}</h2>
-        ${imageHtml}
-        <div class="product-info mt-3 text-start">
-          <p><strong>Kategoriya:</strong> ${product.categoryName || 'N/A'}</p>
-          <p><strong>Narxi:</strong> ${product.price ? product.price.toLocaleString() + " so‘m" : 'N/A'}</p>
-          <p><strong>Brand:</strong> ${product.productBrandName || 'N/A'}</p>
-          <p><strong>Rang:</strong> ${product.colorName || 'N/A'}</p>
-          <p><strong>O‘lcham:</strong> ${product.sizeName || 'N/A'}</p>
-          <p><strong>Tavsif:</strong> ${product.description || 'Tavsif mavjud emas'}</p>
-          <p><strong>Mahsulot soni:</strong> ${product.amount || 'N/A'}</p>
-        </div>
-        ${ratingHtml}
-        ${quantityHtml}
-        <button class="btn btn-success btn-add-to-basket" onclick="addToBasket()">Savatchaga qo'shish</button>
-      `;
+            <a href="product.html" class="btn btn-primary btn-back">Orqaga qaytish</a>
+            <h2 class="mb-3">${product.name || "Noma'lum mahsulot"}</h2>
+            ${imageHtml}
+            <div class="product-info mt-3 text-start">
+                <p><strong>Kategoriya:</strong> ${product.categoryName || 'N/A'}</p>
+                <p><strong>Narxi:</strong> ${product.price ? product.price.toLocaleString() + " so'm" : 'N/A'}</p>
+                <p><strong>Brand:</strong> ${product.productBrand || 'N/A'}</p>
+                ${colorOptionsHtml}
+                ${sizeOptionsHtml}
+                <p><strong>Tavsif:</strong> ${product.description || 'Tavsif mavjud emas'}</p>
+                <p><strong>Mahsulot soni:</strong> <span id="productAmount">${product.amount || 'N/A'}</span></p>
+            </div>
+              <!-- Chat button -->
+        <button class="chat-icon-top" onclick="openChatModal()">
+            <i class="fas fa-comment-dots"></i> Sotuvchi bilan chat
+        </button>
+
+            ${ratingHtml}
+            ${quantityHtml}
+            <button class="btn btn-success btn-add-to-basket mt-3" onclick="addToBasket()">Savatchaga qo'shish</button>
+        `;
+
+        // Yulduzlarni to'g'ri ko'rsatish
+        updateAverageRating();
+    }
+
+    /**
+     * Rang rasmi ID sini olish
+     */
+    function getColorImageId(color) {
+        // Bu yerda rangga mos rasmni topish uchun logika
+        // Hozircha birinchi mahsulot rasmini qaytaramiz
+        if (productVariants && productVariants.length > 0) {
+            const variant = productVariants.find(v => v.available_colors.includes(color));
+            if (variant && variant.attachment_ids && variant.attachment_ids.length > 0) {
+                return variant.attachment_ids[0];
+            }
+        }
+        return product.attachmentIds && product.attachmentIds.length > 0 ? product.attachmentIds[0] : '';
+    }
+
+    /**
+     * Rangni tanlash funksiyasi
+     */
+    function selectColor(color) {
+        selectedColor = color;
+        document.getElementById('selectedColorText').innerText = color;
+
+        // Faol rangni yangilash
+        document.querySelectorAll('.color-item').forEach(item => {
+            if (item.dataset.color === color) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+
+        // Mahsulot rasmini yangilash
+        updateProductImageByVariant();
+
+        // Mavjud o'lchamlarni yangilash
+        updateAvailableSizes();
+    }
+
+    /**
+     * O'lchamni tanlash funksiyasi
+     */
+    function selectSize(size) {
+        selectedSize = size;
+        document.getElementById('selectedSizeText').innerText = size;
+
+        // Faol o'lchamni yangilash
+        document.querySelectorAll('.size-item').forEach(item => {
+            if (item.dataset.size === size) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+
+        // Mahsulot miqdorini yangilash
+        updateProductAmountByVariant();
+    }
+
+    /**
+     * Tanlangan rang va o'lchamga qarab mahsulot rasmini yangilash
+     */
+    function updateProductImageByVariant() {
+        if (!productVariants || productVariants.length === 0) return;
+
+        // Tanlangan rangga mos variantni topish
+        const variant = productVariants.find(v => v.available_colors.includes(selectedColor));
+
+        if (variant && variant.attachment_ids && variant.attachment_ids.length > 0) {
+            const carouselInner = document.querySelector('.carousel-inner');
+            if (carouselInner) {
+                carouselInner.innerHTML = variant.attachment_ids.map((id, index) => `
+                    <div class="carousel-item ${index === 0 ? "active" : ""}">
+                        <img src="http://localhost:8080/api/products/file/${id}" class="d-block w-100" alt="Mahsulot rasmi">
+                    </div>
+                `).join('');
+            } else {
+                // Agar karusel bo'lmasa, bitta rasm ko'rsatiladi
+                const imgElement = document.querySelector('.product-detail > img');
+                if (imgElement) {
+                    imgElement.src = `http://localhost:8080/api/products/file/${variant.attachment_ids[0]}`;
+                }
+            }
+        }
+    }
+
+    /**
+     * Tanlangan rangga qarab mavjud o'lchamlarni yangilash
+     */
+    function updateAvailableSizes() {
+        if (!productVariants || productVariants.length === 0) return;
+
+        // Tanlangan rangga mos variantni topish
+        const variant = productVariants.find(v => v.available_colors.includes(selectedColor));
+
+        if (variant && variant.available_sizes) {
+            // O'lchamlar ro'yxatini yangilash
+            const sizeContainer = document.querySelector('.size-option-items');
+            if (sizeContainer) {
+                sizeContainer.innerHTML = variant.available_sizes.map(size => `
+                    <div class="size-item ${size === selectedSize ? 'active' : ''}"
+                         data-size="${size}"
+                         onclick="selectSize('${size}')">
+                        ${size}
+                    </div>
+                `).join('');
+
+                // Agar tanlangan o'lcham mavjud bo'lmasa, birinchi mavjud o'lchamni tanlash
+                if (!variant.available_sizes.includes(selectedSize)) {
+                    selectSize(variant.available_sizes[0]);
+                }
+            }
+        }
+    }
+
+    /**
+     * Tanlangan rang va o'lchamga qarab mahsulot miqdorini yangilash
+     */
+    function updateProductAmountByVariant() {
+        if (!productVariants || productVariants.length === 0) return;
+
+        // Backenddan tanlangan rang va o'lchamga mos mahsulot miqdorini olish
+        axios.get(`http://localhost:8080/api/products/variant?name=${product.name}&color=${selectedColor}&size=${selectedSize}`)
+            .then(response => {
+                const variantProduct = response.data;
+                if (variantProduct) {
+                    // Mahsulot miqdorini yangilash
+                    document.getElementById('productAmount').innerText = variantProduct.amount || 'N/A';
+
+                    // Miqdor chegarasini yangilash
+                    const quantityInput = document.getElementById('quantity');
+                    if (quantityInput) {
+                        quantityInput.max = variantProduct.amount || 10;
+                        if (parseInt(quantityInput.value) > variantProduct.amount) {
+                            quantityInput.value = variantProduct.amount;
+                            updateTotalPrice();
+                        }
+                    }
+
+                    // Narxni yangilash
+                    if (variantProduct.price) {
+                        product.price = variantProduct.price;
+                        updateTotalPrice();
+                    }
+                }
+            })
+            .catch(error => {
+                console.error("Variant ma'lumotlarini olishda xatolik:", error);
+            });
+    }
+
+    /**
+     * Yulduzlarni to'g'ri ko'rsatish
+     */
+    function updateStars(rating) {
+        const stars = document.querySelectorAll('.star');
+        stars.forEach((star, index) => {
+            if (index < Math.floor(rating)) {
+                star.classList.add('active');
+            } else {
+                star.classList.remove('active');
+            }
+        });
     }
 
     /**
      * rateProduct(stars)
      * Foydalanuvchi reyting berish tugmasini bosganda chaqiriladi.
-     * localStorage-dan foydalanuvchi ID sini oladi va backendga reyting ma'lumotini yuboradi.
      */
     function rateProduct(stars) {
-        const userId = parseInt(localStorage.getItem("userId")); // userId ni Integer ga o'tkazish
+        const userId = parseInt(localStorage.getItem("userId"));
         if (isNaN(userId)) {
             alert("Foydalanuvchi ID topilmadi. Iltimos, tizimga kirishni tekshiring.");
             return;
@@ -187,14 +759,14 @@
         const ratingData = {
             starsCount: stars,
             product: { id: productId },
-            user: { id: userId } // Integer tipida userId
+            user: { id: userId }
         };
 
         axios.post('http://localhost:8080/api/ratings', ratingData)
             .then(response => {
                 alert("Reyting qo'shildi: " + stars + " yulduz");
-
                 updateAverageRating();
+                updateStars(stars);
             })
             .catch(error => {
                 console.error("Reyting qo'shishda xatolik:", error);
@@ -204,7 +776,9 @@
     function updateAverageRating() {
         axios.get(`http://localhost:8080/api/products/${productId}/average-rating`)
             .then(response => {
-                document.getElementById('averageRating').innerText = response.data.toFixed(1);
+                const rating = response.data || 0;
+                document.getElementById('averageRating').innerText = rating.toFixed(1);
+                updateStars(rating);
             })
             .catch(error => {
                 console.error("O'rtacha reytingni yangilashda xatolik:", error);
@@ -214,14 +788,14 @@
     function updateTotalPrice() {
         const quantity = parseInt(document.getElementById('quantity').value);
         const totalPrice = quantity * product.price;
-        document.getElementById('totalPrice').innerText = totalPrice.toLocaleString() + " so‘m";
-        document.getElementById('totalSum').innerText = totalPrice.toLocaleString() + " so‘m";
+        document.getElementById('totalPrice').innerText = totalPrice.toLocaleString() + " so'm";
+        document.getElementById('totalSum').innerText = totalPrice.toLocaleString() + " so'm";
     }
 
     function increaseQuantity() {
         const quantityInput = document.getElementById('quantity');
         let quantity = parseInt(quantityInput.value);
-        const maxQuantity = product.amount || 10;
+        const maxQuantity = parseInt(quantityInput.max) || product.amount || 10;
         if (quantity < maxQuantity) {
             quantityInput.value = quantity + 1;
             updateTotalPrice();
@@ -242,17 +816,32 @@
     /**
      * addToBasket()
      * Savatchaga qo'shish tugmasi bosilganda chaqiriladi.
-     * Foydalanuvchi ID va tokenini localStorage dan oladi; agar mavjud bo'lmasa, login sahifasiga yo'naltiradi.
-     * So'ng mahsulot va miqdor ma'lumotlarini backendga Authorization header orqali yuboradi.
      */
     function addToBasket() {
         const quantity = parseInt(document.getElementById('quantity').value);
+
+        // Variant ma'lumotlarini olish
+        let variantInfo = '';
+        if (selectedColor) {
+            variantInfo += `Rang: ${selectedColor}`;
+        }
+        if (selectedSize) {
+            variantInfo += variantInfo ? `, O'lcham: ${selectedSize}` : `O'lcham: ${selectedSize}`;
+        }
+
         const basketItem = {
             productId: product.id,
             productName: product.name,
             price: product.price,
-            quantity: quantity
+            quantity: quantity,
+            variantInfo: variantInfo
         };
+
+        // Basket ma'lumotlarini alert qilib ko'rsatish
+        alert(JSON.stringify({
+            title: "Savatchaga qo'shilayotgan mahsulot:",
+            data: basketItem
+        }, null, 2));
 
         const userId = localStorage.getItem("userId");
         const token = localStorage.getItem("token");
@@ -269,18 +858,29 @@
             }
         })
             .then(response => {
-                alert(response.data);
+                alert("Mahsulot muvaffaqiyatli qo'shildi!\n" + JSON.stringify(response.data, null, 2));
                 window.location.href = "basket.html";
             })
             .catch(error => {
                 console.error("Savatchaga qo'shishda xatolik:", error);
+                alert("Savatchaga qo'shishda xatolik yuz berdi: " + error.message);
             });
     }
 
+    // Mahsulot ma'lumotlarini yuklash
     if (productId) {
+        // Asosiy mahsulot ma'lumotlarini olish
         axios.get(`http://localhost:8080/api/products/${productId}`)
             .then(response => {
                 product = response.data;
+                console.log("Mahsulot ma'lumotlari:", product);
+
+                // Mahsulot variantlarini olish
+                return axios.get(`http://localhost:8080/api/products/variants?name=${product.name}`);
+            })
+            .then(variantsResponse => {
+                productVariants = variantsResponse.data;
+                console.log("Mahsulot variantlari:", productVariants);
                 displayProductDetail(product);
             })
             .catch(error => {
@@ -290,6 +890,262 @@
     } else {
         document.getElementById('productDetail').innerHTML = '<p class="text-danger">Mahsulot tanlanmagan.</p>';
     }
+
+
+    // Chat Modal Functions
+    function openChatModal() {
+        document.getElementById('chatModalOverlay').classList.add('visible');
+        document.getElementById('debugOutput').style.display = 'block';
+
+
+
+        // WebSocket chat ulanishini boshlash
+        const productId = getProductId();
+        if (productId) {
+            openChat(productId);
+        } else {
+            logDebug("Xatolik: ProductId topilmadi");
+            document.getElementById("chatBox").innerHTML +=
+                `<p class="error">Mahsulot ID si topilmadi. Chat ochib bo'lmaydi.</p>`;
+        }
+    }
+
+    function closeChatModal() {
+        document.getElementById('chatModalOverlay').classList.remove('visible');
+
+        // WebSocket ulanishini yopish
+        if (socket && socket.readyState !== WebSocket.CLOSED) {
+            socket.close();
+            logDebug("WebSocket ulanishi yopildi");
+        }
+    }
+
+    function toggleChatSize() {
+        const chatModal = document.getElementById('chatModal');
+        const expandIcon = document.getElementById('expandIcon');
+
+        chatModal.classList.toggle('expanded');
+
+        if (chatModal.classList.contains('expanded')) {
+            expandIcon.classList.replace('fa-expand', 'fa-compress');
+        } else {
+            expandIcon.classList.replace('fa-compress', 'fa-expand');
+        }
+    }
+
+    // MUHIM: Spring Boot serveri manzilini to'g'ri ko'rsating
+    const API_BASE_URL = "http://localhost:8080"; // Spring Boot serveri manzili
+
+    function openChat(productId) {
+        if (!productId) {
+            alert("Mahsulot ID si ko'rsatilmagan!");
+            return;
+        }
+
+        logDebug(`Chat ochilmoqda, productId: ${productId}`);
+        const userId = localStorage.getItem("userId");
+
+        // To'liq URL manzilni ko'rsatish
+        const url = `${API_BASE_URL}/api/chat`;
+        const data = { productId: parseInt(productId), userId: parseInt(userId) };
+
+        logDebug(`So'rov yuborilmoqda: ${url}`);
+        logDebug(`So'rov ma'lumotlari: ${JSON.stringify(data)}`);
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // Agar kerak bo'lsa, autentifikatsiya tokenini qo'shing
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                logDebug(`Server javobi: Status ${response.status}`);
+
+                // Response body ni text sifatida olish
+                return response.text().then(text => {
+                    if (!response.ok) {
+                        throw new Error(`Server xatosi: ${response.status}, Javob: ${text}`);
+                    }
+
+                    // Javobni JSON ga o'girish
+                    try {
+                        return JSON.parse(text);
+                    } catch (e) {
+                        logDebug(`JSON parse qilishda xatolik: ${e.message}`);
+                        logDebug(`Olingan ma'lumot: ${text}`);
+                        throw new Error(`JSON parse qilishda xatolik: ${text}`);
+                    }
+                });
+            })
+            .then(data => {
+                logDebug(`Chat yaratildi: ${JSON.stringify(data)}`);
+                chatId = data.chatId;
+                logDebug(`Chat ID: ${chatId}`);
+                connectWebSocket(chatId);
+            })
+            .catch(error => {
+                logDebug(`Xatolik: ${error.message}`);
+                document.getElementById("chatBox").innerHTML +=
+                    `<p class="error">Xatolik: ${error.message}</p>`;
+                alert("Chat yaratishda xatolik yuz berdi. Iltimos qayta urinib ko'ring.");
+            });
+    }
+
+    function connectWebSocket(chatId) {
+        // WebSocket URL ni to'g'ri ko'rsatish
+        const wsUrl = `ws://${window.location.hostname}:8080/chat?chatId=${chatId}`;
+
+        logDebug(`WebSocket ulanmoqda: ${wsUrl}`);
+
+
+        // Eski ulanishni yopish (agar mavjud bo'lsa)
+        if (socket && socket.readyState !== WebSocket.CLOSED) {
+            socket.close();
+        }
+
+        try {
+            // Yangi WebSocket ulanishini yaratish
+            socket = new WebSocket(wsUrl);
+
+            socket.onopen = function() {
+                logDebug("✅ WebSocket ulanishi muvaffaqiyatli o'rnatildi");
+                document.getElementById("sendButton").disabled = false;
+                document.getElementById("messageInput").disabled = false;
+
+                // Ulanish muvaffaqiyatli bo'lganini ko'rsatish
+                document.getElementById("chatBox").innerHTML =
+                    `<p class="system-message">Chat ulanishi o'rnatildi</p>`;
+            };
+
+            socket.onmessage = function(event) {
+                try {
+                    logDebug(`Xabar qabul qilindi: ${event.data}`);
+                    let message = JSON.parse(event.data);
+                    const messageClass = message.sender === "user" ? "user-message" : "other-message";
+                    document.getElementById("chatBox").innerHTML +=
+                        `<p class="message ${messageClass}"><strong>${message.sender}:</strong> ${message.text}</p>`;
+
+                    // Avtomatik pastga skroll qilish
+                    document.getElementById("chatBox").scrollTop = document.getElementById("chatBox").scrollHeight;
+                } catch (e) {
+                    logDebug(`Xabarni qayta ishlashda xatolik: ${e.message}`);
+                }
+            };
+
+            socket.onerror = function(error) {
+                logDebug(`WebSocket xatoligi: ${error}`);
+                document.getElementById("sendButton").disabled = true;
+                document.getElementById("messageInput").disabled = true;
+
+                document.getElementById("chatBox").innerHTML +=
+                    `<p class="error">Ulanishda xatolik yuz berdi</p>`;
+            };
+
+            socket.onclose = function(event) {
+                logDebug(`WebSocket yopildi. Kod: ${event.code}, Sabab: ${event.reason}`);
+                document.getElementById("sendButton").disabled = true;
+                document.getElementById("messageInput").disabled = true;
+
+                document.getElementById("chatBox").innerHTML +=
+                    `<p class="system-message">Chat ulanishi uzildi</p>`;
+
+                // 5 soniyadan keyin qayta ulanishga harakat qilish
+                setTimeout(() => {
+                    if (chatId) {
+                        connectWebSocket(chatId);
+                    }
+                }, 5000);
+            };
+        } catch (error) {
+            logDebug(`WebSocket yaratishda xatolik: ${error.message}`);
+            document.getElementById("chatBox").innerHTML +=
+                `<p class="error">WebSocket yaratishda xatolik: ${error.message}</p>`;
+        }
+    }
+
+    function sendMessage() {
+        const messageInput = document.getElementById("messageInput");
+        const text = messageInput.value.trim();
+
+        if (!text) {
+            return; // Bo'sh xabarlarni yubormaslik
+        }
+
+        if (!socket || socket.readyState !== WebSocket.OPEN) {
+            logDebug("❌ Xatolik: WebSocket hali ulanmagan!");
+            document.getElementById("chatBox").innerHTML +=
+                `<p class="error">Chat serveriga ulanish mavjud emas</p>`;
+            return;
+        }
+
+        // Xabarni yaratish
+        const message = {
+            sender: localStorage.getItem("userId"), // Bu yerda userId number bo'lishi kerak, string emas
+            text: text
+        };
+
+        logDebug(`Xabar yuborilmoqda: ${JSON.stringify(message)}`);
+        socket.send(JSON.stringify(message));
+
+        // O'z xabarimizni ko'rsatish
+        document.getElementById("chatBox").innerHTML +=
+            `<div class="message user-message"><strong>Siz:</strong> ${text}</div>`;
+
+        // Input maydonini tozalash
+        messageInput.value = "";
+
+        // Fokusni input maydoniga qaytarish
+        messageInput.focus();
+
+
+        // Avtomatik pastga skroll qilish
+        document.getElementById("chatBox").scrollTop = document.getElementById("chatBox").scrollHeight;
+    }
+
+    // Enter tugmasini bosish orqali xabar yuborish
+    document.getElementById("messageInput").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            sendMessage();
+        }
+    });
+
+    // Sahifa yuklanganda debug ma'lumotlarini ko'rsatish
+    document.addEventListener("DOMContentLoaded", function() {
+        logDebug("Sahifa yuklandi");
+        logDebug(`API URL: ${API_BASE_URL}`);
+        const productId = getProductId();
+        logDebug(`ProductId: ${productId}`);
+    });
+
+    // Close chat modal when clicking outside
+    document.getElementById('chatModalOverlay').addEventListener('click', function(event) {
+        if (event.target === this) {
+            closeChatModal();
+        }
+    });
+
+    if (productId) {
+        axios.get(`http://localhost:8080/api/products/${productId}`)
+            .then(response => {
+                product = response.data;
+                console.log(product)
+                displayProductDetail(product);
+            })
+            .catch(error => {
+                console.error("Mahsulotni yuklashda xatolik:", error);
+                document.getElementById('productDetail').innerHTML = '<p class="text-danger">Mahsulot topilmadi!</p>';
+            });
+    } else {
+        document.getElementById('productDetail').innerHTML = '<p class="text-danger">Mahsulot tanlanmagan.</p>';
+    }
+
+
 </script>
 </body>
 </html>
+
+

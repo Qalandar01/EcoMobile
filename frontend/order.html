@@ -3,108 +3,976 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Details</title>
+    <title>Order Details | YourStore</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
-        .order-card {
-            cursor: pointer;
-            margin-bottom: 10px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            transition: background-color 0.3s;
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4cc9f0;
+            --light-bg: #f8f9fa;
+            --dark-text: #212529;
+            --light-text: #6c757d;
+            --success-color: #4bb543;
         }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark-text);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .order-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(67, 97, 238, 0.15);
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
         .order-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .order-card-header {
+            background-color: var(--light-bg);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+        }
+
+        .order-card-body {
+            padding: 1.5rem;
+        }
+
+        .product-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+
+        .status-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .status-processing {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status-completed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-shipped {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #e9ecef;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 1.5rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.5rem;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            border: 2px solid white;
+        }
+
+        .timeline-date {
+            font-size: 0.8rem;
+            color: var(--light-text);
+        }
+
+        .action-btn {
+            border-radius: 50px;
+            padding: 0.5rem 1.25rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+        }
+
+        .summary-title {
+            font-weight: 600;
+            color: var(--light-text);
+            margin-bottom: 1rem;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .summary-total {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--dark-text);
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 3rem;
+            height: 3rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--light-text);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #dee2e6;
+        }
+
+        .order-item {
+            transition: all 0.2s;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .order-item:hover {
             background-color: #f8f9fa;
+        }
+
+        .view-product-btn {
+            transition: all 0.2s;
+        }
+
+        .view-product-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Product Carousel Styles */
+        .product-carousel {
+            width: 100px;
+            height: 100px;
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .carousel-inner {
+            border-radius: 8px;
+            height: 100%;
+        }
+
+        .carousel-item {
+            height: 100%;
+        }
+
+        .carousel-item img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+        }
+
+        .carousel-control-prev,
+        .carousel-control-next {
+            width: 25px;
+            height: 25px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.8;
+            z-index: 10;
+        }
+
+        .carousel-control-prev {
+            left: 5px;
+        }
+
+        .carousel-control-next {
+            right: 5px;
+        }
+
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            width: 15px;
+            height: 15px;
+            filter: invert(1) grayscale(100);
+        }
+
+        .carousel-indicators {
+            margin-bottom: 0;
+            bottom: 0;
+        }
+
+        .carousel-indicators button {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.7);
+            margin: 0 2px;
+        }
+
+        .carousel-indicators .active {
+            background-color: var(--primary-color);
+        }
+
+        /* Carousel Hover Effect */
+        .product-carousel:hover .carousel-control-prev,
+        .product-carousel:hover .carousel-control-next {
+            opacity: 1;
+        }
+
+        /* Fullscreen Image Modal */
+        .fullscreen-modal .modal-content {
+            background-color: transparent;
+            border: none;
+        }
+
+        .fullscreen-modal .modal-body {
+            padding: 0;
+        }
+
+        .fullscreen-modal .carousel-item img {
+            width: 100%;
+            height: auto;
+            max-height: 80vh;
+            object-fit: contain;
+        }
+
+        .fullscreen-modal .carousel-control-prev,
+        .fullscreen-modal .carousel-control-next {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+
+        .fullscreen-modal .carousel-control-prev-icon,
+        .fullscreen-modal .carousel-control-next-icon {
+            filter: none;
+        }
+
+        .fullscreen-modal .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 1050;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .fullscreen-modal .close-btn:hover {
+            background-color: white;
+            transform: scale(1.1);
         }
     </style>
 </head>
 <body>
-<div class="container mt-5">
-    <h1 class="mb-4">Order Details</h1>
-    <div id="orderDetails"></div>
-    <button id="viewItemsBtn" class="btn btn-primary mt-3">View Order Items</button>
-    <div id="orderItems" class="mt-3"></div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container">
+        <a class="navbar-brand" href="index.html">YourStore</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="product.html"><i class="bi bi-house-door"></i> Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="orderManagement.html"><i class="bi bi-list-check"></i> My Orders</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="profile.html"><i class="bi bi-person"></i> Profile</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
+<!-- Main Content -->
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Order Header -->
+            <div class="order-header">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="mb-0">Order Details</h2>
+                    <span class="status-badge status-processing" id="orderStatus">New</span>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-2 mb-md-0">
+                        <small class="text-white-50">Buyurtma raqami</small>
+                        <div class="h5 mb-0" id="orderNumber">--</div>
+                    </div>
+                    <div class="col-md-4 mb-2 mb-md-0">
+                        <small class="text-white-50">Buyurtma vaqti</small>
+                        <div class="h5 mb-0" id="orderDate">--</div>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-white-50">Umumiy summa</small>
+                        <div class="h5 mb-0" id="orderTotal">--</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Timeline -->
+            <div class="order-card mb-4">
+                <div class="order-card-header">
+                    <i class="bi bi-clock-history me-2"></i>Order Status
+                </div>
+                <div class="order-card-body">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="d-flex justify-content-between">
+                                <h6 class="mb-1">Order Placed</h6>
+                                <small class="timeline-date" id="orderPlacedDate">Today, 10:30 AM</small>
+                            </div>
+                            <p class="mb-0 text-muted small">We've received your order</p>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="d-flex justify-content-between">
+                                <h6 class="mb-1">Processing</h6>
+                                <small class="timeline-date" id="processingDate">Estimated: Today, 12:00 PM</small>
+                            </div>
+                            <p class="mb-0 text-muted small">We're preparing your order</p>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="d-flex justify-content-between">
+                                <h6 class="mb-1">Shipped</h6>
+                                <small class="timeline-date" id="shippedDate">Estimated: Tomorrow</small>
+                            </div>
+                            <p class="mb-0 text-muted small">Your order is on the way</p>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="d-flex justify-content-between">
+                                <h6 class="mb-1">Delivered</h6>
+                                <small class="timeline-date" id="deliveredDate">Estimated: 2-3 business days</small>
+                            </div>
+                            <p class="mb-0 text-muted small">Your order will arrive soon</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Items -->
+            <div class="order-card">
+                <div class="order-card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="bi bi-cart-check me-2"></i>Order Items
+                        <span class="badge bg-secondary ms-2" id="itemCount">0</span>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary" id="printInvoiceBtn">
+                        <i class="bi bi-printer"></i> Print Invoice
+                    </button>
+                </div>
+                <div class="order-card-body" id="orderItemsContainer">
+                    <div class="text-center py-5" id="loadingSpinner">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading order items...</p>
+                    </div>
+                    <div class="empty-state" id="emptyState" style="display: none;">
+                        <i class="bi bi-cart-x"></i>
+                        <h5>No items found</h5>
+                        <p class="text-muted">There are no items in this order</p>
+                    </div>
+                    <div id="orderItemsList" class="order-items-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Order Summary -->
+            <div class="summary-card mb-4">
+                <h5 class="summary-title">Order Summary</h5>
+                <div class="summary-item">
+                    <span>Subtotal</span>
+                    <span id="subtotal">$0.00</span>
+                </div>
+                <div class="summary-item">
+                    <span>Shipping</span>
+                    <span id="shipping">$0.00</span>
+                </div>
+                <div class="summary-item">
+                    <span>Tax</span>
+                    <span id="tax">$0.00</span>
+                </div>
+                <div class="summary-item pt-2 summary-total">
+                    <span>Total</span>
+                    <span id="summaryTotal">$0.00</span>
+                </div>
+            </div>
+
+            <!-- Delivery Information -->
+            <div class="summary-card mb-4">
+                <h5 class="summary-title">Delivery Information</h5>
+                <div class="mb-3">
+                    <small class="text-muted">DELIVERY ADDRESS</small>
+                    <div id="locationLoading" class="text-center py-2">
+                        <div class="spinner-border spinner-border-sm text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="small mb-0">Loading address...</p>
+                    </div>
+                    <div id="locationError" class="alert alert-danger py-2 small" style="display: none;">
+                        Failed to load address information.
+                    </div>
+                    <div id="locationDetails" style="display: none;">
+                        <p class="mb-0"><strong>Region:</strong> <span id="region">--</span></p>
+                        <p class="mb-0"><strong>District:</strong> <span id="district">--</span></p>
+                        <p class="mb-0"><strong>Street:</strong> <span id="street">--</span></p>
+                        <p class="mb-0"><strong>Home:</strong> <span id="home">--</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer Support -->
+            <div class="summary-card">
+                <h5 class="summary-title">Need Help?</h5>
+                <p class="small text-muted">If you have any questions about your order, our customer service team is happy to help.</p>
+                <button class="btn btn-outline-primary w-100 mb-2" id="liveChatBtn">
+                    <i class="bi bi-chat-left-text"></i> Live Chat
+                </button>
+                <button class="btn btn-outline-secondary w-100" id="emailSupportBtn">
+                    <i class="bi bi-envelope"></i> Email Support
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Fullscreen Image Modal -->
+<div class="modal fade fullscreen-modal" id="imageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="close-btn" data-bs-dismiss="modal">
+                <i class="bi bi-x-lg"></i>
+            </div>
+            <div class="modal-body">
+                <div id="fullscreenCarousel" class="carousel slide" data-bs-interval="false">
+                    <div class="carousel-inner" id="fullscreenCarouselInner">
+                        <!-- Images will be inserted here -->
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#fullscreenCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#fullscreenCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-light py-4 mt-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-3 mb-md-0">
+                <h5>YourStore</h5>
+                <p class="text-muted small">Quality products at affordable prices with fast delivery.</p>
+            </div>
+            <div class="col-md-2 mb-3 mb-md-0">
+                <h6>Shop</h6>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-muted small">All Products</a></li>
+                    <li><a href="#" class="text-muted small">New Arrivals</a></li>
+                    <li><a href="#" class="text-muted small">Featured</a></li>
+                </ul>
+            </div>
+            <div class="col-md-2 mb-3 mb-md-0">
+                <h6>Support</h6>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-muted small">Contact Us</a></li>
+                    <li><a href="#" class="text-muted small">FAQs</a></li>
+                    <li><a href="#" class="text-muted small">Returns</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h6>Stay Connected</h6>
+                <div class="d-flex gap-3 mb-3">
+                    <a href="#" class="text-muted"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="text-muted"><i class="bi bi-twitter"></i></a>
+                    <a href="#" class="text-muted"><i class="bi bi-instagram"></i></a>
+                </div>
+                <p class="small text-muted mb-0">© 2023 YourStore. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     const userId = localStorage.getItem("userId");
     const orderId = new URLSearchParams(window.location.search).get("orderId");
     const locationId = new URLSearchParams(window.location.search).get("locationId");
-    if (!userId) {
-        alert("Iltimos, tizimga kiring!");
+    const token = localStorage.getItem("token");
+
+    const productCarousels = {};
+
+    if (!userId || !token) {
+        alert("Please login to view your orders!");
         window.location.href = "login.html";
     }
 
     async function createOrder() {
         try {
+            showLoading();
             const { data: order } = await axios.post(
                 "http://localhost:8080/api/orders/create-from-basket",
                 null,
-                { params: { locationId }, headers: { userId } }
+                {
+                    params: { locationId },
+                    headers: {
+                        userId,
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
             );
 
             if (!order.id) {
-                throw new Error("Buyurtma IDsi yaratilmadi!");
+                throw new Error("Order ID not created!");
             }
 
             window.location.href = `order.html?orderId=${order.id}`;
         } catch (error) {
-            alert("Xatolik: " + error.message);
+            alert("Error: " + error.message);
+        } finally {
+            hideLoading();
         }
     }
 
     async function loadOrderDetails() {
         try {
-            const response = await fetch(`http://localhost:8080/api/orders/${orderId}`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const order = await response.json();
-
-            const orderDetails = document.getElementById('orderDetails');
-            orderDetails.innerHTML = `
-                <h4>Order #${order.id}</h4>
-                <p>Status: ${order.status}</p>
-                <p>Total: $${order.total.toFixed(2)}</p>
-                <p>Location ID: ${order.locationId}</p>
-                <p>Date: ${order.date}</p>
-            `;
-
-            document.getElementById('viewItemsBtn').addEventListener('click', () => {
-                loadOrderItems(orderId);
+            showLoading();
+            const response = await axios.get(`http://localhost:8080/api/orders/${orderId}`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "userId": userId
+                }
             });
+            const order = response.data;
+
+            // Update order header
+            document.getElementById('orderNumber').textContent = `#${order.id}`;
+            const orderDate = new Date(order.date);
+            document.getElementById('orderDate').textContent = orderDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('orderTotal').textContent = `$${order.total.toFixed(2)}`;
+
+            // Update status
+            updateOrderStatus(order.status);
+
+            // Update timeline dates
+            updateTimelineDates(orderDate);
+
+            // Update summary
+            document.getElementById('subtotal').textContent = `$${(order.total * 0.9).toFixed(2)}`;
+            document.getElementById('shipping').textContent = `$${(order.total * 0.05).toFixed(2)}`;
+            document.getElementById('tax').textContent = `$${(order.total * 0.05).toFixed(2)}`;
+            document.getElementById('summaryTotal').textContent = `$${order.total.toFixed(2)}`;
+
+            // Load location information
+            if (order.locationId) {
+                await loadLocationDetails(order.locationId);
+            }
+
+            // Load order items
+            await loadOrderItems(orderId);
         } catch (error) {
             console.error('Error fetching order details:', error);
+            document.getElementById('orderItemsContainer').innerHTML = `
+                <div class="alert alert-danger">Error loading order details. Please try again later.</div>
+            `;
+        } finally {
+            hideLoading();
         }
+    }
+
+    async function loadLocationDetails(locationId) {
+        try {
+            // Show loading state
+            document.getElementById('locationLoading').style.display = 'block';
+            document.getElementById('locationDetails').style.display = 'none';
+            document.getElementById('locationError').style.display = 'none';
+
+            // Fetch all locations for the user and find the one matching the locationId
+            const response = await axios.get(`http://localhost:8080/api/locations`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "userId": userId
+                }
+            });
+
+            const locations = response.data;
+            const location = locations.find(loc => loc.id === locationId);
+
+            if (location) {
+                // Update the location details in the UI
+                document.getElementById('region').textContent = location.region || '--';
+                document.getElementById('district').textContent = location.district || '--';
+                document.getElementById('street').textContent = location.street || '--';
+                document.getElementById('home').textContent = location.home || '--';
+
+                // Hide loading and show details
+                document.getElementById('locationLoading').style.display = 'none';
+                document.getElementById('locationDetails').style.display = 'block';
+            } else {
+                throw new Error('Location not found');
+            }
+        } catch (error) {
+            console.error('Error fetching location details:', error);
+            document.getElementById('locationLoading').style.display = 'none';
+            document.getElementById('locationError').style.display = 'block';
+        }
+    }
+
+    function updateOrderStatus(status) {
+        const statusElement = document.getElementById('orderStatus');
+        statusElement.textContent = status;
+
+        // Remove all status classes
+        statusElement.classList.remove(
+            'status-processing',
+            'status-completed',
+            'status-shipped'
+        );
+
+        // Add appropriate status class
+        switch(status.toLowerCase()) {
+            case 'processing':
+                statusElement.classList.add('status-processing');
+                break;
+            case 'completed':
+                statusElement.classList.add('status-completed');
+                break;
+            case 'shipped':
+                statusElement.classList.add('status-shipped');
+                break;
+            default:
+                statusElement.classList.add('status-processing');
+        }
+    }
+
+    function updateTimelineDates(orderDate) {
+        const orderPlacedDate = orderDate;
+        const processingDate = new Date(orderDate);
+        processingDate.setHours(orderDate.getHours() + 2);
+
+        const shippedDate = new Date(orderDate);
+        shippedDate.setDate(orderDate.getDate() + 1);
+
+        const deliveredDate = new Date(orderDate);
+        deliveredDate.setDate(orderDate.getDate() + 3);
+
+        document.getElementById('orderPlacedDate').textContent = orderPlacedDate.toLocaleString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        document.getElementById('processingDate').textContent = "Estimated: " + processingDate.toLocaleString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        document.getElementById('shippedDate').textContent = "Estimated: " + shippedDate.toLocaleString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric'
+        });
+
+        document.getElementById('deliveredDate').textContent = "Estimated: " + deliveredDate.toLocaleString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric'
+        });
     }
 
     async function loadOrderItems(orderId) {
         try {
-            const response = await fetch(`http://localhost:8080/api/orders/${orderId}/items`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const orderItems = await response.json();
-
-            const orderItemsContainer = document.getElementById('orderItems');
-            orderItemsContainer.innerHTML = '';
-
-            orderItems.forEach(item => {
-                const itemCard = document.createElement('div');
-                itemCard.className = 'order-card';
-                itemCard.innerHTML = `
-                    <h4>${item.productName}</h4>
-                    <p>Product ID: ${item.productId}</p>
-                    <p>Price: $${item.price.toFixed(2)}</p>
-                    <p>Quantity: ${item.quantity}</p>
-                `;
-                orderItemsContainer.appendChild(itemCard);
+            showLoading();
+            const response = await axios.get(`http://localhost:8080/api/orders/${orderId}/items`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "userId": userId
+                }
             });
+            const orderItems = response.data;
+
+            const orderItemsList = document.getElementById('orderItemsList');
+            orderItemsList.innerHTML = '';
+
+            if (orderItems.length === 0) {
+                document.getElementById('emptyState').style.display = 'block';
+                return;
+            }
+
+            document.getElementById('itemCount').textContent = orderItems.length;
+
+            // Load all product details first
+            const productDetails = await Promise.all(
+                orderItems.map(item =>
+                    axios.get(`http://localhost:8080/api/products/${item.productId}`, {
+                        headers: {
+                            "Authorization": `Bearer ${token}`,
+                            "userId": userId
+                        }
+                    })
+                        .then(res => res.data)
+                        .catch(error => {
+                            console.error(`Failed to fetch product ${item.productId}:`, error);
+                            return null;
+                        })
+                )
+            );
+
+            // Display items with their images
+            orderItems.forEach((item, index) => {
+                const product = productDetails[index];
+                let imageUrls = [];
+
+                // Get all image URLs for the product
+                if (product && product.attachmentIds && product.attachmentIds.length > 0) {
+                    imageUrls = product.attachmentIds.map(id =>
+                        `http://localhost:8080/api/products/file/${id}`
+                    );
+                }
+
+                // If no images, use placeholder
+                if (imageUrls.length === 0) {
+                    imageUrls = ['https://via.placeholder.com/150/6c757d/FFFFFF?text=Product'];
+                }
+
+                const itemElement = document.createElement('div');
+                itemElement.className = 'd-flex mb-4 pb-4 border-bottom order-item';
+
+                // Create carousel HTML
+                let carouselHtml = '';
+                if (imageUrls.length === 1) {
+                    // If only one image, don't use carousel
+                    carouselHtml = `
+                        <div class="product-carousel" onclick="openImageModal('${item.productId}', 0)">
+                            <img src="${imageUrls[0]}" alt="${item.productName}" class="product-img"
+                                 onerror="this.src='https://via.placeholder.com/150/6c757d/FFFFFF?text=Product'">
+                        </div>
+                    `;
+                } else {
+                    // Create carousel for multiple images
+                    carouselHtml = `
+                        <div id="carousel-${item.productId}" class="carousel slide product-carousel" data-bs-interval="false">
+                            <div class="carousel-indicators">
+                                ${imageUrls.map((_, i) =>
+                        `<button type="button" data-bs-target="#carousel-${item.productId}" data-bs-slide-to="${i}"
+                                     ${i === 0 ? 'class="active"' : ''}></button>`
+                    ).join('')}
+                            </div>
+                            <div class="carousel-inner">
+                                ${imageUrls.map((url, i) => `
+                                    <div class="carousel-item ${i === 0 ? 'active' : ''}">
+                                        <img src="${url}" class="d-block w-100" alt="${item.productName}"
+                                             onclick="openImageModal('${item.productId}', ${i})"
+                                             onerror="this.src='https://via.placeholder.com/150/6c757d/FFFFFF?text=Product'">
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carousel-${item.productId}" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carousel-${item.productId}" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+                    `;
+                }
+
+                itemElement.innerHTML = `
+                    ${carouselHtml}
+                    <div class="flex-grow-1 ms-3">
+                        <h6 class="mb-1">${item.productName}</h6>
+                        <p class="text-muted small mb-1">Product ID: ${item.productId}</p>
+                        <p class="text-muted small mb-2">Quantity: ${item.quantity}</p>
+                        <p class="mb-0 fw-bold">$${item.price.toFixed(2)}</p>
+                    </div>
+                    <div class="text-end">
+
+                    </div>
+                `;
+                orderItemsList.appendChild(itemElement);
+
+                // Store image URLs for this product for the modal
+                window[`productImages_${item.productId}`] = imageUrls;
+
+                // Initialize carousel for this product if it has multiple images
+                if (imageUrls.length > 1) {
+                    // Wait for DOM to be updated
+                    setTimeout(() => {
+                        const carouselElement = document.getElementById(`carousel-${item.productId}`);
+                        if (carouselElement) {
+                            // Initialize Bootstrap carousel
+                            productCarousels[item.productId] = new bootstrap.Carousel(carouselElement, {
+                                interval: false, // Don't auto-rotate
+                                wrap: true,      // Allow continuous cycling
+                                touch: true      // Enable touch swiping
+                            });
+
+                            // Add manual event listeners to ensure navigation works
+                            const prevButton = carouselElement.querySelector('.carousel-control-prev');
+                            const nextButton = carouselElement.querySelector('.carousel-control-next');
+
+                            prevButton.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                productCarousels[item.productId].prev();
+                            });
+
+                            nextButton.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                productCarousels[item.productId].next();
+                            });
+                        }
+                    }, 100);
+                }
+            });
+
         } catch (error) {
             console.error('Error fetching order items:', error);
+            document.getElementById('orderItemsList').innerHTML = `
+                <div class="alert alert-danger">Error loading order items. Please try again later.</div>
+            `;
+        } finally {
+            hideLoading();
         }
+    }
+
+    function viewProduct(productId) {
+        window.location.href = `product.html?productId=${productId}`;
+    }
+
+    function showLoading() {
+        document.getElementById('loadingSpinner').style.display = 'block';
+        document.getElementById('emptyState').style.display = 'none';
+        document.getElementById('orderItemsList').innerHTML = '';
+    }
+
+    function hideLoading() {
+        document.getElementById('loadingSpinner').style.display = 'none';
+    }
+
+    // Open fullscreen image modal
+    function openImageModal(productId, imageIndex) {
+        const imageUrls = window[`productImages_${productId}`];
+        if (!imageUrls || imageUrls.length === 0) return;
+
+        const carouselInner = document.getElementById('fullscreenCarouselInner');
+        carouselInner.innerHTML = '';
+
+        imageUrls.forEach((url, i) => {
+            const slide = document.createElement('div');
+            slide.className = `carousel-item ${i === imageIndex ? 'active' : ''}`;
+            slide.innerHTML = `
+                <img src="${url}" class="d-block mx-auto" alt="Product Image ${i+1}"
+                     onerror="this.src='https://via.placeholder.com/800/6c757d/FFFFFF?text=Product+Image'">
+            `;
+            carouselInner.appendChild(slide);
+        });
+
+        const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+        modal.show();
+
+        // Initialize fullscreen carousel
+        const fullscreenCarousel = new bootstrap.Carousel(document.getElementById('fullscreenCarousel'), {
+            interval: false,
+            wrap: true,
+            touch: true
+        });
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -113,9 +981,23 @@
         } else if (locationId) {
             createOrder();
         } else {
-            alert("Manzil tanlanmagan!");
+            alert("No location selected!");
             window.location.href = "location.html";
         }
+
+        // Print invoice button
+        document.getElementById('printInvoiceBtn').addEventListener('click', () => {
+            window.print();
+        });
+
+        // Support buttons
+        document.getElementById('liveChatBtn').addEventListener('click', () => {
+            alert("Live chat feature will be available soon!");
+        });
+
+        document.getElementById('emailSupportBtn').addEventListener('click', () => {
+            window.location.href = "mailto:support@yourstore.com";
+        });
     });
 </script>
 </body>

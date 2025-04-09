@@ -50,18 +50,22 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
                         req
-                                .requestMatchers("/api/login", "/api/file/**","/api/verify-code",
-                                        "/api/forgot-password", "/api/set-new-password","/api/category/**",
-                                        "/api/products/**","api/register-mail","api/verification",
+                                .requestMatchers("/api/login", "/api/file/**","/api/verify-code","/api/notifications", "/api/notification-events",
+                                        "/api/forgot-password", "/api/set-new-password","/api/category/**","/api/auth/oauth2/**",
+                                        "/api/products/**","/api/products/variant/**","/api/products/variants/**","api/register-mail","api/verification",
                                         "/api/file","/api/basket/**", "/api/brands/**","/api/category/product-count/**",
                                         "/api/colors/**", "/api/orders/**", "/api/locations/**" ,"/api/user/**" ,"/file/**","/api/sizes/**" ,"/api/user/**","/api/categoryWithProQuantity","/api/ratings",
-                                        "/login","/api/auth/**").permitAll()
+                                        "/login","/api/auth/**","/api/chat/**","/chat","/api/chats/customers","/api/history","/api/chats/send","/api/chats/**","/api/chats/new-messages", "/api/chats/sellers"
+                                ).permitAll()
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                                 .requestMatchers("/api/products/save/").hasRole("ADMIN")
                                 .requestMatchers("/api/products/delete/").hasRole("ADMIN")
                                 .requestMatchers("/api/products/edit/").hasRole("ADMIN")
                                 .requestMatchers("/api/order/**").hasAnyRole("USER", "ADMIN")
+                                .requestMatchers("/api/admin-li st","api/edit-admin","/api/edit-role",
+                                        "/api/add-admin","/api/totalOrder","/api/totalProducts","/api/totalQuantity").hasRole("SUPER_ADMIN")
+
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -3,175 +3,902 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mahsulotlar va Kategoriyalar</title>
+    <title>MyStore - Mahsulotlar</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary: #6b7280;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --border-radius: 12px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f8f9fa;
-            padding: 20px;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
         }
-        .navbar-custom {
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary);
         }
-        .container-custom {
-            max-width: 1200px;
-            width: 100%;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+
+        .navbar {
+            box-shadow: var(--shadow);
+            padding: 1rem 0;
         }
-        .card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+        .nav-link {
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
         }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
         }
-        .card img {
-            height: 200px;
-            width: 100%;
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
             object-fit: cover;
-            border-radius: 8px 8px 0 0;
+            border: 2px solid var(--primary);
         }
-        .like-button {
+
+        .dropdown-menu {
+            border: none;
+            box-shadow: var(--shadow-lg);
+            border-radius: var(--border-radius);
+        }
+
+        .dropdown-item {
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+        }
+
+        .main-container {
+            margin-top: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        /* Sidebar */
+        .sidebar-card {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            font-weight: 600;
+        }
+
+        .category-list {
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .category-item {
+            padding: 0.75rem 1.5rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .category-item:last-child {
+            border-bottom: none;
+        }
+
+        .category-item:hover, .category-item.active {
+            background-color: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+        }
+
+        .category-badge {
+            background-color: var(--primary);
+            color: white;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 50px;
+        }
+
+        /* Products */
+        .products-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .products-title {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--dark);
+        }
+
+        .product-card {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 2;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+        }
+
+        .product-img-container {
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .product-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .product-card:hover .product-img {
+            transform: scale(1.05);
+        }
+
+        .like-btn {
             position: absolute;
             top: 10px;
             right: 10px;
-            font-size: 24px;
-            background: transparent;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.8);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             border: none;
-            cursor: pointer;
-            color: #ff4757;
+            color: var(--danger);
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
         }
-        .like-button:hover {
-            color: #ff6b81;
-        }
-        .pointer { cursor: pointer; }
-        .badge-custom {
-            background-color: #6c757d;
+
+        .like-btn:hover, .like-btn.active {
+            background: var(--danger);
             color: white;
-            padding: 5px 10px;
-            border-radius: 20px;
         }
-        .btn-custom {
-            background-color: #007bff;
+
+        .product-body {
+            padding: 1.25rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            color: var(--dark);
+        }
+
+        .product-category {
+            font-size: 0.85rem;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .product-price {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.25rem;
+            margin: 0.5rem 0;
+        }
+
+        .product-description {
+            font-size: 0.9rem;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+
+        .product-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .btn-view {
+            background-color: var(--primary);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
         }
-        .btn-custom:hover {
-            background-color: #0056b3;
+
+        .btn-view:hover {
+            background-color: var(--primary-hover);
+            color: white;
         }
+
+        .carousel-control-prev, .carousel-control-next {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .carousel-control-prev {
+            left: 10px;
+        }
+
+        .carousel-control-next {
+            right: 10px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .sidebar-col {
+                margin-bottom: 2rem;
+            }
+
+            .product-img-container {
+                height: 180px;
+            }
+        }
+
         @media (max-width: 768px) {
-            .card img {
+            .product-img-container {
                 height: 150px;
             }
-            .card-body {
-                padding: 15px;
+
+            .product-title {
+                font-size: 1rem;
+            }
+
+            .product-price {
+                font-size: 1.1rem;
             }
         }
+
         @media (max-width: 576px) {
-            body {
-                padding: 10px;
+            .products-header {
+                flex-direction: column;
+                align-items: flex-start;
             }
+
+            .product-img-container {
+                height: 200px;
+            }
+        }
+
+        /* Floating action button for mobile */
+        .floating-cart-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .floating-cart-btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-3px);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--danger);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            .floating-cart-btn {
+                display: flex;
+            }
+        }
+
+        /* Loading skeleton */
+        .skeleton {
+            animation: skeleton-loading 1s linear infinite alternate;
+            opacity: 0.7;
+            border-radius: var(--border-radius);
+        }
+
+        @keyframes skeleton-loading {
+            0% {
+                background-color: hsl(200, 20%, 80%);
+            }
+            100% {
+                background-color: hsl(200, 20%, 95%);
+            }
+        }
+
+        .skeleton-text {
+            width: 100%;
+            height: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .skeleton-text:last-child {
+            margin-bottom: 0;
+            width: 80%;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-hover);
+        }
+
+        /* Notification bell styles */
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            margin-right: 15px;
+        }
+
+        .notification-bell i {
+            font-size: 1.2rem;
+            color: var(--secondary);
+            transition: color 0.3s ease;
+        }
+
+        .notification-bell:hover i {
+            color: var(--primary);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -8px;
+            background-color: var(--danger);
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notification-dropdown {
+            width: 320px;
+            padding: 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .notification-title {
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .notification-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            transition: background-color 0.3s ease;
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-item:hover {
+            background-color: rgba(37, 99, 235, 0.05);
+        }
+
+        .notification-item.unread {
+            background-color: rgba(37, 99, 235, 0.1);
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .notification-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: rgba(37, 99, 235, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .notification-icon i {
+            color: var(--primary);
+            font-size: 1rem;
+        }
+
+        .notification-text {
+            flex-grow: 1;
+        }
+
+        .notification-message {
+            margin: 0 0 0.25rem;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .notification-time {
+            font-size: 0.75rem;
+            color: var(--secondary);
+            margin: 0;
+        }
+
+        .notification-footer {
+            text-align: center;
+            padding: 0.75rem 1rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .notification-footer a {
+            color: var(--primary);
+            font-size: 0.9rem;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .notification-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Toast notification */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1100;
+        }
+
+        .custom-toast {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            margin-bottom: 10px;
+            min-width: 300px;
+            max-width: 400px;
+            animation: slideIn 0.3s ease-out forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast-header {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .toast-body {
+            padding: 1rem;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            margin: 0;
+            flex-grow: 1;
+        }
+
+        .toast-close {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0;
+            margin-left: 10px;
+        }
+
+        /* No results found */
+        .no-results {
+            text-align: center;
+            padding: 3rem 1rem;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .no-results i {
+            font-size: 3rem;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+
+        .no-results h4 {
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .no-results p {
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
         }
     </style>
 </head>
 <body>
 
-<form action="reportAdmin.html">
-    <button class="btn btn-custom">Report Admin</button>
-</form>
+<!-- Toast container for notifications -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Floating cart button for mobile -->
+<a href="basket.html" class="floating-cart-btn">
+    <i class="fas fa-shopping-cart"></i>
+    <span class="cart-count" id="mobileCartCount">0</span>
+</a>
+
 <!-- Header: Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark navbar-custom">
+<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
     <div class="container">
-        <a class="navbar-brand" href="product.html">MyStore</a>
+        <a class="navbar-brand d-flex align-items-center" href="product.html">
+            <i class="fas fa-store-alt me-2"></i>
+            MyStore
+        </a>
+
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
                 aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+
         <div class="collapse navbar-collapse" id="navbarContent">
-            <!-- Chap tomondagi tugmalar -->
+            <!-- Left side navigation -->
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="product.html">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="basket.html">Basket</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="orderManagemand.html">Order</a>
-                </li>
-            </ul>
-            <!-- O'ng tomondagi foydalanuvchi rasmi va ism familiya -->
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img id="navbarProfileImage" class="rounded-circle me-2" alt="User Image" style="width: 40px; height: 40px;">
-                        <span class="text-white" id="navbarUsername">Ism Familiya</span>
+                    <a class="nav-link active" aria-current="page" href="product.html">
+                        <i class="fas fa-home me-1"></i> Bosh sahifa
                     </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="settings.html">Settings</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="login.html" onclick="logout()">Logout</a></li>
-                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="basket.html">
+                        <i class="fas fa-shopping-cart me-1"></i> Savat
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="myOrders.html">
+                        <i class="fas fa-clipboard-list me-1"></i> Buyurtmalar
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="favourite-products.html">
+                        <i class="fas fa-heart me-1"></i> Sevimlilar
+                    </a>
                 </li>
             </ul>
+
+            <!-- Right side: Search, notifications and user profile -->
+            <div class="d-flex align-items-center">
+                <form class="d-flex me-3" id="searchForm">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="searchInput" placeholder="Qidirish..." aria-label="Search">
+                        <button class="btn btn-outline-primary" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Notification Bell -->
+                <div class="notification-bell dropdown">
+                    <a class="nav-link" href="#" role="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge" id="notificationCount">0</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end notification-dropdown" aria-labelledby="notificationDropdown">
+                        <div class="notification-header">
+                            <h6 class="notification-title">Bildirishnomalar</h6>
+                            <a href="#" class="text-primary" style="font-size: 0.8rem;" id="markAllAsRead">Barchasini o'qilgan deb belgilash</a>
+                        </div>
+                        <div id="notificationList">
+                            <!-- Notifications will be loaded here -->
+                            <div class="notification-item text-center py-3">
+                                <p class="text-muted mb-0">Hozircha bildirishnomalar yo'q</p>
+                            </div>
+                        </div>
+                        <div class="notification-footer">
+                            <a href="#">Barcha bildirishnomalarni ko'rish</a>
+                        </div>
+                    </div>
+                </div>
+
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img id="navbarProfileImage" class="rounded-circle user-avatar me-2" alt="User Image">
+                            <span class="d-none d-lg-inline" id="navbarUsername">Ism Familiya</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="settings.html"><i class="fas fa-user-cog me-2"></i> Profil</a></li>
+                            <li><a class="dropdown-item" href="chat.html">Mening chatlarim</a></li>
+                            <li><a class="dropdown-item" href="favourite-products.html"><i class="fas fa-heart me-2"></i> Sevimlilar</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="login.html" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i> Chiqish</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 </nav>
 
-<div class="container-custom">
+<!-- Main Content -->
+<div class="container main-container">
     <div class="row">
-        <!-- Chap tomonda: Kategoriyalar -->
-        <div class="col-md-4">
-            <div class="card mb-3">
-                <div class="card-header bg-dark text-white">Categories</div>
-                <div class="card-body">
-                    <ul id="categoryList" class="list-group mb-3"></ul>
-                    <form id="addCategoryForm" onsubmit="addCategory(event)" style="display: none;">
-                        <div class="input-group">
-                            <input type="text" id="categoryName" class="form-control" placeholder="New category name" required />
-                            <button type="submit" class="btn btn-dark">Add</button>
-                        </div>
-                    </form>
-                    <div id="adminCategoryButton" style="display: none;">
-                    </div>
+        <!-- Left Sidebar: Categories -->
+        <div class="col-lg-3 col-md-4 sidebar-col">
+            <div class="card sidebar-card mb-4">
+                <div class="sidebar-header">
+                    <i class="fas fa-list me-2"></i> Kategoriyalar
+                </div>
+                <div class="card-body p-0">
+                    <ul id="categoryList" class="list-group category-list">
+                        <!-- Categories will be loaded here -->
+                    </ul>
                 </div>
             </div>
         </div>
 
-        <!-- O'ng tomonda: Mahsulotlar -->
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-dark text-white">Products</div>
-                <div class="card-body">
-                    <div class="row" id="productList"></div>
-                    <div class="text-end" id="adminProductButton" style="display: none;">
+        <!-- Right Side: Products -->
+        <div class="col-lg-9 col-md-8">
+            <div class="products-header">
+                <h2 class="products-title">
+                    <i class="fas fa-box-open me-2"></i> <span id="productsTitle">Mahsulotlar</span>
+                </h2>
+
+
+            </div>
+
+            <div class="row" id="productList">
+                <!-- Products will be loaded here -->
+
+                <!-- Skeleton loading (temporary) -->
+                <div class="col-xl-4 col-lg-6 col-md-6">
+                    <div class="product-card">
+                        <div class="product-img-container skeleton" style="height: 200px;"></div>
+                        <div class="product-body">
+                            <div class="skeleton skeleton-text"></div>
+                            <div class="skeleton skeleton-text"></div>
+                            <div class="skeleton skeleton-text" style="width: 60%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-lg-6 col-md-6">
+                    <div class="product-card">
+                        <div class="product-img-container skeleton" style="height: 200px;"></div>
+                        <div class="product-body">
+                            <div class="skeleton skeleton-text"></div>
+                            <div class="skeleton skeleton-text"></div>
+                            <div class="skeleton skeleton-text" style="width: 60%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-lg-6 col-md-6">
+                    <div class="product-card">
+                        <div class="product-img-container skeleton" style="height: 200px;"></div>
+                        <div class="product-body">
+                            <div class="skeleton skeleton-text"></div>
+                            <div class="skeleton skeleton-text"></div>
+                            <div class="skeleton skeleton-text" style="width: 60%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center" id="pagination">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-dark text-white py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 mb-4 mb-lg-0">
+                <h5 class="mb-3"><i class="fas fa-store-alt me-2"></i> MyStore</h5>
+                <p class="text-muted">Eng yaxshi mahsulotlar faqat bizda. Biz bilan xarid qilishning zavqini his eting!</p>
+                <div class="social-icons">
+                    <a href="#" class="text-white me-2"><i class="fab fa-telegram"></i></a>
+                    <a href="#" class="text-white me-2"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-white me-2"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="text-white"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
+                <h5 class="mb-3">Ma'lumot</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#" class="text-muted">Biz haqimizda</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted">Yetkazib berish</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted">To'lov usullari</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted">Garantiya</a></li>
+                    <li><a href="#" class="text-muted">Kontaktlar</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
+                <h5 class="mb-3">Foydalanuvchi</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="" class="text-muted">Profil</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted">Savat</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted">Sevimlilar</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted">Buyurtmalar</a></li>
+                    <li><a href="#" class="text-muted">Chiqish</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-4">
+                <h5 class="mb-3">Yangiliklar uchun obuna bo'ling</h5>
+                <p class="text-muted mb-3">Yangi mahsulotlar va chegirmalar haqida birinchi bo'lib xabardor bo'ling.</p>
+                <form class="mb-3">
+                    <div class="input-group">
+                        <input type="email" class="form-control" placeholder="Email manzilingiz" required>
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </form>
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-phone-alt me-2"></i>
+                    <div>
+                        <small class="text-muted">Qo'ng'iroq qiling</small>
+                        <h6 class="mb-0">+998 99 999 99 99</h6>
                     </div>
                 </div>
             </div>
         </div>
+        <hr class="my-4 bg-secondary">
+        <div class="row">
+            <div class="col-md-6 text-center text-md-start">
+                <p class="small text-muted mb-0">&copy; 2023 MyStore. Barcha huquqlar himoyalangan.</p>
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+            </div>
+        </div>
     </div>
-</div>
+</footer>
 
 <!-- Axios va Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     // Foydalanuvchi ma'lumotlari va rol
-    let role = localStorage.getItem("role") || "ROLE_ADMIN";
     let token = localStorage.getItem("token");
-
     const userId = localStorage.getItem("userId");
+    const userRole = localStorage.getItem("role");
+    let currentPage = 1;
+    let totalPages = 1;
+    let currentCategory = null;
+    let currentSearchQuery = '';
+    let currentSortOption = 'newest';
+    let notifications = [];
+    let unreadNotificationsCount = 0;
 
+    // Check user authentication
+    if (!token || !userId) {
+        window.location.href = "login.html";
+    }
+
+    // Load user data
     if (userId && token) {
         axios.get(`http://localhost:8080/api/user/${userId}`, {
             headers: { token: token }
@@ -191,217 +918,671 @@
             });
     }
 
-
-    if (role === "ROLE_ADMIN") {
-        document.getElementById("adminCategoryButton").style.display = "block";
-        document.getElementById("adminProductButton").style.display = "block";
-        document.getElementById("addCategoryForm").style.display = "none";
-    }
-
     // Mahsulotlar uchun axios instance
     const productRequest = axios.create({
         baseURL: "http://localhost:8080/api/",
         headers: { token: token }
     });
 
-    async function fetchProducts() {
+    // Fetch and display products with search and pagination
+    async function fetchProducts(page = 1, search = '', categoryId = null, sortOption = 'newest') {
         try {
-            const response = await productRequest.get('products');
-            const products = response.data;
-            console.log("Mahsulotlar:", products);
+            // Update current state
+            currentPage = page;
+            currentSearchQuery = search;
+            currentCategory = categoryId;
+            currentSortOption = sortOption;
+
+            // Update products title based on search
+            if (search) {
+                document.getElementById("productsTitle").textContent = `"${search}" qidiruv natijalari`;
+            } else if (categoryId) {
+                // If category is selected, title will be updated after fetching category name
+            } else {
+                document.getElementById("productsTitle").textContent = "Mahsulotlar";
+            }
+
+            // Show loading skeleton
+            document.getElementById("productList").innerHTML = getSkeletonLoading();
+
+            // Prepare request URL and parameters
+            let url, params;
+
+            if (search) {
+                // Use the search endpoint if search query is provided
+                url = 'products/search';
+                params = new URLSearchParams();
+                params.append('query', search);
+                if (page > 1) params.append('page', page - 1); // API uses 0-based pagination
+                params.append('size', 10);
+            } else {
+                // Use regular products endpoint or category endpoint
+                url = categoryId ? `products/category/${categoryId}` : 'products';
+                params = new URLSearchParams();
+                if (page > 1) params.append('page', page);
+                params.append('sort', sortOption);
+            }
+
+            // Add query parameters to URL
+            if (params.toString()) {
+                url += `?${params.toString()}`;
+            }
+
+            const response = await productRequest.get(url);
+            let products = response.data;
+
+            // If response has pagination info
+            if (products.content) {
+                totalPages = products.totalPages;
+                products = products.content;
+            } else {
+                totalPages = 1;
+            }
+
+            // Update pagination
+            updatePagination(currentPage, totalPages);
+
+            // Display products
             displayProducts(products);
+
+            // If category is selected, update the title with category name
+            if (categoryId) {
+                try {
+                    const categoryResponse = await axios.get(`http://localhost:8080/api/category/${categoryId}`);
+                    document.getElementById("productsTitle").textContent = categoryResponse.data.name;
+                } catch (error) {
+                    console.error("Error fetching category name:", error);
+                }
+            }
         } catch (error) {
             console.error('Xatolik yuz berdi:', error);
+            // Show error message
+            document.getElementById("productList").innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                    <h5>Mahsulotlarni yuklashda xatolik yuz berdi</h5>
+                    <p class="text-muted">Iltimos, keyinroq urunib ko'ring yoki administrator bilan bog'laning.</p>
+                    <button class="btn btn-primary" onclick="fetchProducts()">
+                        <i class="fas fa-sync-alt me-2"></i> Qayta yuklash
+                    </button>
+                </div>
+            `;
         }
     }
 
-    function displayProducts(products) {
-        let productList = document.getElementById("productList");
-        productList.innerHTML = "";
-
-        products.forEach((product, index) => {
-            let productId = product.id || product.productId;
-            let carouselId = `carousel-${productId}-${index}`;
-
-            // Foydalanuvchi ushbu mahsulotni like bosganligini tekshirish
-            let isLiked = (product.likedByUsers || []).includes(userId);
-            let heartIcon = isLiked ? "❤️" : "🤍";
-
-            let imageContainerHtml = "";
-            if ((product.attachmentIds || []).length > 1) {
-                let carouselHtml = `
-                <div id="${carouselId}" class="carousel slide" data-bs-interval="false">
-                    <div class="carousel-inner">
-                        ${(product.attachmentIds || []).map((attachmentId, i) => `
-                            <div class="carousel-item ${i === 0 ? 'active' : ''}">
-                                <img src="http://localhost:8080/api/products/file/${attachmentId}" class="d-block w-100" alt="Mahsulot rasmi">
-                            </div>
-                        `).join('')}
+    // Generate skeleton loading HTML
+    function getSkeletonLoading() {
+        return `
+            <div class="col-xl-4 col-lg-6 col-md-6">
+                <div class="product-card">
+                    <div class="product-img-container skeleton" style="height: 200px;"></div>
+                    <div class="product-body">
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text" style="width: 60%;"></div>
                     </div>
                 </div>
-            `;
-
-                imageContainerHtml = `
-                <div class="position-relative">
-                    ${carouselHtml}
-                    <button id="like-btn-${productId}" class="like-button" onclick="toggleLike(${productId})" style="color: ${isLiked ? 'red' : 'gray'};">${heartIcon}</button>
-                </div>
-                <button class="btn btn-secondary btn-sm mt-2" onclick="nextImage('${carouselId}')">Keyingi rasm</button>
-                <a class="cart-text" href="index.html?productId=${productId}">Mahsulot haqida</a>
-            `;
-            } else {
-                let singleImageHtml = (product.attachmentIds || []).map(attachmentId =>
-                    `<img src="http://localhost:8080/api/products/file/${attachmentId}" class="img-fluid" alt="Mahsulot rasmi">`
-                ).join("");
-
-                imageContainerHtml = `
-                <div class="position-relative">
-                    ${singleImageHtml}
-                    <button id="like-btn-${productId}" class="like-button" onclick="toggleLike(${productId})" style="color: ${isLiked ? 'red' : 'gray'};">${heartIcon}</button>
-                </div>
-                <a class="cart-text" href="index.html?productId=${productId}">Mahsulot haqida</a>
-            `;
-            }
-
-            let adminButtons = "";
-            if (role === "ROLE_ADMIN") {
-                adminButtons = `
-                <div class="d-flex justify-content-between mt-2">
-                    <!-- Admin uchun tugmalar -->
-                </div>
-            `;
-            }
-
-            productList.innerHTML += `
-            <div class="col-md-6 mb-3">
-                <div class="card">
-                    <div class="card-body">
-                        <p class="card-text"><strong>Kategoriya:</strong> ${product.categoryName || "N/A"}</p>
-                        ${imageContainerHtml}
-                        <h5 class="card-title mt-2">${product.name}</h5>
-                        <p class="card-text"><strong>Narxi:</strong> ${product.price} so‘m</p>
-                        <p class="card-text"><strong>Brand:</strong> ${product.productBrandName || "N/A"}</p>
-                        <p class="card-text"><strong>Description:</strong> ${product.description || "N/A"}</p>
+            </div>
+            <div class="col-xl-4 col-lg-6 col-md-6">
+                <div class="product-card">
+                    <div class="product-img-container skeleton" style="height: 200px;"></div>
+                    <div class="product-body">
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text" style="width: 60%;"></div>
                     </div>
-                    ${adminButtons}
+                </div>
+            </div>
+            <div class="col-xl-4 col-lg-6 col-md-6">
+                <div class="product-card">
+                    <div class="product-img-container skeleton" style="height: 200px;"></div>
+                    <div class="product-body">
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text" style="width: 60%;"></div>
+                    </div>
                 </div>
             </div>
         `;
+    }
+
+    // Update pagination controls
+    function updatePagination(currentPage, totalPages) {
+        const pagination = document.getElementById("pagination");
+        if (totalPages <= 1) {
+            pagination.style.display = 'none';
+            return;
+        }
+
+        pagination.style.display = 'flex';
+        let paginationHTML = '';
+
+        // Previous button
+        paginationHTML += `
+            <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            </li>
+        `;
+
+        // Page numbers
+        const startPage = Math.max(1, currentPage - 2);
+        const endPage = Math.min(totalPages, startPage + 4);
+
+        for (let i = startPage; i <= endPage; i++) {
+            paginationHTML += `
+                <li class="page-item ${i === currentPage ? 'active' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${i}); return false;">${i}</a>
+                </li>
+            `;
+        }
+
+        // Next button
+        paginationHTML += `
+            <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </li>
+        `;
+
+        pagination.innerHTML = paginationHTML;
+    }
+
+    // Change page
+    function changePage(page) {
+        if (page < 1 || page > totalPages) return;
+        fetchProducts(page, currentSearchQuery, currentCategory, currentSortOption);
+        window.scrollTo(0, 0);
+    }
+
+    // Display products in grid
+    function displayProducts(products) {
+        const productList = document.getElementById("productList");
+        productList.innerHTML = "";
+
+        if (products.length === 0) {
+            productList.innerHTML = `
+                <div class="col-12">
+                    <div class="no-results">
+                        <i class="fas fa-search"></i>
+                        <h4>Mahsulotlar topilmadi</h4>
+                        <p>Boshqa kalit so'zlar bilan qidirib ko'ring yoki boshqa kategoriyani tanlang.</p>
+                        <button class="btn btn-primary" onclick="resetSearch()">
+                            <i class="fas fa-redo me-2"></i> Barcha mahsulotlarni ko'rsatish
+                        </button>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        products.forEach((product, index) => {
+            const productId = product.id || product.productId;
+            const carouselId = `carousel-${productId}-${index}`;
+
+            // Like holatini aniqlash
+            const isLiked = (product.likedByUsers || [])
+                .map(String)
+                .includes(String(userId));
+
+            const imageHtml = createImageHtml(product, productId, carouselId, isLiked);
+
+            productList.innerHTML += `
+                <div class="col-xl-4 col-lg-6 col-md-6">
+                    <div class="product-card">
+                        ${imageHtml}
+                        <div class="product-body">
+                            <span class="product-category">${product.categoryName || "N/A"}</span>
+                            <h5 class="product-title">${product.name}</h5>
+                            <p class="product-description">${product.description || "Mavjud emas"}</p>
+                            <div class="product-actions">
+                                <span class="product-price">${formatPrice(product.price)} so'm</span>
+                                <a href="index.html?productId=${productId}" class="btn-view btn-sm">
+                                    <i class="fas fa-eye me-1"></i> Ko'rish
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
         });
 
+        // Initialize carousels with NO auto-sliding
         document.querySelectorAll('.carousel').forEach(carousel => {
-            new bootstrap.Carousel(carousel, { interval: false });
+            new bootstrap.Carousel(carousel, {
+                interval: false,  // This disables auto-sliding
+                touch: true,      // Enable touch swiping on mobile
+                wrap: false       // Prevents cycling back to the beginning
+            });
         });
     }
 
+    // Reset search and show all products
+    function resetSearch() {
+        document.getElementById("searchInput").value = '';
+        document.getElementById("productsTitle").textContent = "Mahsulotlar";
+        fetchProducts(1, '', null, currentSortOption);
+    }
 
-    function nextImage(carouselId) {
-        const carouselElement = document.getElementById(carouselId);
-        if (carouselElement) {
-            const carouselInstance = new bootstrap.Carousel(carouselElement);
-            carouselInstance.next();
+    // Format price with thousands separator
+    function formatPrice(price) {
+        return price ? price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") : "0";
+    }
+
+    // Create image HTML with carousel if multiple images
+    function createImageHtml(product, productId, carouselId, isLiked) {
+        const attachments = product.attachmentIds || [];
+        const likeIcon = isLiked ? 'fas fa-heart' : 'far fa-heart';
+
+        if (attachments.length > 1) {
+            return `
+                <div class="product-img-container position-relative">
+                    <div id="${carouselId}" class="carousel slide h-100" data-bs-interval="false">
+                        <div class="carousel-inner h-100">
+                            ${attachments.map((id, i) => `
+                                <div class="carousel-item h-100 ${i === 0 ? 'active' : ''}">
+                                    <img src="http://localhost:8080/api/products/file/${id}" class="product-img w-100">
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#${carouselId}" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#${carouselId}" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                    <button class="like-btn ${isLiked ? 'active' : ''}" onclick="toggleLike(${productId}, this)">
+                        <i class="${likeIcon}"></i>
+                    </button>
+                </div>
+            `;
+        } else if (attachments.length === 1) {
+            return `
+                <div class="product-img-container position-relative">
+                    <img src="http://localhost:8080/api/products/file/${attachments[0]}" class="product-img w-100">
+                    <button class="like-btn ${isLiked ? 'active' : ''}" onclick="toggleLike(${productId}, this)">
+                        <i class="${likeIcon}"></i>
+                    </button>
+                </div>
+            `;
+        } else {
+            return `
+                <div class="product-img-container position-relative">
+                    <img src="https://via.placeholder.com/300x200?text=No+Image" class="product-img w-100">
+                    <button class="like-btn ${isLiked ? 'active' : ''}" onclick="toggleLike(${productId}, this)">
+                        <i class="${likeIcon}"></i>
+                    </button>
+                </div>
+            `;
         }
     }
 
-
-    async function toggleLike(productId) {
+    // Toggle like status
+    async function toggleLike(productId, button) {
         try {
-            const response = await axios.post(`http://localhost:8080/api/products/${productId}/like?userId=${userId}`);
+            const icon = button.querySelector('i');
+            const isLiked = icon.classList.contains('fas');
 
-            if (response.status === 200) {
-                let likeButton = document.getElementById(`like-btn-${productId}`);
-                if (likeButton.innerText === "🤍") {
-                    likeButton.innerText = "❤️";
-                    likeButton.style.color = "red";
+            // Optimistic UI update
+            if (isLiked) {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                button.classList.remove('active');
+            } else {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                button.classList.add('active');
+            }
+
+            const response = await productRequest.post(`products/${productId}/like?userId=${userId}`);
+
+            if (response.status !== 200) {
+                // Revert if API call fails
+                if (isLiked) {
+                    icon.classList.add('fas');
+                    icon.classList.remove('far');
+                    button.classList.add('active');
                 } else {
-                    likeButton.innerText = "🤍";
-                    likeButton.style.color = "gray";
+                    icon.classList.add('far');
+                    icon.classList.remove('fas');
+                    button.classList.remove('active');
                 }
-                console.log("Like muvaffaqiyatli o'zgartirildi.");
             }
         } catch (error) {
-            console.error("Like xatosi:", error.response ? error.response.data : error.message);
+            console.error("Like xatosi:", error.response?.data || error.message);
         }
     }
 
-
+    // Load categories with product counts
     function loadCategories() {
         axios.get("http://localhost:8080/api/category/product-count")
             .then(res => {
                 const categoryList = document.getElementById("categoryList");
                 categoryList.innerHTML = `
-                <li class="list-group-item pointer" onclick="fetchProducts()">Barcha kategoriyalar</li>
-                ${res.data.map(category => `
-                    <li class="list-group-item pointer"
-                        onclick="loadProductsByCategory(${category.id})">
-                        ${category.name}
-                        <span class="badge bg-secondary">
-                            ${category.productCount} <small>products</small>
-                        </span>
+                    <li class="category-item active" onclick="loadAllProducts()">
+                        <span><i class="fas fa-th-large me-2"></i> Barcha mahsulotlar</span>
                     </li>
-                `).join('')}
-            `;
+                    ${res.data.map(category => `
+                        <li class="category-item" onclick="loadProductsByCategory(${category.id}, this)">
+                            <span><i class="fas fa-folder me-2"></i> ${category.name}</span>
+                            <span class="category-badge">${category.productCount}</span>
+                        </li>
+                    `).join('')}
+                `;
             })
-            .catch(() => console.error("Kategoriyalar yuklanmadi"));
+            .catch(() => {
+                console.error("Kategoriyalar yuklanmadi");
+                // Show error in UI
+                document.getElementById("categoryList").innerHTML = `
+                    <li class="category-item active" onclick="loadAllProducts()">
+                        <span><i class="fas fa-th-large me-2"></i> Barcha mahsulotlar</span>
+                    </li>
+                    <li class="list-group-item text-danger">
+                        <i class="fas fa-exclamation-circle me-2"></i> Kategoriyalar yuklanmadi
+                    </li>
+                `;
+            });
     }
 
-    function addCategory(event) {
-        event.preventDefault();
-        let categoryName = document.getElementById("categoryName").value;
-        axios.post("http://localhost:8080/api/category", { name: categoryName })
-            .then(() => {
-                loadCategories();
-                document.getElementById("categoryName").value = "";
-                document.getElementById("addCategoryForm").style.display = "none";
-            })
-            .catch(err => alert("Failed to add category!"));
+    // Load all products (reset category filter)
+    function loadAllProducts() {
+        // Update active category in sidebar
+        document.querySelectorAll('.category-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        document.querySelector('.category-item').classList.add('active');
+
+        // Reset search and category
+        fetchProducts(1, currentSearchQuery, null, currentSortOption);
     }
 
-    function deleteCategory(id) {
-        axios.delete(`http://localhost:8080/api/category/${id}`)
-            .then(() => loadCategories())
-            .catch(err => alert("Failed to delete category!"));
+    // Load products by category
+    function loadProductsByCategory(categoryId, element) {
+        // Update active category in sidebar
+        document.querySelectorAll('.category-item').forEach(item => {
+            item.classList.remove('active');
+        });
+
+        if (element) {
+            element.classList.add('active');
+        }
+
+        fetchProducts(1, currentSearchQuery, categoryId, currentSortOption);
     }
 
-    function editCategory(id, currentName) {
-        let newName = prompt("Edit Category Name", currentName);
-        if (newName && newName !== currentName) {
-            axios.put(`http://localhost:8080/api/category/${id}`, { name: newName })
-                .then(() => loadCategories())
-                .catch(err => alert("Failed to update category!"));
+    // Show toast notification
+    function showToast(message, type = "info", title = "Xabar") {
+        const toastContainer = document.getElementById('toastContainer');
+        const toastId = 'toast-' + Date.now();
+
+        const toastHTML = `
+            <div class="custom-toast" id="${toastId}">
+                <div class="toast-header bg-${type} text-white">
+                    <h6 class="toast-title">${title}</h6>
+                    <button type="button" class="toast-close" onclick="closeToast('${toastId}')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            </div>
+        `;
+
+        toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            closeToast(toastId);
+        }, 5000);
+    }
+
+    // Close toast notification
+    function closeToast(toastId) {
+        const toast = document.getElementById(toastId);
+        if (toast) {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                toast.remove();
+            }, 300);
         }
     }
 
-    function toggleCategoryForm() {
-        const form = document.getElementById("addCategoryForm");
-        form.style.display = form.style.display === "none" ? "block" : "none";
-    }
-
-    function loadProductsByCategory(categoryId) {
-        productRequest.get(`products/category/${categoryId}`)
-            .then(response => {
-                displayProducts(response.data);
-            })
-            .catch(error => console.error("Xatolik:", error));
-    }
-
+    // Logout function
     function logout() {
         localStorage.removeItem("token");
         localStorage.removeItem("userId");
+        localStorage.removeItem("role");
         window.location.href = "login.html";
     }
 
-
-    fetchProducts();
-    loadCategories();
-    getTokenFromUrl()
+    // Get token from URL if present (for OAuth etc.)
     function getTokenFromUrl() {
         const urlParams = new URLSearchParams(window.location.search);
-        let token =  urlParams.get('token'); // Replace 'token' with your parameter name
-        if (token){
-            localStorage.setItem("token",token);
+        let token = urlParams.get('token');
+        if (token) {
+            localStorage.setItem("token", token);
+            // Remove token from URL
+            window.history.replaceState({}, document.title, window.location.pathname);
         }
     }
+
+    // Search form submission
+    document.getElementById('searchForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const searchQuery = document.getElementById('searchInput').value.trim();
+
+        if (searchQuery === '') {
+            // If search is empty, show all products
+            resetSearch();
+            return;
+        }
+
+        fetchProducts(1, searchQuery, currentCategory, currentSortOption);
+    });
+
+    // Sort dropdown options
+    document.querySelectorAll('.sort-option').forEach(option => {
+        option.addEventListener('click', function(e) {
+            e.preventDefault();
+            const sortOption = this.getAttribute('data-sort');
+            fetchProducts(currentPage, currentSearchQuery, currentCategory, sortOption);
+        });
+    });
+
+    // Load notifications
+    function loadNotifications() {
+        axios.get(`http://localhost:8080/api/notifications/user/${userId}`, {
+            headers: { token: token }
+        })
+            .then(response => {
+                notifications = response.data;
+
+                // Count unread notifications
+                unreadNotificationsCount = notifications.filter(n => !n.read).length;
+
+                // Update notification badge
+                document.getElementById('notificationCount').textContent = unreadNotificationsCount;
+
+                // Update notification list
+                updateNotificationList();
+            })
+            .catch(error => {
+                console.error("Error loading notifications:", error);
+            });
+    }
+
+    // Update notification list in dropdown
+    function updateNotificationList() {
+        const notificationList = document.getElementById('notificationList');
+
+        if (notifications.length === 0) {
+            notificationList.innerHTML = `
+                <div class="notification-item text-center py-3">
+                    <p class="text-muted mb-0">Hozircha bildirishnomalar yo'q</p>
+                </div>
+            `;
+            return;
+        }
+
+        notificationList.innerHTML = notifications
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .map(notification => {
+                const date = new Date(notification.createdAt);
+                const timeAgo = getTimeAgo(date);
+
+                let icon = 'fas fa-bell';
+                if (notification.type === 'ORDER_STATUS') {
+                    icon = 'fas fa-truck';
+                } else if (notification.type === 'PRODUCT') {
+                    icon = 'fas fa-box';
+                } else if (notification.type === 'PROMO') {
+                    icon = 'fas fa-tag';
+                }
+
+                return `
+                    <div class="notification-item ${notification.read ? '' : 'unread'}" onclick="markAsRead(${notification.id})">
+                        <div class="notification-content">
+                            <div class="notification-icon">
+                                <i class="${icon}"></i>
+                            </div>
+                            <div class="notification-text">
+                                <p class="notification-message">${notification.message}</p>
+                                <p class="notification-time">${timeAgo}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            })
+            .join('');
+    }
+
+    // Mark notification as read
+    function markAsRead(notificationId) {
+        axios.post(`http://localhost:8080/api/notifications/${notificationId}/read`, {}, {
+            headers: { token: token }
+        })
+            .then(() => {
+                // Update local notification data
+                const notification = notifications.find(n => n.id === notificationId);
+                if (notification && !notification.read) {
+                    notification.read = true;
+                    unreadNotificationsCount--;
+                    document.getElementById('notificationCount').textContent = unreadNotificationsCount;
+                    updateNotificationList();
+                }
+            })
+            .catch(error => {
+                console.error("Error marking notification as read:", error);
+            });
+    }
+
+    // Mark all notifications as read
+    document.getElementById('markAllAsRead').addEventListener('click', function(e) {
+        e.preventDefault();
+
+        axios.post(`http://localhost:8080/api/notifications/user/${userId}/read-all`, {}, {
+            headers: { token: token }
+        })
+            .then(() => {
+                // Update all notifications to read
+                notifications.forEach(notification => {
+                    notification.read = true;
+                });
+                unreadNotificationsCount = 0;
+                document.getElementById('notificationCount').textContent = '0';
+                updateNotificationList();
+                showToast("Barcha bildirishnomalar o'qilgan deb belgilandi", "success");
+            })
+            .catch(error => {
+                console.error("Error marking all notifications as read:", error);
+            });
+    });
+
+    // Format time ago
+    function getTimeAgo(date) {
+        const seconds = Math.floor((new Date() - date) / 1000);
+
+        let interval = Math.floor(seconds / 31536000);
+        if (interval > 1) return `${interval} yil oldin`;
+
+        interval = Math.floor(seconds / 2592000);
+        if (interval > 1) return `${interval} oy oldin`;
+
+        interval = Math.floor(seconds / 86400);
+        if (interval > 1) return `${interval} kun oldin`;
+
+        interval = Math.floor(seconds / 3600);
+        if (interval > 1) return `${interval} soat oldin`;
+
+        interval = Math.floor(seconds / 60);
+        if (interval > 1) return `${interval} daqiqa oldin`;
+
+        return `${Math.floor(seconds)} soniya oldin`;
+    }
+
+    // Check for order status updates (polling)
+    function checkOrderStatusUpdates() {
+        if (!userId) return;
+
+        axios.get(`http://localhost:8080/api/notifications/user/${userId}/unread`, {
+            headers: { token: token }
+        })
+            .then(response => {
+                const newNotifications = response.data;
+
+                // Process new order status notifications
+                newNotifications.forEach(notification => {
+                    if (notification.type === 'ORDER_STATUS' && !notifications.some(n => n.id === notification.id)) {
+                        // Add to notifications array
+                        notifications.unshift(notification);
+                        unreadNotificationsCount++;
+
+                        // Show toast notification
+                        showToast(notification.message, "primary", "Buyurtma holati yangilandi");
+
+                        // Update notification badge and list
+                        document.getElementById('notificationCount').textContent = unreadNotificationsCount;
+                        updateNotificationList();
+                    }
+                });
+            })
+            .catch(error => {
+                console.error("Error checking for notifications:", error);
+            });
+    }
+
+    // Update cart count
+    function updateCartCount() {
+        axios.get(`http://localhost:8080/api/basket/count/${userId}`, {
+            headers: { token: token }
+        })
+            .then(response => {
+                const count = response.data;
+                document.getElementById('mobileCartCount').textContent = count;
+            })
+            .catch(error => {
+                console.error("Error fetching cart count:", error);
+            });
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        getTokenFromUrl();
+        fetchProducts();
+        loadCategories();
+        loadNotifications();
+        updateCartCount();
+
+        // Check for new notifications every 30 seconds
+        setInterval(checkOrderStatusUpdates, 30000);
+    });
 </script>
 </body>
 </html>

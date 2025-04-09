@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mening chatlarim</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Axios kutubxonasini qo'shing -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        /* CSS kodlari o'zgarishsiz qoladi */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Full page chat container */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100vh;
+            background-color: white;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background-color: #2196F3;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .chat-header h3 {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .chat-header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-header-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .chat-body {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Sotuvchilar ro'yxati */
+        .chat-sidebar {
+            width: 300px;
+            border-right: 1px solid #e0e0e0;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+        }
+
+        .chat-sidebar-header {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            background-color: #f5f5f5;
+        }
+
+        .chat-sidebar-search {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .chat-list {
+            list-style: none;
+        }
+
+        .chat-list-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.2s;
+            position: relative;
+        }
+
+        .chat-list-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .chat-list-item.active {
+            background-color: #e3f2fd;
+        }
+
+        .chat-list-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #757575;
+            position: relative;
+        }
+
+        .chat-list-info {
+            flex: 1;
+        }
+
+        .chat-list-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .chat-list-last-message {
+            font-size: 13px;
+            color: #757575;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
+        }
+
+        .chat-list-time {
+            font-size: 12px;
+            color: #9e9e9e;
+            white-space: nowrap;
+        }
+
+
+        /* Xabarlar qismi */
+        .chat-messages-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #e5ddd5;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+CjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0iI2U1ZGRkNSI+PC9yZWN0Pgo8Y2lyY2xlIGN4PSIzIiBjeT0iNC41IiByPSIxLjUiIGZpbGw9InJnYmEoMCwwLDAsMC4wMikiPjwvY2lyY2xlPgo8Y2lyY2xlIGN4PSIxMyIgY3k9IjE2LjUiIHI9IjEuNSIgZmlsbD0icmdiYSgwLDAsMCwwLjAyKSI+PC9jaXJjbGU+Cjwvc3ZnPg==');
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 7.5px;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: #9e9e9e;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .message-sender {
+            align-self: flex-start;
+            background-color: white;
+            border-top-left-radius: 0;
+        }
+
+        .message-user {
+            align-self: flex-end;
+            background-color: #dcf8c6;
+            border-top-right-radius: 0;
+            margin-left: auto;
+        }
+
+        .chat-input-container {
+            padding: 10px 15px;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 20px;
+            background-color: white;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+
+        .chat-input:focus {
+            outline: none;
+        }
+
+        .chat-send-btn {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-send-btn:disabled {
+            background-color: #b0bec5;
+            cursor: not-allowed;
+        }
+
+        /* Responsive dizayn */
+        @media (max-width: 768px) {
+            .chat-sidebar {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                left: 0;
+                top: 0;
+                z-index: 5;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .chat-sidebar.active {
+                transform: translateX(0);
+            }
+
+            .back-to-messages {
+                display: block;
+                padding: 10px;
+                background-color: #2196F3;
+                color: white;
+                text-align: center;
+                cursor: pointer;
+            }
+
+            .show-sellers-list {
+                display: block;
+                margin-right: 10px;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .back-to-messages, .show-sellers-list {
+                display: none;
+            }
+        }
+
+        /* Sotuvchi ma'lumotari */
+        .contact-info {
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+        }
+
+        .contact-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #757575;
+        }
+
+
+        .contact-name {
+            font-weight: bold;
+        }
+
+        .contact-status {
+            font-size: 12px;
+            color: #4caf50;
+        }
+
+        /* Xabar yo'q holatda ko'rsatiladigan qism */
+        .no-messages {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #9e9e9e;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .no-messages i {
+            font-size: 50px;
+            margin-bottom: 15px;
+            color: #b0bec5;
+        }
+
+        /* Back button */
+        .back-button {
+            background: none;
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            margin-right: 15px;
+            font-size: 16px;
+        }
+
+        /* Loading indicator */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            color: #757575;
+            padding: 20px;
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #2196F3;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Error message */
+        .error-message {
+            color: #f44336;
+            text-align: center;
+            padding: 20px;
+            background-color: #ffebee;
+            border-radius: 5px;
+            margin: 20px;
+        }
+
+        /* O'qilmagan xabarlar uchun notification */
+        .unread-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #f44336;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #2196F3;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .notification i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification-close {
+            margin-left: 15px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<!-- Full page chat container -->
+<div id="chatContainer" class="chat-container">
+    <div class="chat-header">
+        <div style="display: flex; align-items: center;">
+            <button class="back-button" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h3>Mening chatlarim</h3>
+        </div>
+        <div class="chat-header-actions">
+            <button class="chat-header-btn show-sellers-list" onclick="toggleSidebar()">
+                <i class="fas fa-users"></i>
+            </button>
+        </div>
+    </div>
+
+
+    <div class="chat-body">
+        <!-- Kontaktlar ro'yxati (sotuvchilar yoki mijozlar) -->
+        <div class="chat-sidebar" id="chatSidebar">
+            <div class="back-to-messages" onclick="toggleSidebar()">
+                <i class="fas fa-arrow-left"></i> Xabarlarga qaytish
+            </div>
+            <div class="chat-sidebar-header">
+                <input type="text" class="chat-sidebar-search" placeholder="Qidirish..." onkeyup="searchContacts(this.value)">
+            </div>
+            <ul id="chatList" class="chat-list">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <span>Chatlar yuklanmoqda...</span>
+                </div>
+            </ul>
+        </div>
+
+        <!-- Xabarlar qismi -->
+        <div class="chat-messages-container">
+            <div id="contactInfo" class="contact-info" style="display: none;">
+                <div class="contact-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div>
+                    <div id="contactName" class="contact-name">Kontakt nomi</div>
+                    <div class="contact-status">Online</div>
+                </div>
+            </div>
+
+            <div id="chatMessages" class="chat-messages">
+                <div class="no-messages">
+                    <i class="fas fa-comments"></i>
+                    <h3>Suhbatlashish uchun</h3>
+                    <p>Chap tomondagi ro'yxatdan kontaktni tanlang</p>
+                </div>
+            </div>
+
+            <div class="chat-input-container">
+                <input type="text" id="messageInput" class="chat-input" placeholder="Xabar yozing..." disabled>
+                <button id="sendButton" class="chat-send-btn" onclick="sendMessage()" disabled>
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Notification container -->
+<div id="notificationContainer"></div>
+
+<script>
+    // Global o'zgaruvchilar
+    let currentContactId = null; // Tanlangan kontakt ID'si (sotuvchi yoki mijoz)
+    let currentUserId = null; // Foydalanuvchi ID'si
+    let contacts = []; // Kontaktlar ro'yxati (sotuvchilar yoki mijozlar)
+    let chats = {}; // Chatlar ma'lumotlari
+    let pollingInterval = null; // Real-time xabarlar uchun interval
+    let unreadMessages = {}; // O'qilmagan xabarlar soni
+
+    // API URL
+    const API_BASE_URL = 'http://localhost:8080';
+
+    // Sahifa yuklanganda chat oynasini avtomatik ochish
+    window.addEventListener('DOMContentLoaded', function() {
+        // Foydalanuvchi ID'sini localStorage'dan olish
+        const storedUserId = localStorage.getItem("userId");
+        if (storedUserId) {
+            currentUserId = parseInt(storedUserId);
+            // Chat sahifasi ochilishi bilan kontaktlar ro'yxatini yuklash
+            loadContactsList();
+
+            // O'qilmagan xabarlarni localStorage'dan olish
+            const storedUnreadMessages = localStorage.getItem("unreadMessages");
+            if (storedUnreadMessages) {
+                unreadMessages = JSON.parse(storedUnreadMessages);
+            }
+
+            // Har 5 soniyada yangi xabarlarni tekshirish
+            setInterval(checkAllNewMessages, 5000);
+        } else {
+            // Agar foydalanuvchi ID'si yo'q bo'lsa, login sahifasiga yo'naltirish
+            // Bu qismni o'z loyihangizga moslashtiring
+            showError("Foydalanuvchi tizimga kirmagan. Iltimos, avval tizimga kiring.", document.getElementById('chatMessages'));
+        }
+    });
+
+    // Orqaga qaytish
+    function goBack() {
+        window.history.back();
+    }
+
+    // Mobile view uchun sidebar toggle
+    function toggleSidebar() {
+        document.getElementById('chatSidebar').classList.toggle('active');
+    }
+
+
+    // Xatolikni ko'rsatish
+    function showError(message, element = document.getElementById('chatList')) {
+        element.innerHTML = `
+            <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i>
+                <p>${message}</p>
+            </div>
+        `;
+    }
+
+    // Kontaktlar ro'yxatini yuklash (sotuvchilar yoki mijozlar)
+    function loadContactsList() {
+        // Yuklanayotganini ko'rsatish
+        document.getElementById('chatList').innerHTML = `
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <span>Chatlar yuklanmoqda...</span>
+            </div>
+        `;
+
+        // Foydalanuvchi rolini tekshirish
+        const userRole = localStorage.getItem('userRole'); // 'seller' yoki 'customer'
+        const userId = localStorage.getItem('userId');
+
+        console.log("Foydalanuvchi roli:", userRole);
+        console.log("Foydalanuvchi ID:", userId);
+
+        // Foydalanuvchi roliga qarab API endpointni tanlash
+        const endpoint = userRole === 'ROLE_ADMIN' || userRole === 'seller'
+            ? `${API_BASE_URL}/api/chats/sellers?userId=${userId}`
+            : `${API_BASE_URL}/api/chats/customers?userId=${userId}`;
+
+        console.log("API endpoint:", endpoint);
+
+        // API dan ma'lumotlarni olish
+        axios.get(endpoint, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        })
+            .then(response => {
+                console.log("API javob:", response.data);
+                contacts = response.data;
+                renderContactsList();
+            })
+            .catch(error => {
+                console.error('Kontaktlar ro\'yxatini yuklashda xatolik:', error);
+                showError('Kontaktlar ro\'yxatini yuklashda xatolik yuz berdi. Iltimos, qayta urinib ko\'ring.');
+            });
+    }
+
+    // Kontaktlar ro'yxatini ko'rsatish
+    function renderContactsList() {
+        const chatList = document.getElementById('chatList');
+        chatList.innerHTML = '';
+
+        if (!contacts || contacts.length === 0) {
+            chatList.innerHTML = `
+                <div style="padding: 20px; text-align: center; color: #757575;">
+                    <i class="fas fa-info-circle"></i>
+                    <p>Hozircha chatlar mavjud emas.</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Foydalanuvchi rolini tekshirish
+        const userRole = localStorage.getItem('userRole'); // 'seller' yoki 'customer'
+
+        contacts.forEach(contact => {
+            const listItem = document.createElement('li');
+            listItem.className = 'chat-list-item';
+            listItem.setAttribute('data-contact-id', contact.id);
+
+            // Sotuvchi yoki mijoz ekanligiga qarab onclick funksiyasini o'zgartirish
+            if (userRole === 'ROLE_ADMIN' || userRole === 'seller') {
+                listItem.onclick = () => selectContact(contact.id, 'customer');
+            } else {
+                listItem.onclick = () => selectContact(contact.id, 'seller');
+            }
+
+            // O'qilmagan xabarlar soni
+            const unreadCount = unreadMessages[contact.id] || 0;
+
+            listItem.innerHTML = `
+                <div class="chat-list-avatar">
+                    ${contact.avatar ? `<img src="${contact.avatar}" alt="${contact.name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">` : `<i class="fas fa-${userRole === 'ROLE_ADMIN' || userRole === 'seller' ? 'user' : 'store'}"></i>`}
+                    ${unreadCount > 0 ? `<div class="unread-badge">${unreadCount}</div>` : ''}
+                </div>
+                <div class="chat-list-info">
+                    <div class="chat-list-name">${contact.name}</div>
+                    <div class="chat-list-last-message">${contact.lastMessage || 'Hali xabar yo\'q'}</div>
+                </div>
+                <div class="chat-list-time">${contact.time || ''}</div>
+            `;
+
+
+            chatList.appendChild(listItem);
+        });
+    }
+
+    // Kontaktlarni qidirish
+    function searchContacts(query) {
+        const filteredContacts = contacts.filter(contact =>
+            contact.name.toLowerCase().includes(query.toLowerCase())
+        );
+
+        const chatList = document.getElementById('chatList');
+        chatList.innerHTML = '';
+
+        if (filteredContacts.length === 0) {
+            chatList.innerHTML = `
+                <div style="padding: 20px; text-align: center; color: #757575;">
+                    <i class="fas fa-search"></i>
+                    <p>"${query}" so'rovi bo'yicha kontaktlar topilmadi.</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Foydalanuvchi rolini tekshirish
+        const userRole = localStorage.getItem('userRole'); // 'seller' yoki 'customer'
+
+        filteredContacts.forEach(contact => {
+            const listItem = document.createElement('li');
+            listItem.className = 'chat-list-item';
+            listItem.setAttribute('data-contact-id', contact.id);
+
+            // Sotuvchi yoki mijoz ekanligiga qarab onclick funksiyasini o'zgartirish
+            if (userRole === 'ROLE_ADMIN' || userRole === 'seller') {
+                listItem.onclick = () => selectContact(contact.id, 'customer');
+            } else {
+                listItem.onclick = () => selectContact(contact.id, 'seller');
+            }
+
+            // O'qilmagan xabarlar soni
+            const unreadCount = unreadMessages[contact.id] || 0;
+
+            listItem.innerHTML = `
+                <div class="chat-list-avatar">
+                    ${contact.avatar ? `<img src="${contact.avatar}" alt="${contact.name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">` : `<i class="fas fa-${userRole === 'ROLE_ADMIN' || userRole === 'seller' ? 'user' : 'store'}"></i>`}
+                    ${unreadCount > 0 ? `<div class="unread-badge">${unreadCount}</div>` : ''}
+                </div>
+                <div class="chat-list-info">
+                    <div class="chat-list-name">${contact.name}</div>
+                    <div class="chat-list-last-message">${contact.lastMessage || 'Hali xabar yo\'q'}</div>
+                </div>
+                <div class="chat-list-time">${contact.time || ''}</div>
+            `;
+
+            chatList.appendChild(listItem);
+        });
+    }
+
+    // Kontaktni tanlash (sotuvchi yoki mijoz)
+    function selectContact(contactId, contactType) {
+        currentContactId = contactId;
+
+        console.log("Tanlangan kontakt ID:", contactId);
+        console.log("Kontakt turi:", contactType);
+
+        // Aktiv kontaktni belgilash
+        const chatItems = document.querySelectorAll('.chat-list-item');
+        chatItems.forEach(item => {
+            if (parseInt(item.getAttribute('data-contact-id')) === contactId) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+
+        // Kontakt ma'lumotlarini ko'rsatish
+        const contactInfo = document.getElementById('contactInfo');
+        contactInfo.style.display = 'flex';
+
+        // Tanlangan kontakt nomini ko'rsatish
+        const contact = contacts.find(c => c.id === contactId);
+        document.getElementById('contactName').textContent = contact.name;
+
+        // Chat tarixini yuklash
+        loadChatHistory(contactId, contactType);
+
+        // Input maydonini faollashtirish
+        document.getElementById('messageInput').disabled = false;
+        document.getElementById('sendButton').disabled = false;
+
+        // Mobile view uchun sidebar yopish
+        if (window.innerWidth <= 768) {
+            document.getElementById('chatSidebar').classList.remove('active');
+        }
+
+        // Real-time xabarlarni olishni boshlash
+        startRealTimeMessages();
+
+        // O'qilmagan xabarlarni o'qilgan deb belgilash
+        markAsRead(contactId);
+    }
+
+
+    // O'qilmagan xabarlarni o'qilgan deb belgilash
+    function markAsRead(contactId) {
+        if (unreadMessages[contactId]) {
+            unreadMessages[contactId] = 0;
+            localStorage.setItem("unreadMessages", JSON.stringify(unreadMessages));
+            renderContactsList();
+        }
+    }
+
+    // Chat tarixini yuklash
+    function loadChatHistory(contactId, contactType) {
+        // Xabarlar konteynerini tozalash va yuklanayotganini ko'rsatish
+        const chatMessages = document.getElementById('chatMessages');
+        chatMessages.innerHTML = `
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <span>Xabarlar yuklanmoqda...</span>
+            </div>
+        `;
+
+        const userId = localStorage.getItem("userId");
+
+        // Foydalanuvchi roliga qarab API parametrlarini o'zgartirish
+        let sellerId, customerId;
+        if (contactType === 'seller') {
+            sellerId = contactId;
+            customerId = userId;
+        } else {
+            sellerId = userId;
+            customerId = contactId;
+        }
+
+        console.log("Chat tarixini yuklash: sellerId =", sellerId, "customerId =", customerId);
+
+        axios.get(`${API_BASE_URL}/api/history?sellerId=${sellerId}&userId=${customerId}`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        })
+            .then(response => {
+                console.log('Chat tarix yuklandi:', response.data);
+
+                // Agar ma'lumotlar bo'sh bo'lsa, bo'sh massiv yaratish
+                if (!response.data) {
+                    chats[contactId] = [];
+                } else {
+                    chats[contactId] = response.data;
+                }
+
+                renderChatMessages(chats[contactId]);
+            })
+            .catch(error => {
+                console.error('Chat tarixini yuklashda xatolik:', error);
+                showError('Chat tarixini yuklashda xatolik yuz berdi. Iltimos, qayta urinib ko\'ring.', chatMessages);
+            });
+    }
+
+    // Xabarlarni ko'rsatish
+    function renderChatMessages(messages) {
+        const chatMessages = document.getElementById('chatMessages');
+        chatMessages.innerHTML = '';
+
+        // Agar xabarlar bo'sh bo'lsa
+        if (!messages || messages.length === 0) {
+            chatMessages.innerHTML = `
+                <div class="no-messages">
+                    <i class="fas fa-comments"></i>
+                    <h3>Hali xabarlar yo'q</h3>
+                    <p>Suhbatni boshlash uchun xabar yuboring</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Foydalanuvchi ID'sini olish
+        const userId = parseInt(localStorage.getItem('userId'));
+
+        console.log("Xabarlarni ko'rsatish. Foydalanuvchi ID:", userId);
+        console.log("Xabarlar:", messages);
+
+        messages.forEach(msg => {
+            const messageDiv = document.createElement('div');
+
+            // Xabar matnini olish
+            const messageText = msg.content || msg.text || '';
+
+            // Vaqtni formatlash
+            let formattedTime = '';
+            if (msg.sentAt) {
+                const date = new Date(msg.sentAt);
+                formattedTime = formatDate(date);
+            } else if (msg.time) {
+                formattedTime = msg.time;
+            }
+
+            // Xabar yuboruvchisini aniqlash - MUHIM: Bu qismni to'g'riladim
+            let isUserMessage = false;
+
+            if (msg.senderId !== undefined) {
+                // API dan kelgan xabarlar uchun
+                isUserMessage = parseInt(msg.senderId) === userId;
+            } else if (msg.sender !== undefined) {
+                // Yangi yuborilgan xabarlar uchun
+                isUserMessage = parseInt(msg.sender) === userId;
+            } else if (msg.id && typeof msg.id === 'string' && msg.id.startsWith('temp-')) {
+                // Temp xabarlar uchun (yangi yuborilgan)
+                isUserMessage = true;
+            }
+
+
+            // Xabar klassini belgilash
+            messageDiv.className = `message ${isUserMessage ? 'message-user' : 'message-sender'}`;
+
+            messageDiv.innerHTML = `
+                ${messageText}
+                <div class="message-time">${formattedTime}</div>
+            `;
+
+            chatMessages.appendChild(messageDiv);
+        });
+
+        // Pastga skroll qilish
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Xabar yuborish
+    function sendMessage() {
+        const messageInput = document.getElementById('messageInput');
+        const text = messageInput.value.trim();
+
+        if (!text || !currentContactId) return;
+
+        // Input maydonini tozalash
+        messageInput.value = '';
+
+        // Foydalanuvchi ID'sini olish
+        const userId = localStorage.getItem('userId');
+        const userRole = localStorage.getItem('userRole');
+
+        // Yangi xabar yaratish
+        const tempMessage = {
+            id: 'temp-' + Date.now(),
+            sender: parseInt(userId),
+            senderId: parseInt(userId),
+            text: text,
+            content: text, // API javobiga mos kelishi uchun
+            time: formatCurrentTime(),
+            status: 'sending'
+        };
+
+        // Xabarni chatga qo'shish (UI uchun)
+        if (!chats[currentContactId]) {
+            chats[currentContactId] = [];
+        }
+
+        chats[currentContactId].push(tempMessage);
+        renderChatMessages(chats[currentContactId]);
+
+        // API ga xabarni yuborish
+        const requestData = userRole === 'ROLE_ADMIN' || userRole === 'seller'
+            ? {
+                sellerId: userId,
+                customerId: currentContactId,
+                message: text
+            }
+            : {
+                sellerId: currentContactId,
+                customerId: userId,
+                message: text
+            };
+
+        console.log("Xabar yuborish:", requestData);
+
+        axios.post(`${API_BASE_URL}/api/chats/send`, requestData, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        })
+            .then(response => {
+                console.log("Xabar yuborildi:", response.data);
+                // Xabar yuborildi deb belgilash
+                const messageIndex = chats[currentContactId].findIndex(m => m.id === tempMessage.id);
+                if (messageIndex !== -1) {
+                    // Serverdan qaytgan xabar bilan almashtirish
+                    const serverMessage = response.data;
+                    // Serverdan kelgan xabarga foydalanuvchi ID'sini qo'shish
+                    serverMessage.senderId = parseInt(userId);
+                    chats[currentContactId][messageIndex] = serverMessage;
+                    renderChatMessages(chats[currentContactId]);
+                }
+
+                // Kontaktning oxirgi xabarini yangilash
+                updateContactLastMessage(currentContactId, text);
+            })
+            .catch(error => {
+                console.error('Xabar yuborishda xatolik:', error);
+
+                // Xatolikni ko'rsatish
+                const messageIndex = chats[currentContactId].findIndex(m => m.id === tempMessage.id);
+                if (messageIndex !== -1) {
+                    chats[currentContactId][messageIndex].status = 'error';
+                    chats[currentContactId][messageIndex].text += ' (Yuborilmadi)';
+                    renderChatMessages(chats[currentContactId]);
+                }
+            });
+    }
+
+    // Kontaktning oxirgi xabarini yangilash
+    function updateContactLastMessage(contactId, text) {
+        const contactIndex = contacts.findIndex(c => c.id === contactId);
+        if (contactIndex !== -1) {
+            contacts[contactIndex].lastMessage = text;
+            contacts[contactIndex].time = "Hozirgina";
+            renderContactsList();
+
+
+            // Aktiv kontaktni qayta belgilash
+            const chatItem = document.querySelector(`.chat-list-item[data-contact-id="${contactId}"]`);
+            if (chatItem) {
+                chatItem.classList.add('active');
+            }
+        }
+    }
+
+    // Joriy vaqtni formatlash
+    function formatCurrentTime() {
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
+    }
+
+    // Sana va vaqtni formatlash
+    function formatDate(date) {
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+
+        const messageDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+        // Soat va daqiqani formatlash
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        const timeStr = `${hours}:${minutes}`;
+
+        if (messageDate.getTime() === today.getTime()) {
+            return timeStr; // Bugun
+        } else if (messageDate.getTime() === yesterday.getTime()) {
+            return `Kecha, ${timeStr}`; // Kecha
+        } else {
+            // Boshqa kunlar uchun
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            return `${day}.${month}.${date.getFullYear()}, ${timeStr}`;
+        }
+    }
+
+    // Real-time xabarlarni olishni boshlash
+    function startRealTimeMessages() {
+        // Avvalgi intervalni to'xtatish
+        if (pollingInterval) {
+            clearInterval(pollingInterval);
+        }
+
+        // Yangi interval yaratish - har 3 soniyada yangilanadi
+        pollingInterval = setInterval(checkNewMessages, 3000);
+    }
+
+    // Yangi xabarlarni tekshirish (tanlangan kontakt uchun)
+    function checkNewMessages() {
+        if (!currentContactId) return;
+
+        // Foydalanuvchi rolini tekshirish
+        const userRole = localStorage.getItem('userRole');
+        const userId = localStorage.getItem('userId');
+
+        // Oxirgi xabar ID'sini olish
+        const lastMessageId = chats[currentContactId] && chats[currentContactId].length > 0
+            ? chats[currentContactId][chats[currentContactId].length - 1].id
+            : 0;
+
+        // Roliga qarab API parametrlarini o'zgartirish
+        let sellerId, customerId;
+        if (userRole === 'ROLE_ADMIN' || userRole === 'seller') {
+            sellerId = userId;
+            customerId = currentContactId;
+        } else {
+            sellerId = currentContactId;
+            customerId = userId;
+        }
+
+        // Yangi xabarlarni olish
+        axios.get(`${API_BASE_URL}/api/chats/new-messages?currentSellerId=${sellerId}&lastMessageId=${lastMessageId}&userId=${customerId}`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        })
+            .then(response => {
+                if (response.data && response.data.length > 0) {
+                    console.log("Yangi xabarlar keldi:", response.data);
+
+                    // Yangi xabarlarni qo'shish
+                    chats[currentContactId] = [...chats[currentContactId], ...response.data];
+                    renderChatMessages(chats[currentContactId]);
+
+                    // Oxirgi xabarni yangilash
+                    if (response.data.length > 0) {
+                        const lastMessage = response.data[response.data.length - 1];
+                        updateContactLastMessage(currentContactId, lastMessage.text || lastMessage.content);
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Yangi xabarlarni olishda xatolik:', error);
+            });
+    }
+
+
+    // Barcha kontaktlar uchun yangi xabarlarni tekshirish
+    function checkAllNewMessages() {
+        // Foydalanuvchi rolini tekshirish
+        const userRole = localStorage.getItem('userRole');
+        const userId = localStorage.getItem('userId');
+
+        // Har bir kontakt uchun yangi xabarlarni tekshirish
+        contacts.forEach(contact => {
+            // Agar bu kontakt hozirda tanlangan bo'lsa, tekshirmaslik
+            if (contact.id === currentContactId) return;
+
+            // Roliga qarab API parametrlarini o'zgartirish
+            let sellerId, customerId;
+            if (userRole === 'ROLE_ADMIN' || userRole === 'seller') {
+                sellerId = userId;
+                customerId = contact.id;
+            } else {
+                sellerId = contact.id;
+                customerId = userId;
+            }
+
+            // Oxirgi xabar ID'sini olish
+            const lastMessageId = chats[contact.id] && chats[contact.id].length > 0
+                ? chats[contact.id][chats[contact.id].length - 1].id
+                : 0;
+
+            // Yangi xabarlarni olish
+            axios.get(`${API_BASE_URL}/api/chats/new-messages?currentSellerId=${sellerId}&lastMessageId=${lastMessageId}&userId=${customerId}`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            })
+                .then(response => {
+                    if (response.data && response.data.length > 0) {
+                        console.log(`Kontakt ${contact.id} uchun yangi xabarlar:`, response.data);
+
+                        // Yangi xabarlarni qo'shish
+                        if (!chats[contact.id]) {
+                            chats[contact.id] = [];
+                        }
+                        chats[contact.id] = [...chats[contact.id], ...response.data];
+
+                        // O'qilmagan xabarlar sonini yangilash
+                        const newUnreadCount = (unreadMessages[contact.id] || 0) + response.data.length;
+                        unreadMessages[contact.id] = newUnreadCount;
+                        localStorage.setItem("unreadMessages", JSON.stringify(unreadMessages));
+
+                        // Kontakt ro'yxatini yangilash
+                        renderContactsList();
+
+                        // Oxirgi xabarni yangilash
+                        if (response.data.length > 0) {
+                            const lastMessage = response.data[response.data.length - 1];
+                            const contactIndex = contacts.findIndex(c => c.id === contact.id);
+                            if (contactIndex !== -1) {
+                                contacts[contactIndex].lastMessage = lastMessage.text || lastMessage.content;
+                                contacts[contactIndex].time = "Hozirgina";
+                            }
+                        }
+
+                        // Notification ko'rsatish
+                        showNotification(contact.name, response.data[0].text || response.data[0].content);
+                    }
+                })
+                .catch(error => {
+                    console.error(`Kontakt ${contact.id} uchun yangi xabarlarni olishda xatolik:`, error);
+                });
+        });
+    }
+
+    // Notification ko'rsatish
+    function showNotification(contactName, message) {
+        // Notification uchun HTML yaratish
+        const notificationHTML = `
+            <div class="notification">
+                <i class="fas fa-envelope"></i>
+                <div>
+                    <strong>${contactName}</strong>
+                    <div>${message.length > 30 ? message.substring(0, 30) + '...' : message}</div>
+                </div>
+                <div class="notification-close" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+        `;
+
+        // Notification konteyneriga qo'shish
+        document.getElementById('notificationContainer').innerHTML += notificationHTML;
+
+
+        // 5 soniyadan keyin notification ni o'chirish
+        setTimeout(() => {
+            const notifications = document.querySelectorAll('.notification');
+            if (notifications.length > 0) {
+                notifications[0].remove();
+            }
+        }, 5000);
+
+        // Notification ovozi
+        playNotificationSound();
+    }
+
+    // Notification ovozi
+    function playNotificationSound() {
+        // Yangi Audio obyekti yaratish
+        const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-software-interface-alert-2573.mp3');
+        audio.volume = 0.5;
+        audio.play().catch(e => console.log('Notification ovozini ijro etishda xatolik:', e));
+    }
+
+    // Enter tugmasini bosish orqali xabar yuborish
+    document.getElementById('messageInput').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            sendMessage();
+        }
+    });
+</script>
+</body>
+</html>

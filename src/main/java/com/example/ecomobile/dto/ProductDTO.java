@@ -22,9 +22,10 @@ public class ProductDTO {
     private Integer sizeId;
     private List<Integer> likedByUsers;
     private Integer amount;
+    private Integer userId;
 
-    private String productBrandName;
+    private String productBrand;
     private String categoryName;
-    private String colorName;
-    private String sizeName;
+    private String productColor;
+    private String productSize;
 }

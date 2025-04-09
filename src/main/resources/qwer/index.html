@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fashion E-commerce App</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+<div class="app-container" id="app">
+    <!-- Onboarding Slider -->
+    <div class="page active" id="onboarding-page">
+        <div class="onboarding-slider">
+            <div class="onboarding-slide active" id="slide-1">
+                <div class="onboarding-image">
+                    <img src="https://images.pexels.com/photos/2010812/pexels-photo-2010812.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Fashion model">
+                    <div class="overlay"></div>
+                </div>
+                <div class="onboarding-content">
+                    <h2>20% Discount</h2>
+                    <h3>New Arrival Product</h3>
+                    <p>Publish up your selfies to make yourself more beautiful with this app.</p>
+                    <div class="onboarding-nav">
+                        <div class="dots">
+                            <div class="dot active"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+                        <button class="next-btn" onclick="nextSlide()">
+                            <i data-lucide="chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="onboarding-slide" id="slide-2">
+                <div class="onboarding-image">
+                    <img src="https://images.pexels.com/photos/3651597/pexels-photo-3651597.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Fashion model">
+                    <div class="overlay"></div>
+                </div>
+                <div class="onboarding-content">
+                    <h2>Take Advantage</h2>
+                    <h3>Of The Offer Shopping</h3>
+                    <p>Publish up your selfies to make yourself more beautiful with this app.</p>
+                    <div class="onboarding-nav">
+                        <div class="dots">
+                            <div class="dot"></div>
+                            <div class="dot active"></div>
+                            <div class="dot"></div>
+                        </div>
+                        <button class="next-btn" onclick="nextSlide()">
+                            <i data-lucide="chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="onboarding-slide" id="slide-3">
+                <div class="onboarding-image">
+                    <img src="https://images.pexels.com/photos/2221879/pexels-photo-2221879.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Fashion model">
+                    <div class="overlay"></div>
+                </div>
+                <div class="onboarding-content">
+                    <h2>All Types Offers</h2>
+                    <h3>Within Your Reach</h3>
+                    <p>Publish up your selfies to make yourself more beautiful with this app.</p>
+                    <div class="onboarding-nav">
+                        <div class="dots">
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot active"></div>
+                        </div>
+                        <button class="next-btn" onclick="navigateTo('login')">
+                            <i data-lucide="chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Page -->
+    <div class="page" id="login-page">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1 class="logo">Fashions</h1>
+                <p class="subtitle">Please enter your credentials to proceed</p>
+            </div>
+            <form class="auth-form" id="login-form">
+                <div class="input-group">
+                    <input type="email" placeholder="Email Address" required>
+                    <i data-lucide="chevron-right"></i>
+                </div>
+                <div class="input-group">
+                    <input type="password" placeholder="Password" required>
+                    <i data-lucide="chevron-right"></i>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="remember">
+                    <label for="remember">Remember me</label>
+                </div>
+                <button type="button" class="btn-primary" onclick="navigateTo('home')">Login</button>
+                <p class="auth-switch">Don't have an account? <a href="#" onclick="toggleAuthForm()">Sign Up</a></p>
+                <div class="divider">
+                    <span>Or Login with</span>
+                </div>
+                <button type="button" class="btn-social">
+                    Continue with Facebook
+                </button>
+                <button type="button" class="btn-social">
+                    Continue with Apple
+                </button>
+            </form>
+            <form class="auth-form hidden" id="signup-form">
+                <div class="input-group">
+                    <input type="text" placeholder="User Name" required>
+                    <i data-lucide="chevron-right"></i>
+                </div>
+                <div class="input-group">
+                    <input type="email" placeholder="Email Address" required>
+                    <i data-lucide="chevron-right"></i>
+                </div>
+                <div class="input-group">
+                    <input type="password" placeholder="Password" required>
+                    <i data-lucide="chevron-right"></i>
+                </div>
+                <div class="input-group">
+                    <input type="password" placeholder="Confirm Password" required>
+                    <i data-lucide="chevron-right"></i>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="terms">
+                    <label for="terms">I agree to the Terms and Conditions</label>
+                </div>
+                <button type="button" class="btn-primary" onclick="navigateTo('home')">Sign Up</button>
+                <p class="auth-switch">Already have an account? <a href="#" onclick="toggleAuthForm()">Login</a></p>
+                <div class="divider">
+                    <span>Or Sign Up with</span>
+                </div>
+                <button type="button" class="btn-social">
+                    Continue with Facebook
+                </button>
+                <button type="button" class="btn-social">
+                    Continue with Apple
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Home Page -->
+    <div class="page" id="home-page">
+        <header class="app-header">
+            <button class="icon-btn">
+                <i data-lucide="menu"></i>
+            </button>
+            <div class="search-bar">
+                <i data-lucide="search"></i>
+                <input type="text" placeholder="Search...">
+            </div>
+            <button class="icon-btn" onclick="navigateTo('cart')">
+                <i data-lucide="shopping-bag"></i>
+            </button>
+        </header>
+        <div class="page-content">
+            <div class="welcome-section">
+                <h2>Welcome,</h2>
+                <p>Our Fashions App</p>
+            </div>
+            <div class="categories-scroll">
+                <button class="category-pill active">All</button>
+                <button class="category-pill">Clothes</button>
+                <button class="category-pill">Shoes</button>
+                <button class="category-pill">Bags</button>
+                <button class="category-pill">Electronics</button>
+                <button class="category-pill">Jewelry</button>
+            </div>
+            <div class="products-section">
+                <div class="section-header">
+                    <h3>New Arrivals</h3>
+                    <button class="view-all">View All</button>
+                </div>
+                <div class="products-grid">
+                    <div class="product-card" onclick="navigateTo('product', 1)">
+                        <div class="product-image">
+                            <img src="https://images.pexels.com/photos/637076/pexels-photo-637076.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Blue Sneakers">
+                            <button class="favorite-btn" onclick="toggleFavorite(event, 1)">
+                                <i data-lucide="heart"></i>
+                            </button>
+                            <div class="discount-badge">50% OFF</div>
+                        </div>
+                        <div class="product-info">
+                            <h4>Blue Sneakers</h4>
+                            <p class="price">$120.00</p>
+                        </div>
+                    </div>
+                    <div class="product-card" onclick="navigateTo('product', 2)">
+                        <div class="product-image">
+                            <img src="https://images.pexels.com/photos/3808229/pexels-photo-3808229.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Handbag">
+                            <button class="favorite-btn" onclick="toggleFavorite(event, 2)">
+                                <i data-lucide="heart"></i>
+                            </button>
+                            <div class="discount-badge">70% OFF</div>
+                        </div>
+                        <div class="product-info">
+                            <h4>Handbag</h4>
+                            <p class="price">$85.00</p>
+                        </div>
+                    </div>
+                    <div class="product-card" onclick="navigateTo('product', 3)">
+                        <div class="product-image">
+                            <img src="https://images.pexels.com/photos/3587478/pexels-photo-3587478.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Headphones">
+                            <button class="favorite-btn" onclick="toggleFavorite(event, 3)">
+                                <i data-lucide="heart"></i>
+                            </button>
+                        </div>
+                        <div class="product-info">
+                            <h4>Headphones</h4>
+                            <p class="price">$199.00</p>
+                        </div>
+                    </div>
+                    <div class="product-card" onclick="navigateTo('product', 4)">
+                        <div class="product-image">
+                            <img src="https://images.pexels.com/photos/26892209/pexels-photo-26892209/free-photo-of-portrait-of-a-man-wearing-a-t-shirt.jpeg?auto=compress&cs=tinysrgb&w=600" alt="White T-Shirt">
+                            <button class="favorite-btn" onclick="toggleFavorite(event, 4)">
+                                <i data-lucide="heart"></i>
+                            </button>
+                        </div>
+                        <div class="product-info">
+                            <h4>White T-Shirt</h4>
+                            <p class="price">$45.00</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="products-section">
+                <div class="section-header">
+                    <h3>Popular</h3>
+                    <button class="view-all">View All</button>
+                </div>
+                <div class="products-grid">
+                    <div class="product-card" onclick="navigateTo('product', 1)">
+                        <div class="product-image">
+                            <img src="https://images.pexels.com/photos/637076/pexels-photo-637076.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Blue Sneakers">
+                            <button class="favorite-btn" onclick="toggleFavorite(event, 1)">
+                                <i data-lucide="heart"></i>
+                            </button>
+                        </div>
+                        <div class="product-info">
+                            <h4>Blue Sneakers</h4>
+                            <p class="price">$120.00</p>
+                        </div>
+                    </div>
+                    <div class="product-card" onclick="navigateTo('product', 2)">
+                        <div class="product-image">
+                            <img src="https://images.pexels.com/photos/3808229/pexels-photo-3808229.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Handbag">
+                            <button class="favorite-btn" onclick="toggleFavorite(event, 2)">
+                                <i data-lucide="heart"></i>
+                            </button>
+                        </div>
+                        <div class="product-info">
+                            <h4>Handbag</h4>
+                            <p class="price">$85.00</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <nav class="bottom-nav">
+            <button class="nav-item active">
+                <i data-lucide="home"></i>
+                <span>Home</span>
+            </button>
+            <button class="nav-item">
+                <i data-lucide="search"></i>
+                <span>Search</span>
+            </button>
+            <button class="nav-item" onclick="navigateTo('cart')">
+                <i data-lucide="shopping-bag"></i>
+                <span>Cart</span>
+            </button>
+            <button class="nav-item" onclick="navigateTo('favorites')">
+                <i data-lucide="heart"></i>
+                <span>Favorites</span>
+            </button>
+            <button class="nav-item" onclick="navigateTo('profile')">
+                <i data-lucide="user"></i>
+                <span>Profile</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Product Detail Page -->
+    <div class="page" id="product-page">
+        <header class="app-header">
+            <button class="icon-btn" onclick="navigateTo('home')">
+                <i data-lucide="chevron-left"></i>
+            </button>
+            <h1>Product Details</h1>
+            <button class="icon-btn" id="product-favorite-btn" onclick="toggleProductFavorite()">
+                <i data-lucide="heart"></i>
+            </button>
+        </header>
+        <div class="page-content">
+            <div class="product-image-large">
+                <img src="https://images.pexels.com/photos/637076/pexels-photo-637076.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Blue Sneakers" id="product-main-image">
+            </div>
+            <div class="product-details">
+                <div class="product-header">
+                    <div>
+                        <h2 id="product-title">Blue Sneakers</h2>
+                        <div class="rating">
+                            <i data-lucide="star" class="star filled"></i>
+                            <i data-lucide="star" class="star filled"></i>
+                            <i data-lucide="star" class="star filled"></i>
+                            <i data-lucide="star" class="star filled"></i>
+                            <i data-lucide="star" class="star half"></i>
+                            <span class="reviews">(120 reviews)</span>
+                        </div>
+                    </div>
+                    <p class="product-price" id="product-price">$120.00</p>
+                </div>
+                <div class="product-description">
+                    <h3>Description</h3>
+                    <p id="product-description">Comfortable casual sneakers with breathable material, perfect for everyday wear.</p>
+                </div>
+                <div class="product-options">
+                    <h3>Color</h3>
+                    <div class="color-options">
+                        <button class="color-option blue active" data-color="blue"></button>
+                        <button class="color-option black" data-color="black"></button>
+                        <button class="color-option white" data-color="white"></button>
+                    </div>
+                </div>
+                <div class="product-options">
+                    <h3>Size</h3>
+                    <div class="size-options">
+                        <button class="size-option" data-size="S">S</button>
+                        <button class="size-option active" data-size="M">M</button>
+                        <button class="size-option" data-size="L">L</button>
+                        <button class="size-option" data-size="XL">XL</button>
+                    </div>
+                </div>
+                <div class="product-options">
+                    <h3>Quantity</h3>
+                    <div class="quantity-selector">
+                        <button class="quantity-btn" onclick="decrementQuantity()">
+                            <i data-lucide="minus"></i>
+                        </button>
+                        <span id="quantity">1</span>
+                        <button class="quantity-btn" onclick="incrementQuantity()">
+                            <i data-lucide="plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="product-actions">
+                    <button class="btn-outline" onclick="addToCart()">Add to Cart</button>
+                    <button class="btn-primary" onclick="navigateTo('checkout')">Buy Now</button>
+                </div>
+
+                <!-- Reviews Section -->
+                <div class="reviews-section">
+                    <div class="section-header">
+                        <h3>Reviews</h3>
+                        <button class="view-all" onclick="showAllReviews()">View All</button>
+                    </div>
+                    <div class="review-item">
+                        <div class="review-header">
+                            <div class="reviewer-info">
+                                <img src="https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg" alt="User" class="reviewer-image">
+                                <div>
+                                    <h4>John Doe</h4>
+                                    <div class="rating small">
+                                        <i data-lucide="star" class="star filled"></i>
+                                        <i data-lucide="star" class="star filled"></i>
+                                        <i data-lucide="star" class="star filled"></i>
+                                        <i data-lucide="star" class="star filled"></i>
+                                        <i data-lucide="star" class="star filled"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="review-date">2 days ago</span>
+                        </div>
+                        <p class="review-text">These sneakers are amazing! Very comfortable and stylish. I've been wearing them every day since I got them.</p>
+                    </div>
+                    <div class="review-item">
+                        <div class="review-header">
+                            <div class="reviewer-info">
+                                <img src="https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg" alt="User" class="reviewer-image">
+                                <div>
+                                    <h4>Jane Smith</h4>
+                                    <div class="rating small">
+                                        <i data-lucide="star" class="star filled"></i>
+                                        <i data-lucide="star" class="star filled"></i>
+                                        <i data-lucide="star" class="star filled"></i>
+                                        <i data-lucide="star" class="star filled"></i>
+                                        <i data-lucide="star" class="star"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="review-date">1 week ago</span>
+                        </div>
+                        <p class="review-text">Great shoes but they run a bit small. I recommend ordering a size up.</p>
+                    </div>
+                    <button class="btn-outline" onclick="showReviewForm()">Write a Review</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Review Form Modal -->
+    <div class="modal" id="review-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Write a Review</h3>
+                <button class="close-btn" onclick="hideReviewForm()">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="rating-selector">
+                    <p>Your Rating</p>
+                    <div class="rating-stars">
+                        <i data-lucide="star" class="star" onclick="setRating(1)"></i>
+                        <i data-lucide="star" class="star" onclick="setRating(2)"></i>
+                        <i data-lucide="star" class="star" onclick="setRating(3)"></i>
+                        <i data-lucide="star" class="star" onclick="setRating(4)"></i>
+                        <i data-lucide="star" class="star" onclick="setRating(5)"></i>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <textarea placeholder="Write your review here..." rows="5"></textarea>
+                </div>
+                <button class="btn-primary" onclick="submitReview()">Submit Review</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Page -->
+    <div class="page" id="cart-page">
+        <header class="app-header">
+            <button class="icon-btn" onclick="navigateTo('home')">
+                <i data-lucide="chevron-left"></i>
+            </button>
+            <h1>My Cart</h1>
+            <div class="spacer"></div>
+        </header>
+        <div class="page-content">
+            <div class="cart-items">
+                <div class="cart-item">
+                    <div class="cart-item-image">
+                        <img src="https://images.pexels.com/photos/637076/pexels-photo-637076.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Blue Sneakers">
+                    </div>
+                    <div class="cart-item-details">
+                        <div class="cart-item-header">
+                            <h3>Blue Sneakers</h3>
+                            <button class="remove-btn" onclick="removeCartItem(1)">
+                                <i data-lucide="trash-2"></i>
+                            </button>
+                        </div>
+                        <p class="cart-item-variant">Color: Blue, Size: 42</p>
+                        <div class="cart-item-footer">
+                            <p class="cart-item-price">$120.00</p>
+                            <div class="quantity-selector small">
+                                <button class="quantity-btn" onclick="updateCartQuantity(1, -1)">
+                                    <i data-lucide="minus"></i>
+                                </button>
+                                <span>1</span>
+                                <button class="quantity-btn" onclick="updateCartQuantity(1, 1)">
+                                    <i data-lucide="plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="cart-item">
+                    <div class="cart-item-image">
+                        <img src="https://images.pexels.com/photos/3808229/pexels-photo-3808229.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Handbag">
+                    </div>
+                    <div class="cart-item-details">
+                        <div class="cart-item-header">
+                            <h3>Handbag</h3>
+                            <button class="remove-btn" onclick="removeCartItem(2)">
+                                <i data-lucide="trash-2"></i>
+                            </button>
+                        </div>
+                        <p class="cart-item-variant">Color: Black, Size: M</p>
+                        <div class="cart-item-footer">
+                            <p class="cart-item-price">$85.00</p>
+                            <div class="quantity-selector small">
+                                <button class="quantity-btn" onclick="updateCartQuantity(2, -1)">
+                                    <i data-lucide="minus"></i>
+                                </button>
+                                <span>1</span>
+                                <button class="quantity-btn" onclick="updateCartQuantity(2, 1)">
+                                    <i data-lucide="plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="cart-item">
+                    <div class="cart-item-image">
+                        <img src="https://images.pexels.com/photos/3587478/pexels-photo-3587478.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Headphones">
+                    </div>
+                    <div class="cart-item-details">
+                        <div class="cart-item-header">
+                            <h3>Headphones</h3>
+                            <button class="remove-btn" onclick="removeCartItem(3)">
+                                <i data-lucide="trash-2"></i>
+                            </button>
+                        </div>
+                        <p class="cart-item-variant">Color: Black, Size: One Size</p>
+                        <div class="cart-item-footer">
+                            <p class="cart-item-price">$199.00</p>
+                            <div class="quantity-selector small">
+                                <button class="quantity-btn" onclick="updateCartQuantity(3, -1)">
+                                    <i data-lucide="minus"></i>
+                                </button>
+                                <span>1</span>
+                                <button class="quantity-btn" onclick="updateCartQuantity(3, 1)">
+                                    <i data-lucide="plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="order-summary">
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span>$404.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping</span>
+                    <span>$5.00</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total</span>
+                    <span>$409.00</span>
+                </div>
+            </div>
+            <button class="btn-primary" onclick="navigateTo('checkout')">Proceed to Checkout</button>
+        </div>
+        <nav class="bottom-nav">
+            <button class="nav-item" onclick="navigateTo('home')">
+                <i data-lucide="home"></i>
+                <span>Home</span>
+            </button>
+            <button class="nav-item">
+                <i data-lucide="search"></i>
+                <span>Search</span>
+            </button>
+            <button class="nav-item active">
+                <i data-lucide="shopping-bag"></i>
+                <span>Cart</span>
+            </button>
+            <button class="nav-item" onclick="navigateTo('favorites')">
+                <i data-lucide="heart"></i>
+                <span>Favorites</span>
+            </button>
+            <button class="nav-item" onclick="navigateTo('profile')">
+                <i data-lucide="user"></i>
+                <span>Profile</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Favorites Page -->
+    <div class="page" id="favorites-page">
+        <header class="app-header">
+            <button class="icon-btn" onclick="navigateTo('home')">
+                <i data-lucide="chevron-left"></i>
+            </button>
+            <h1>My Favorites</h1>
+            <div class="spacer"></div>
+        </header>
+        <div class="page-content">
+            <div class="favorites-list" id="favorites-container">
+                <!-- Favorites will be populated by JavaScript -->
+            </div>
+        </div>
+        <nav class="bottom-nav">
+            <button class="nav-item" onclick="navigateTo('home')">
+                <i data-lucide="home"></i>
+                <span>Home</span>
+            </button>
+            <button class="nav-item">
+                <i data-lucide="search"></i>
+                <span>Search</span>
+            </button>
+            <button class="nav-item" onclick="navigateTo('cart')">
+                <i data-lucide="shopping-bag"></i>
+                <span>Cart</span>
+            </button>
+            <button class="nav-item active">
+                <i data-lucide="heart"></i>
+                <span>Favorites</span>
+            </button>
+            <button class="nav-item" onclick="navigateTo('profile')">
+                <i data-lucide="user"></i>
+                <span>Profile</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Checkout Page -->
+    <div class="page" id="checkout-page">
+        <header class="app-header">
+            <button class="icon-btn" onclick="navigateTo('cart')">
+                <i data-lucide="chevron-left"></i>
+            </button>
+            <h1 id="checkout-title">Delivery Address</h1>
+            <div class="spacer"></div>
+        </header>
+        <div class="page-content">
+            <!-- Step 1: Delivery Address -->
+            <div class="checkout-step active" id="step-address">
+                <div class="form-section">
+                    <h3>Contact Information</h3>
+                    <div class="input-group">
+                        <input type="text" placeholder="Full Name" value="John Smith">
+                    </div>
+                    <div class="input-group">
+                        <input type="email" placeholder="Email Address" value="john.smith@example.com">
+                    </div>
+                    <div class="input-group">
+                        <input type="tel" placeholder="Phone Number" value="+1 234 567 8900">
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h3>Shipping Address</h3>
+                    <div class="input-group">
+                        <input type="text" placeholder="Address Line 1" value="123 Main Street">
+                    </div>
+                    <div class="input-group">
+                        <input type="text" placeholder="Address Line 2" value="Apt 4B">
+                    </div>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <input type="text" placeholder="City" value="New York">
+                        </div>
+                        <div class="input-group">
+                            <input type="text" placeholder="State/Province" value="NY">
+                        </div>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <input type="text" placeholder="Postal Code" value="10001">
+                        </div>
+                        <div class="input-group">
+                            <input type="text" placeholder="Country" value="United States">
+                        </div>
+                        value="United States">
+                    </div>
+                </div>
+            </div>
+            <div class="form-section">
+                <h3>Saved Addresses</h3>
+                <div class="address-card selected">
+                    <div class="address-icon">
+                        <i data-lucide="check"></i>
+                    </div>
+                    <div class="address-details">
+                        <h4>Home</h4>
+                        <p>123 Main Street, Apt 4B, New York, NY 10001</p>
+                    </div>
+                    <button class="icon-btn">
+                        <i data-lucide="chevron-right"></i>
+                    </button>
+                </div>
+                <div class="address-card">
+                    <div class="address-icon">
+                        <i data-lucide="check"></i>
+                    </div>
+                    <div class="address-details">
+                        <h4>Work</h4>
+                        <p>456 Business Ave, Suite 200, New York, NY 10002</p>
+                    </div>
+                    <button class="icon-btn">
+                        <i data-lucide="chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            <button class="btn-primary" onclick="nextCheckoutStep()">Continue</button>
+        </div>
+
+        <!-- Step 2: Payment -->
+        <div class="checkout-step" id="step-payment">
+            <div class="payment-methods">
+                <div class="payment-method selected">
+                    <input type="radio" name="payment" id="card" checked>
+                    <label for="card">
+                        <i data-lucide="credit-card"></i>
+                        Credit/Debit Card
+                    </label>
+                </div>
+                <div class="payment-method">
+                    <input type="radio" name="payment" id="paypal">
+                    <label for="paypal">PayPal</label>
+                </div>
+                <div class="payment-method">
+                    <input type="radio" name="payment" id="apple">
+                    <label for="apple">Apple Pay</label>
+                </div>
+            </div>
+            <div class="card-details">
+                <div class="saved-card">
+                    <div class="card-badge">VISA</div>
+                    <p class="card-label">Card Number</p>
+                    <p class="card-number">**** **** **** 4242</p>
+                    <div class="card-info">
+                        <div>
+                            <p class="card-label">Card Holder</p>
+                            <p>John Smith</p>
+                        </div>
+                        <div>
+                            <p class="card-label">Expires</p>
+                            <p>09/25</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h3>Add New Card</h3>
+                    <div class="input-group">
+                        <input type="text" placeholder="Card Number">
+                    </div>
+                    <div class="input-group">
+                        <input type="text" placeholder="Card Holder Name">
+                    </div>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <input type="text" placeholder="Expiry Date (MM/YY)">
+                        </div>
+                        <div class="input-group">
+                            <input type="text" placeholder="CVV">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-primary" onclick="nextCheckoutStep()">Continue</button>
+        </div>
+
+        <!-- Step 3: Order Summary -->
+        <div class="checkout-step" id="step-summary">
+            <div class="form-section">
+                <h3>Order Items</h3>
+                <div class="summary-item">
+                    <div class="summary-item-image">
+                        <img src="https://images.pexels.com/photos/637076/pexels-photo-637076.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Blue Sneakers">
+                    </div>
+                    <div class="summary-item-details">
+                        <h4>Blue Sneakers</h4>
+                        <p>Color: Blue, Size: 42</p>
+                    </div>
+                    <p class="summary-item-price">$120.00</p>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-item-image">
+                        <img src="https://images.pexels.com/photos/3808229/pexels-photo-3808229.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Handbag">
+                    </div>
+                    <div class="summary-item-details">
+                        <h4>Handbag</h4>
+                        <p>Color: Black, Size: M</p>
+                    </div>
+                    <p class="summary-item-price">$85.00</p>
+                </div>
+            </div>
+            <div class="order-summary">
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span>$205.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping</span>
+                    <span>$5.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Tax</span>
+                    <span>$20.50</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total</span>
+                    <span>$230.50</span>
+                </div>
+            </div>
+            <div class="form-section">
+                <h3>Delivery Information</h3>
+                <div class="info-card">
+                    <p class="info-name">John Smith</p>
+                    <p>123 Main Street, Apt 4B</p>
+                    <p>New York, NY 10001</p>
+                    <p>United States</p>
+                    <p class="info-phone">+1 234 567 8900</p>
+                </div>
+            </div>
+            <div class="form-section">
+                <h3>Payment Method</h3>
+                <div class="info-card payment">
+                    <i data-lucide="credit-card"></i>
+                    <div>
+                        <p class="info-name">Visa ending in 4242</p>
+                        <p>Expires 09/25</p>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-primary" onclick="navigateTo('success')">Place Order</button>
+        </div>
+    </div>
+</div>
+
+<!-- Success Page -->
+<div class="page" id="success-page">
+    <div class="success-container">
+        <div class="success-icon">
+            <i data-lucide="check-circle"></i>
+        </div>
+        <h1>Successful!</h1>
+        <p>Your order has been placed successfully. We'll send you a confirmation email shortly.</p>
+        <div class="success-actions">
+            <button class="btn-primary" onclick="navigateTo('orders')">
+                <i data-lucide="shopping-bag"></i>
+                Track Order
+            </button>
+            <button class="btn-outline" onclick="navigateTo('home')">
+                <i data-lucide="home"></i>
+                Back to Home
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Profile Page -->
+<div class="page" id="profile-page">
+    <div class="profile-header">
+        <div class="profile-image">
+            <img src="https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg" alt="Profile">
+        </div>
+        <div class="profile-info">
+            <h2>John Smith</h2>
+            <p>john.smith@example.com</p>
+        </div>
+    </div>
+    <div class="page-content">
+        <div class="menu-items">
+            <button class="menu-item" onclick="navigateTo('payment')">
+                <div class="menu-icon">
+                    <i data-lucide="credit-card"></i>
+                </div>
+                <span>Payment Method</span>
+                <i data-lucide="chevron-right"></i>
+            </button>
+            <button class="menu-item" onclick="navigateTo('orders')">
+                <div class="menu-icon">
+                    <i data-lucide="shopping-bag"></i>
+                </div>
+                <span>Order History</span>
+                <i data-lucide="chevron-right"></i>
+            </button>
+            <button class="menu-item" onclick="navigateTo('favorites')">
+                <div class="menu-icon">
+                    <i data-lucide="heart"></i>
+                </div>
+                <span>My Favorites</span>
+                <i data-lucide="chevron-right"></i>
+            </button>
+            <button class="menu-item" onclick="navigateTo('settings')">
+                <div class="menu-icon">
+                    <i data-lucide="settings"></i>
+                </div>
+                <span>Settings</span>
+                <i data-lucide="chevron-right"></i>
+            </button>
+        </div>
+        <button class="btn-logout" onclick="navigateTo('login')">
+            <i data-lucide="log-out"></i>
+            Log Out
+        </button>
+    </div>
+    <nav class="bottom-nav">
+        <button class="nav-item" onclick="navigateTo('home')">
+            <i data-lucide="home"></i>
+            <span>Home</span>
+        </button>
+        <button class="nav-item">
+            <i data-lucide="search"></i>
+            <span>Search</span>
+        </button>
+        <button class="nav-item" onclick="navigateTo('cart')">
+            <i data-lucide="shopping-bag"></i>
+            <span>Cart</span>
+        </button>
+        <button class="nav-item">
+            <i data-lucide="heart"></i>
+            <span>Favorites</span>
+        </button>
+        <button class="nav-item active">
+            <i data-lucide="user"></i>
+            <span>Profile</span>
+        </button>
+    </nav>
+</div>
+
+<!-- Settings Page -->
+<div class="page" id="settings-page">
+    <header class="app-header">
+        <button class="icon-btn" onclick="navigateTo('profile')">
+            <i data-lucide="chevron-left"></i>
+        </button>
+        <h1>Settings</h1>
+        <div class="spacer"></div>
+    </header>
+    <div class="page-content">
+        <div class="settings-section">
+            <h3>Account</h3>
+            <div class="settings-item">
+                <div class="settings-item-left">
+                    <i data-lucide="globe"></i>
+                    <span>Language</span>
+                </div>
+                <span class="settings-value">English</span>
+            </div>
+            <div class="settings-item">
+                <div class="settings-item-left">
+                    <i data-lucide="phone"></i>
+                    <span>Phone Number</span>
+                </div>
+                <span class="settings-value">+1 234 567 8900</span>
+            </div>
+        </div>
+        <div class="settings-section">
+            <h3>Preferences</h3>
+            <div class="settings-item">
+                <div class="settings-item-left">
+                    <i data-lucide="bell"></i>
+                    <span>Notifications</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div class="settings-item">
+                <div class="settings-item-left">
+                    <i data-lucide="moon"></i>
+                    <span>Dark Mode</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="darkModeToggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div class="settings-item">
+                <div class="settings-item-left">
+                    <i data-lucide="shield"></i>
+                    <span>Face ID</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </div>
+        <button class="btn-outline" onclick="navigateTo('login')">Sign Out</button>
+    </div>
+</div>
+
+<!-- Chat Support -->
+<div class="chat-support" id="chat-support">
+    <button class="chat-button" onclick="toggleChat()">
+        <i data-lucide="message-circle"></i>
+    </button>
+    <div class="chat-container" id="chat-container">
+        <div class="chat-header">
+            <h3>Customer Support</h3>
+            <button class="close-btn" onclick="toggleChat()">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+            <div class="message support">
+                <div class="message-content">
+                    <p>Hello! How can I help you today?</p>
+                    <span class="message-time">10:30 AM</span>
+                </div>
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" placeholder="Type your message..." id="chat-input-field">
+            <button onclick="sendChatMessage()">
+                <i data-lucide="send"></i>
+            </button>
+        </div>
+    </div>
+</div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

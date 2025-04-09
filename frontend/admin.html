@@ -194,6 +194,8 @@
             formData.append("productBrandId",  formObj.productBrandId);
             formData.append("sizeId",          formObj.sizeId);
             formData.append("colorId",         formObj.colorId);
+            formData.append("userId",localStorage.getItem("userId"))
+
 
             // Fayllarni qo'shish
             const files = document.getElementById("attachments").files;
@@ -205,6 +207,8 @@
             axios.post("http://localhost:8080/api/products/save", formData)
                 .then(() => {
                     alert("Mahsulot muvaffaqiyatli qo'shildi!");
+                    window.location.href='reportAdmin.html'
+
                     // Istasangiz, shu yerda formani tozalash yoki boshqa sahifaga o'tish mumkin
                 })
                 .catch(err => console.error(err));

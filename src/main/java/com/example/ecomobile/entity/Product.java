@@ -36,6 +36,9 @@ public class Product extends BaseEntity {
 
 
     @ManyToOne
+    private User users;
+
+    @ManyToOne
     private Category category;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -44,6 +47,7 @@ public class Product extends BaseEntity {
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
+
     private List<User> likedByUsers;
 
 }

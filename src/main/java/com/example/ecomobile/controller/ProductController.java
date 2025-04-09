@@ -1,6 +1,7 @@
 package com.example.ecomobile.controller;
 
 import com.example.ecomobile.dto.ProductDTO;
+import com.example.ecomobile.dto.ProductVariantDTO;
 import com.example.ecomobile.entity.Attachment;
 import com.example.ecomobile.entity.AttachmentContent;
 import com.example.ecomobile.entity.Product;
@@ -47,6 +48,7 @@ public class ProductController {
             @RequestParam Integer colorId,
             @RequestParam Integer sizeId,
             @RequestParam Integer amount,
+            @RequestParam Integer userId,
             @RequestParam(required = false) MultipartFile[] attachments) {
         try {
             if (productName.trim().isEmpty()) {
@@ -62,7 +64,8 @@ public class ProductController {
                 }
             }
 
-            // DTO yaratish
+            System.out.println("Bu category==============="+category);
+
             ProductDTO productDTO = ProductDTO.builder()
                     .name(productName)
                     .price(price)
@@ -73,10 +76,11 @@ public class ProductController {
                     .sizeId(sizeId)
                     .attachmentIds(attachmentIds)
                     .amount(amount)
-                    .productBrandName(productBrandService.findByIdForName(productBrandId))
+                    .userId(userId)
+                    .productBrand(productBrandService.findByIdForName(productBrandId))
                     .categoryName(category.map(categoryServise::findByIdForName).orElse(null))
-                    .colorName(productColorService.findByIdForName(colorId))
-                    .sizeName(productSizeService.findByIdForSize(sizeId))
+                    .productColor(productColorService.findByIdForName(colorId))
+                    .productSize(productSizeService.findByIdForSize(sizeId))
                     .build();
 
             // Mahsulotni saqlash
@@ -103,6 +107,13 @@ public class ProductController {
         productService.likeProduct(productId, userId);
         return ResponseEntity.ok("Like updated");
     }
+//
+//    @GetMapping("/{id}")
+//    public ResponseEntity<?> getProductById(@PathVariable Integer id) {
+//        Optional<ProductDTO> product = productService.getProductById(id);
+//        return product.map(ResponseEntity::ok)
+//                .orElseGet(() -> ResponseEntity.notFound().build());
+//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getProductById(@PathVariable Integer id) {
@@ -111,6 +122,21 @@ public class ProductController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/variants")
+    public ResponseEntity<?> getProductVariants(@RequestParam String name) {
+        List<ProductVariantDTO> variants = productService.getProductVariants(name);
+        return ResponseEntity.ok(variants);
+    }
+
+    @GetMapping("/variant")
+    public ResponseEntity<?> getProductVariant(
+            @RequestParam String name,
+            @RequestParam String color,
+            @RequestParam String size) {
+        Optional<ProductDTO> variant = productService.getProductVariant(name, color, size);
+        return variant.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
     @GetMapping("/file/{attachmentId}")
     public void getFile(@PathVariable Integer attachmentId, HttpServletResponse response) throws IOException {
         Attachment attachment = attachmentRepository.findById(attachmentId)
@@ -141,16 +167,32 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Integer id, @RequestBody ProductDTO productDTO) {
-        Product updatedProduct = productService.updateProduct(id, productDTO);
-        return ResponseEntity.ok(updatedProduct);
+    public ResponseEntity<?> updateProduct(@PathVariable Integer id, @RequestBody ProductDTO productDTO) {
+        try {
+            Product updatedProduct = productService.updateProduct(id, productDTO);
+            return ResponseEntity.ok(updatedProduct);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Mahsulotni yangilashda xatolik yuz berdi: " + e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Integer id) {
-        productService.deleteProduct(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deleteProduct(@PathVariable Integer id) {
+        try {
+            productService.deleteProduct(id);
+            return ResponseEntity.ok("Mahsulot muvaffaqiyatli o'chirildi");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Mahsulotni o'chirishda xatolik yuz berdi: " + e.getMessage());
+        }
     }
+
+
 
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<List<ProductDTO>> getProductsByCategory(@PathVariable Integer categoryId) {
@@ -169,4 +211,14 @@ public class ProductController {
         return ResponseEntity.ok(favouriteProducts);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<ProductDTO>
+            >
+    searchProducts(
+            @RequestParam String query,
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size) {
+        List<ProductDTO> searchResults = productService.searchProducts(query, page, size);
+        return ResponseEntity.ok(searchResults);
+    }
 }

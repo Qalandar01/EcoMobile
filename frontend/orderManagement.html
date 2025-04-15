@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nike Order Management</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="js/order.js" defer></script>
 
     <style>
         body {
-            background-color: #e3e6e8;
+            background-color: #f8f9fa;
             font-family: 'Poppins', sans-serif;
         }
 
@@ -19,24 +19,60 @@
             background: #fff;
             border-radius: 12px;
             padding: 25px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
 
         .order-card {
             border: none;
             border-radius: 12px;
-            transition: transform 0.3s ease-in-out;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
 
         .order-card:hover {
-            transform: scale(1.02);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         .btn-custom {
             border-radius: 8px;
-            padding: 8px 12px;
+            padding: 8px 16px;
             font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .status-select {
+            width: 180px;
+            border-radius: 8px;
+            padding: 6px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .status-select:focus {
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        /* Status badges */
+        .badge-NEW {
+            background-color: #17a2b8 !important;
+        }
+
+        .badge-PROCESSING {
+            background-color: #ffc107 !important;
+            color: #212529 !important;
+        }
+
+        .badge-DELIVERING {
+            background-color: #0d6efd !important;
+        }
+
+        .badge-DELIVERED {
+            background-color: #198754 !important;
+        }
+
+        .badge-CANCELLED {
+            background-color: #dc3545 !important;
         }
 
         /* Pagination Styling */
@@ -48,6 +84,7 @@
             border-radius: 8px;
             font-weight: 500;
             transition: all 0.3s ease;
+            margin: 0 3px;
         }
 
         .pagination-custom .page-link:hover {
@@ -55,11 +92,10 @@
             color: white;
         }
 
-        .pagination-custom .current-page {
+        .pagination-custom .page-item.active .page-link {
             background-color: #007bff;
             color: white;
             border-radius: 8px;
-            padding: 8px 15px;
             font-weight: 600;
         }
 
@@ -68,31 +104,66 @@
             pointer-events: none;
         }
 
+        /* Search input animation */
+        #search {
+            transition: all 0.3s ease;
+        }
+
+        #search:focus {
+            width: 300px !important;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        /* Order details animation */
+        .order-details {
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
     </style>
 </head>
 <body>
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-center mb-0">Order Management Dashboard</h2>
+            <a class="btn btn-primary" href="reportAdmin.html">Back</a>
+            <p class="text-center text-muted">View and manage all customer orders</p>
+        </div>
+    </div>
 
-<div class="container mt-5">
-    <h2 class="mb-4 text-center">Order Management</h2>
     <div class="order-container">
-        <div class="order-header d-flex justify-content-between align-items-center p-3 bg-light rounded shadow-sm">
-            <h5 class="mb-0">My Orders</h5>
-            <form onsubmit="getFilteredOrders(event)">
-                <div class="d-flex gap-2 align-items-center">
-                    <input id="search" name="search" type="text" class="form-control" placeholder="Search orders..."
-                           style="width: 200px; border-radius: 20px; padding: 10px 15px;">
-                    <input id="date" name="date" type="date" class="form-control"
-                           style="width: 150px; border-radius: 10px;">
-                    <button class="btn btn-primary" style="border-radius: 10px; padding: 8px 20px;">Search</button>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 p-3 bg-light rounded">
+            <h5 class="mb-3 mb-md-0">
+                <i class="fas fa-clipboard-list me-2"></i>All Orders
+            </h5>
+
+            <div class="d-flex flex-column flex-md-row gap-3 align-items-center">
+                <div class="input-group" style="width: 250px;">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="fas fa-search"></i>
+                        </span>
+                    <input id="search" type="text" class="form-control border-start-0"
+                           placeholder="Search orders..." style="border-radius: 0 8px 8px 0;">
                 </div>
-            </form>
+
+                <div class="input-group" style="width: 200px;">
+                        <span class="input-group-text bg-white">
+                            <i class="far fa-calendar-alt"></i>
+                        </span>
+                    <input id="date" type="date" class="form-control">
+                </div>
+
+                <button class="btn btn-primary" onclick="getFilteredOrders()">
+                    <i class="fas fa-filter me-1"></i> Filter
+                </button>
+            </div>
         </div>
 
         <!-- Order List -->
-        <div class="mt-4" id="orders"></div>
-
+        <div id="orders" class="mt-3"></div>
     </div>
 </div>
-<script src="js/request.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

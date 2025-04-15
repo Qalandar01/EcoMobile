@@ -1,203 +1,254 @@
-let orderElement = document.getElementById("orders");
-let paginationElement = document.createElement("div");
-paginationElement.className = "d-flex justify-content-center mt-4";
-orderElement.after(paginationElement);
-
 document.addEventListener("DOMContentLoaded", function () {
-    getOrders(1);
+    initializeOrderManagement();
 });
 
-let orders = [];
+const request = axios.create({
+    baseURL: "http://localhost:8080/api/",
+    headers: {
+        token: localStorage.getItem('token')
+    }
+});
+
 let currentPage = 1;
-const pageSize = 10; // Number of orders per page
+const pageSize = 10;
+
+function initializeOrderManagement() {
+    const orderElement = document.getElementById("orders");
+    if (!orderElement) {
+        console.error("Orders element not found");
+        return;
+    }
+    const paginationElement = document.createElement("div");
+    paginationElement.className = "d-flex justify-content-center mt-4 pagination-custom";
+    orderElement.after(paginationElement);
+
+    // Load initial orders
+    getOrders(1);
+
+    // Setup event listeners for search and date inputs, if they exist
+    const searchElement = document.getElementById("search");
+    if (searchElement) {
+        searchElement.addEventListener("keyup", function (event) {
+            if (event.key === "Enter") {
+                getFilteredOrders();
+            }
+        });
+    }
+    const dateElement = document.getElementById("date");
+    if (dateElement) {
+        dateElement.addEventListener("change", function () {
+            getFilteredOrders();
+        });
+    }
+}
 
 function getOrders(page) {
     currentPage = page;
-
-    request({
-        url: "order",
-        method: "GET",
+    request.get("orders", {
         params: {
-            token: localStorage.getItem("token"),
             page: page,
             size: pageSize
         }
-    }).then(res => {
-        orders = res.data.orders; // Ensure your backend response includes `{ orders: [], totalPages: X }`
-        draw(orders);
-        drawPagination(res.data.totalPages);
-    }).catch(ex => {
-        console.error("Error fetching orders:", ex);
-    });
+    })
+        .then(response => {
+            drawOrders(response.data.orders);
+            drawPagination(response.data.totalPages);
+        })
+        .catch(error => {
+            console.error("Error fetching orders:", error);
+            showError("Failed to load orders");
+        });
 }
 
-function getFilteredOrders(event) {
-    event.preventDefault();
-
-    const formData = new FormData(event.target);
-    const search = formData.get("search");
-    const date = formData.get("date");
-
-    request({
-        url: "order",
-        method: "get",
+function getFilteredOrders() {
+    const search = document.getElementById("search")?.value || "";
+    const date = document.getElementById("date")?.value || "";
+    request.get("orders", {
         params: {
-            search: search || "",
-            date: date || "",
+            search: search,
+            date: date,
             page: 1, // Reset to first page when filtering
             size: pageSize
         }
-    }).then(res => {
-        orders = res.data.orders;
-        draw(orders);
-        drawPagination(res.data.totalPages);
-    }).catch(err => {
-        console.error("Error fetching orders:", err);
-    });
+    })
+        .then(response => {
+            drawOrders(response.data.orders);
+            drawPagination(response.data.totalPages);
+            currentPage = 1;
+        })
+        .catch(error => {
+            console.error("Error fetching filtered orders:", error);
+            showError("Failed to filter orders");
+        });
 }
 
-function draw(orders) {
-    let s = "";
-    for (let order of orders) {
-        s += `
-       <div class="card order-card mb-3 p-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h6>Order #${order.id}</h6>
-                    <p class="text-muted">${order.location}</p>
+function drawOrders(orders) {
+    const orderElement = document.getElementById("orders");
+    let html = "";
+    if (!orders || orders.length === 0) {
+        html = `<div class="alert alert-info">No orders found</div>`;
+    } else {
+        orders.forEach(order => {
+            html += `
+            <div class="card order-card mb-3 p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6>Order #${order.id}</h6>
+                        <p class="text-muted">${order.locationId ? `Location ID: ${order.locationId}` : 'No location'}</p>
+                    </div>
+                    <span class="badge bg-secondary ms-2">${order.date || 'No date'}</span>
+                    <select class="form-select status-select" data-order-id="${order.id}" style="width: 200px">
+                        <option value="NEW" ${order.status === "NEW" ? "selected" : ""}>NEW</option>
+                        <option value="PROCESSING" ${order.status === "PROCESSING" ? "selected" : ""}>PROCESSING</option>
+                        <option value="DELIVERING" ${order.status === "DELIVERING" ? "selected" : ""}>DELIVERING</option>
+                        <option value="DELIVERED" ${order.status === "DELIVERED" ? "selected" : ""}>DELIVERED</option>
+                        <option value="CANCELLED" ${order.status === "CANCELLED" ? "selected" : ""}>CANCELLED</option>
+                    </select>
                 </div>
-                <span class="badge bg-secondary ms-2">${order.date}</span> 
-                <select style="width: 500px" class="form-select status-select" data-order-id="${order.id}">
-                    <option value="NEW" ${order.status === "NEW" ? "selected" : ""}>NEW</option>
-                    <option value="PROCESSING" ${order.status === "PROCESSING" ? "selected" : ""}>PROCESSING</option>
-                    <option value="DELIVERING" ${order.status === "DELIVERING" ? "selected" : ""}>DELIVERING</option>
-                    <option value="DELIVERED" ${order.status === "DELIVERED" ? "selected" : ""}>DELIVERED</option>
-                    <option value="CANCELLED" ${order.status === "CANCELLED" ? "selected" : ""}>CANCELLED</option>
-                </select>
-            </div>
-            <div class="d-flex justify-content-between align-items-center mt-2">
-                <p class="mb-0">Total: <strong>$ ${order.total}</strong></p>
-                <button class="btn btn-primary btn-custom toggle-view" onclick="drawOrderItems(${order.id})" data-target="#order${order.id}">
-                    <i class="fas fa-eye"></i> View
-                </button>
-            </div>
-            <div class="order-details" id="order${order.id}">
-                <p><strong>Items:</strong></p>
-                <ul class="list-group" id="items-${order.id}">
-                </ul>
-            </div>
-        </div>`;
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <p class="mb-0">Total: <strong>$${order.total || 0}</strong></p>
+                    <button class="btn btn-primary btn-custom toggle-view" data-order-id="${order.id}">
+                        <i class="fas fa-eye"></i> View Items
+                    </button>
+                </div>
+                <div class="order-details mt-3" id="order-details-${order.id}" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <p><strong>Items:</strong></p>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="loadOrderItems(${order.id})">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    <ul class="list-group" id="order-items-${order.id}">
+                        <li class="list-group-item text-center">Loading items...</li>
+                    </ul>
+                </div>
+            </div>`;
+        });
     }
-    orderElement.innerHTML = s;
-    attachEventListeners();
+    orderElement.innerHTML = html;
+    setupEventListeners();
 }
 
-function drawOrderItems(orderId) {
-    let order = orders.find(o => o.id === orderId);
-    let s = "";
-    if (!order) return;
-    let itemsContainer = document.getElementById("items-" + orderId);
-    for (let orderItem of order.orderItems) {
-        let totalPrice = orderItem.product.price * orderItem.quantity;
-        s += `
-          <li class="list-group-item">
-            ${orderItem.product.name} - Size ${orderItem.product.size.productSize} - Qty: ${orderItem.quantity} 
-            - <strong>$${totalPrice}</strong>
-          </li>
-        `;
-    }
-
-    if (!order.orderItems){
-        s = 'No Items';
-    }
-    itemsContainer.innerHTML = s;
-}
-
-function attachEventListeners() {
-    document.querySelectorAll(".status-select").forEach(select => {
-        select.addEventListener("change", function () {
+function setupEventListeners() {
+    // Status change listener
+    document.querySelectorAll('.status-select').forEach(select => {
+        select.addEventListener('change', function () {
             const orderId = this.dataset.orderId;
             const newStatus = this.value;
-            updateStatusInBackend(orderId, newStatus);
-            updateStatus(orderId, newStatus, this);
+            updateOrderStatus(orderId, newStatus);
         });
     });
 
-    document.querySelectorAll(".toggle-view").forEach(button => {
-        button.addEventListener("click", function () {
-            const target = document.querySelector(this.dataset.target);
-            if (target.classList.contains("show")) {
-                target.classList.remove("show");
+    // Toggle view listener for order details
+    document.querySelectorAll('.toggle-view').forEach(button => {
+        button.addEventListener('click', function () {
+            const orderId = this.dataset.orderId;
+            const detailsDiv = document.getElementById(`order-details-${orderId}`);
+            if (detailsDiv.style.display === 'none' || detailsDiv.style.display === '') {
+                detailsDiv.style.display = 'block';
+                loadOrderItems(orderId);
             } else {
-                document.querySelectorAll(".order-details").forEach(el => el.classList.remove("show"));
-                target.classList.add("show");
+                detailsDiv.style.display = 'none';
             }
         });
     });
 }
 
-function updateStatus(orderId, status, selectElement) {
-    const statusClasses = {
-        "PROCESSING": "bg-warning",
-        "DELIVERED": "bg-success",
-        "CANCELLED": "bg-danger",
-        "NEW": "bg-info",
-        "DELIVERING": "bg-primary"
-    };
-
-    let badge = selectElement.closest(".order-card").querySelector(".status-badge");
-    if (!badge) {
-        badge = document.createElement("span");
-        badge.className = "status-badge";
-        selectElement.closest(".order-card").querySelector(".d-flex").appendChild(badge);
-    }
-
-    badge.textContent = status;
-    badge.className = `status-badge ${statusClasses[status]}`;
+function loadOrderItems(orderId) {
+    const itemsContainer = document.getElementById(`order-items-${orderId}`);
+    request.get(`orders/${orderId}/items`)
+        .then(response => {
+            const items = response.data;
+            let html = "";
+            if (!items || items.length === 0) {
+                html = '<li class="list-group-item text-center">No items found</li>';
+            } else {
+                items.forEach(item => {
+                    const totalPrice = item.price * item.quantity;
+                    html += `
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>${item.productName}</strong> (ID: ${item.productId})
+                        <br>
+                        <small>Price: $${item.price} x ${item.quantity} = $${totalPrice.toFixed(2)}</small>
+                    </div>
+                </li>`;
+                });
+            }
+            itemsContainer.innerHTML = html;
+        })
+        .catch(error => {
+            console.error(`Error loading items for order ${orderId}:`, error);
+            itemsContainer.innerHTML = '<li class="list-group-item text-danger">Failed to load items</li>';
+        });
 }
 
-function updateStatusInBackend(orderId, status) {
-    request({
-        url: "order/status",
-        method: "POST",
-        data: {
-            orderId,
-            status
-        }
-    }).catch(err => console.error("Error updating status:", err));
+function updateOrderStatus(orderId, status) {
+    request.post('orders/status', {
+        orderId: parseInt(orderId),
+        status: status
+    })
+        .then(() => {
+            showSuccess(`Order #${orderId} status updated to ${status}`);
+        })
+        .catch(error => {
+            console.error(`Error updating status for order ${orderId}:`, error);
+            showError("Failed to update order status");
+            // Agar kerak bo'lsa, avvalgi statusni tiklash uchun qo'shimcha kod yozilishi mumkin
+        });
 }
 
 function drawPagination(totalPages) {
-    let s = `<nav><ul class="pagination">`;
+    const paginationElement = document.querySelector('.pagination-custom');
+    let html = '<nav><ul class="pagination">';
 
-    s += `<li class="page-item ${currentPage === 1 ? "disabled" : ""}">
-            <a class="page-link" href="#" onclick="getOrders(${currentPage - 1})">Previous</a>
-          </li>`;
+    // Previous button
+    html += `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="getOrders(${currentPage - 1}); return false;">Previous</a>
+            </li>`;
 
+    // Page numbers
     for (let i = 1; i <= totalPages; i++) {
-        s += `<li class="page-item ${i === currentPage ? "active" : ""}">
-                <a class="page-link" href="#" onclick="getOrders(${i})">${i}</a>
-              </li>`;
+        html += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+                    <a class="page-link" href="#" onclick="getOrders(${i}); return false;">${i}</a>
+                </li>`;
     }
 
-    s += `<li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
-            <a class="page-link" href="#" onclick="getOrders(${currentPage + 1})">Next</a>
-          </li>`;
+    // Next button
+    html += `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="getOrders(${currentPage + 1}); return false;">Next</a>
+            </li>`;
 
-    s += `</ul></nav>`;
-    paginationElement.innerHTML = s;
+    html += '</ul></nav>';
+    paginationElement.innerHTML = html;
 }
 
-const searchInput = document.querySelector(".search-bar");
+function showSuccess(message) {
+    const alert = document.createElement('div');
+    alert.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 end-0 m-3';
+    alert.style.zIndex = '9999';
+    alert.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    document.body.appendChild(alert);
+    setTimeout(() => {
+        alert.classList.remove('show');
+        setTimeout(() => alert.remove(), 150);
+    }, 3000);
+}
 
-searchInput.addEventListener("focus", () => {
-    searchInput.style.width = "500px";
-    searchInput.style.boxShadow = "0px 4px 8px rgba(0, 0, 0, 0.1)";
-});
-
-searchInput.addEventListener("blur", () => {
-    if (!searchInput.value) {
-        searchInput.style.width = "200px";
-        searchInput.style.boxShadow = "none";
-    }
-});
+function showError(message) {
+    const alert = document.createElement('div');
+    alert.className = 'alert alert-danger alert-dismissible fade show position-fixed top-0 end-0 m-3';
+    alert.style.zIndex = '9999';
+    alert.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    document.body.appendChild(alert);
+    setTimeout(() => {
+        alert.classList.remove('show');
+        setTimeout(() => alert.remove(), 150);
+    }, 3000);
+}

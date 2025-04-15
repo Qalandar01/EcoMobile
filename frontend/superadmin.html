@@ -2,9 +2,411 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Super Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce Super Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .dashboard-card {
+            transition: transform 0.3s;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .action-buttons button {
+            margin: 2px;
+        }
+    </style>
 </head>
-<body>
-<h1>Welcome Super Admin</h1>
+<body class="bg-light">
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<button class="btn btn-danger" id="logout" onclick="logout()">Logout</button>
+<div class="container-fluid py-4">
+    <h1 class="mb-4">Super Admin Panel</h1>
+
+    <!-- Product Reports -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card dashboard-card bg-primary text-white">
+                <div class="card-body">
+                    <h5>Jami Buyurtmalar</h5>
+                    <h2 id="totalOrders">1,234</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card dashboard-card bg-success text-white">
+                <div class="card-body">
+                    <h5>Mahsulotlar Soni</h5>
+                    <h2 id="totalproducts">567</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card dashboard-card bg-danger text-white">
+                <div class="card-body">
+                    <h5>Sotilgan Mahsulotlar</h5>
+                    <h2 id="totalQuantity">892</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Management -->
+    <div class="card mb-4">
+        <div class="card-header bg-dark text-white">
+            Adminlar Boshqaruvi
+            <button class="btn btn-sm btn-light float-end" onclick="showAddAdminModal()">+ Qo'shish</button>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Ism</th>
+                    <th>Email</th>
+
+                    <th>Holat</th>
+                    <th>Amallar</th>
+                </tr>
+                </thead>
+                <tbody id="adminList">
+                <!-- Admins will be added here dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<!-- Add Admin Modal -->
+<div class="modal fade" id="addAdminModa">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <!-- Modal sarlavhasi qo'shish/tahrirlash uchun moslashadi -->
+                <h5 class="modal-title" id="modalTitl">Admin Qo'shish</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="adminFor" onsubmit="event.preventDefault(); saveAdmi()">
+                    <!-- Ism maydoni -->
+                    <div class="mb-3">
+                        <label for="adminName">Ism</label>
+                        <input type="text" class="form-control" id="adminNam" required>
+                    </div>
+                    <!-- Email maydoni -->
+                    <div class="mb-3">
+                        <label for="adminEmail">Email</label>
+                        <input type="email" class="form-control" id="adminEmai" required>
+                    </div>
+                    <!-- Rol tanlash maydoni -->
+                    <div class="mb-3">
+                        <label for="adminRole">Rol</label>
+                        <select class="form-select" id="adminRol" required>
+                            <option value="admin">Admin</option>
+                            <option value="super-admin">Super Admin</option>
+                        </select>
+                    </div>
+                    <!-- Submit tugmasi qo'shish/tahrirlash uchun o'zgaradi -->
+                    <button type="submit" id="saveButto" class="btn btn-primary">Saqlash</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addAdminModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <!-- Modal sarlavhasi qo'shish/tahrirlash uchun moslashadi -->
+                <h5 class="modal-title" id="modalTitle">Admin Qo'shish</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="adminForm" onsubmit="event.preventDefault(); saveAdmin()">
+                    <!-- Ism maydoni -->
+                    <div class="mb-3">
+                        <label for="adminName">Ism</label>
+                        <input type="text" class="form-control" id="adminName" required>
+                    </div>
+                    <!-- Email maydoni -->
+                    <div class="mb-3">
+                        <label for="adminEmail">Email</label>
+                        <input type="email" class="form-control" id="adminEmail" required>
+                    </div>
+                    <!-- Rol tanlash maydoni -->
+                    <div class="mb-3">
+                        <label for="adminRole">Rol</label>
+                        <select class="form-select" id="adminRole" required>
+                            <option value="admin">Admin</option>
+                            <option value="super-admin">Super Admin</option>
+                        </select>
+                    </div>
+                    <!-- Submit tugmasi qo'shish/tahrirlash uchun o'zgaradi -->
+                    <button type="submit" id="saveButton" class="btn btn-primary">Saqlash</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+<script src="/frontend/js/request.js"></script>
+<script src="/frontend/js/script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    totalOrder()
+    totalProdudts()
+    totalQuantity()
+    renderAdmins()
+    editAdmin()
+    saveAdmin()
+    saveAdmi()
+    function showAddAdminModal() {
+        renderAdmins()
+
+        document.getElementById('adminFor').reset();
+        new bootstrap.Modal(document.getElementById('addAdminModa')).show();
+    }
+
+
+    function editAdmin(index) {
+        if (index === undefined || index === null) {
+            console.error("Index mavjud emas!");
+            return; // index mavjud bo‘lmaganda, funksiyani to‘xtatamiz
+        }
+        id = index; // endi idni saqlash mumkin
+        console.log("Kelgan index:", index, "id:", id);
+
+        request.post(`/edit-admin/${index}`)
+            .then(response => {
+                const admin = response.data;
+                renderAdmins()
+                document.getElementById('adminName').value = admin.firstname;
+                document.getElementById('adminEmail').value = admin.email;
+                document.getElementById('adminRole').value = admin.roles[0].roleName.replace('ROLE_', '');
+                document.getElementById('modalTitle').innerText = "Admin Tahrirlash";
+                document.getElementById('saveButton').innerText = "Yangilash";
+
+                new bootstrap.Modal(document.getElementById('addAdminModal')).show();
+            })
+            .catch(error => {
+                console.error('Xatolik:', error.response ? error.response.data : error.message);
+            });
+    }
+
+
+
+    function saveAdmin() {
+
+        const name = document.getElementById('adminName').value;
+        const email = document.getElementById('adminEmail').value;
+        const role = document.getElementById('adminRole').value;
+
+
+
+        const url =`/edit-role/${id}/${encodeURIComponent(name)}/${encodeURIComponent(email)}/${encodeURIComponent(role)}`;
+
+        request.post(url, { name, email, role })
+            .then(res => {
+                alert(id ? "Admin yangilandi!" : "Admin qo'shildi!");
+                document.getElementById('modalTitle').innerText = "Admin Qo'shish";
+                document.getElementById('saveButton').innerText = "Saqlash";
+
+                // Modalni yopish
+                const modal = bootstrap.Modal.getInstance(document.getElementById('addAdminModal'));
+                modal.hide();
+                resetModal();
+                renderAdmins()
+            })
+            .catch(err => {
+                console.error('Xatolik:', err.response ? err.response.data : err.message);
+                alert('Xatolik yuz berdi!');
+            });
+    }
+
+    function saveAdmi() {
+        const name = document.getElementById('adminNam').value;
+        const email = document.getElementById('adminEmai').value;
+        const role = document.getElementById('adminRol').value;
+
+
+        request({
+                url: "/add-admin",
+                method: "post",
+                data: {
+                    name:name,
+                    email:email,
+                    role:role
+                }
+            }
+        )
+            .then(res => {
+                alert("Admin qo'shildi!");
+
+                // Modalni yopish
+                const modal = bootstrap.Modal.getInstance(document.getElementById('addAdminModa'));
+                modal.hide();
+                resetModal();
+                renderAdmins()
+            })
+            .catch(err => {
+                console.error('Xatolik:', err.response ? err.response.data : err.message);
+                alert('Xatolik yuz berdi!');
+            });
+    }
+
+    function resetModal() {
+        id = null;
+        document.getElementById('modalTitle').innerText = "Admin Qo'shish";
+        document.getElementById('saveButto').innerText = "Saqlash";
+        document.getElementById('adminForm').reset();
+    }
+
+    function deleteAdmin(index) {
+        request.delete(`/delete-admin/${index}`)
+            .then(res=>{
+                alert("Adminlik safidan bo'shatilindi")
+                renderAdmins()
+            })
+            .catch(res=>{
+                console.log("Xatolik:"+res.err)
+            })
+        renderAdmins();
+    }
+
+
+    function renderAdmins() {
+        const adminTable = document.getElementById('adminList');
+
+        // API so'rovini yuborish
+        request({
+            url: "/admin-list",
+            method: "GET"
+        })
+            .then(data => {
+                // Ma'lumotlar formatini tekshirish
+                if (!Array.isArray(data)) {
+                    if (data && data.data && Array.isArray(data.data)) {
+                        data = data.data; // Agar data obyektida 'data' array bo'lsa, uni olish
+                    } else {
+                        data = []; // Ma'lumot mavjud bo'lmasa, bo'sh arrayga o'tish
+                    }
+                }
+
+                // Jadvalni tozalash
+                adminTable.innerHTML = "";
+
+                // Adminlar ro'yxatini ko'rsatish
+                data.forEach(admin => {
+                    // Rollarni formatlash
+                    const roles = admin.roles ? admin.roles.join(', ') : 'No Role'; // Rolarni vergul bilan ajratish
+
+                    console.log("Adminni idsi shu: " + admin.id); // Konsolda admin id sini ko'rsatish
+
+                    // Jadvalni dinamik ravishda to'ldirish
+                    adminTable.innerHTML += `
+                <tr>
+                    <td>${admin.firstname} ${admin.lastname}</td>  <!-- Ism va Familiya -->
+                    <td>${admin.email}</td>  <!-- Email -->
+                    <td>
+                        <span class="badge ${admin.enabled ? 'bg-danger' : 'bg-success'}">
+                            ${admin.enabled ? 'Bloklangan' : 'Faol'}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-warning" onclick="editAdmin(${admin.id})">Tahrirlash</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteAdmin(${admin.id})">O'chirish</button>
+                    </td>
+                </tr>
+            `;
+                });
+            })
+            .catch(error => {
+                console.error('Xatolik:', error);
+                if (error.response) {
+                    console.error('Server javobi:', error.response.data);
+                    console.error('Status kodi:', error.response.status);
+                } else if (error.request) {
+                    console.error('So\'rov yuborilmadi:', error.request);
+                } else {
+                    console.error('Xatolik:', error.message);
+                }
+            });
+    }
+
+
+
+    function totalOrder() {
+        const total = document.getElementById("totalOrders");
+
+        request({
+            url: "/totalOrder",
+            method: "GET"
+        }).then(res => {
+            console.log("bu total :"+res.data)
+            total.innerHTML = res.data // To'g'ri ishlatish uchun backticks
+        }).catch(err => {
+            console.error('Xatolik:', err);
+        });
+    }
+
+    function totalProdudts(){
+        const total=document.getElementById("totalproducts")
+        request({
+            url:"/totalProducts",
+            method:"GET"
+        }).then(res=>{
+            total.innerHTML=res.data
+        })
+    }
+
+    function totalQuantity(){
+        const total=document.getElementById("totalQuantity")
+        request({
+            url:"/totalQuantity",
+            method:"GET"
+        }).then(res=>{
+            total.innerHTML=res.data;
+        })
+    }
+    function logout() {
+        localStorage.removeItem("token");
+        localStorage.removeItem("userId");
+        window.location.href = "login.html";
+    }
+    const userId = localStorage.getItem("userId");
+
+    if (userId && token) {
+        axios.get(`http://localhost:8080/api/user/${userId}`, {
+            headers: { token: token }
+        })
+            .then(response => {
+                const user = response.data;
+                document.getElementById("navbarUsername").textContent = `${user.firstname} ${user.lastname}`;
+
+                if (user.attachmentId) {
+                    document.getElementById("navbarProfileImage").src = `http://localhost:8080/file/${user.attachmentId}`;
+                } else {
+                    document.getElementById("navbarProfileImage").src = "https://via.placeholder.com/40";
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching user details:", error);
+            });
+    }
+
+
+    document.getElementById("logout").addEventListener("click", function () {
+        localStorage.removeItem("token");
+        localStorage.removeItem("userId");
+        window.location.href = "login.html";
+    });
+
+
+
+</script>
 </body>
 </html>

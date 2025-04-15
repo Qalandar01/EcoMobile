@@ -1,4 +1,3 @@
-
 closeConfirmationModal()
 closeResetPasswordModal()
 closeModal()
@@ -125,6 +124,7 @@ function resetPassword() {
     closeResetPasswordModal();
 }
 
+
 function setNewPassword(newPassword) {
     let email = document.getElementById("reset-email").value;
     request(
@@ -202,7 +202,7 @@ function handleVerification() {
     const code = document.getElementById('verification-code').value;
 
     if (!code) {
-       document.getElementById('verification-error').textContent = "Please enter the code!";
+        document.getElementById('verification-error').textContent = "Please enter the code!";
         return;
     }
 
@@ -249,7 +249,7 @@ function togglePasswordVisibility(fieldId, iconElement) {
         iconElement.textContent = "🙈";
     } else {
         field.type = "password";
-        iconElement.textContent = "👁️";
+        iconElement.textContent = "👁";
     }
 }
 function toggleForm() {
@@ -263,6 +263,7 @@ function openVerificationModal(){
 function validatePassword(password) {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     const errorMessage = document.getElementById("register-error");
+
 
     if (!regex.test(password)) {
         alert( "Parol kamida 8 ta belgidan iborat, bitta katta harf, bitta kichik harf, bitta raqam va bitta maxsus belgi (@$!%*?&) bo'lishi kerak!");
@@ -291,6 +292,3 @@ function signInWithGoogle(){
         window.location.href = res.data.authorizationUrl;
     })
 }
-
-
-

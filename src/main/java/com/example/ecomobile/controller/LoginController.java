@@ -49,6 +49,10 @@ public class LoginController {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
+    @GetMapping("/")
+    public String homePage() {
+        return "forward:/login.html";
+    }
 
     @PostMapping("/login")
     public HttpEntity<?> login(@RequestBody LoginDTO loginDTO) {

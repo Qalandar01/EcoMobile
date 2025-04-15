@@ -463,3 +463,117 @@ button:hover {
     transform: translateX(100%) rotateY(-180deg);
     opacity: 0;
 }
+
+body {
+    background-color: #e3e6e8;
+    font-family: 'Poppins', sans-serif;
+}
+
+.order-container {
+    background: #fff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+}
+
+.order-card {
+    border: none;
+    border-radius: 12px;
+    transition: transform 0.3s ease-in-out;
+    margin-bottom: 15px;
+}
+
+.order-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.btn-custom {
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+}
+
+/* Pagination Styling */
+.pagination-custom .page-link {
+    border: none;
+    color: #007bff;
+    background-color: #f8f9fa;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.pagination-custom .page-link:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.pagination-custom .page-item.active .page-link {
+    background-color: #007bff;
+    color: white;
+    border-radius: 8px;
+    padding: 8px 15px;
+    font-weight: 600;
+}
+
+.pagination-custom .page-item.disabled .page-link {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.order-details {
+    display: none;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.order-details.show {
+    display: block;
+}
+
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+    margin-left: 10px;
+}
+
+.bg-NEW {
+    background-color: #17a2b8;
+}
+
+.bg-PROCESSING {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.bg-DELIVERING {
+    background-color: #6f42c1;
+}
+
+.bg-DELIVERED {
+    background-color: #28a745;
+}
+
+.bg-CANCELLED {
+    background-color: #dc3545;
+}
+
+.search-bar {
+    transition: width 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Animation for status update */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.status-update-message {
+    animation: fadeIn 0.3s ease-in-out;
+}

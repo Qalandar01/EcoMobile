@@ -36,9 +36,9 @@
         </div>
         <div class="user-info">
             <div class="profile-circle">
-                <img id="userProfileImage" src="https://via.placeholder.com/40" alt="User Profile" />
+                <img id="userProfileImage"  alt="User Profile" />
             </div>
-            <span class="text-white" id="userFullName">Ilon Mask</span>
+            <span class="text-white" id="userFullName"></span>
         </div>
     </div>
 </nav>
@@ -158,45 +158,60 @@
 </div>
 
 <!-- Product Modal (Add/Edit) -->
+<!-- Product Modal (Add/Edit) -->
 <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="productModalLabel">Add/Edit Product</h5>
+                <h5 class="modal-title" id="productModalLabel">Mahsulotni tahrirlash</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form id="productForm">
-                    <div class="mb-3">
-                        <label for="productName" class="form-label">Product Name</label>
-                        <input type="text" class="form-control" id="productName" required />
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="productName" class="form-label">Mahsulot nomi</label>
+                                <input type="text" class="form-control" id="productName" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="productPrice" class="form-label">Narxi</label>
+                                <input type="number" step="0.01" class="form-control" id="productPrice" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="productAmount" class="form-label">Miqdori</label>
+                                <input type="number" class="form-control" id="productAmount" required />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="productCategory" class="form-label">Kategoriya</label>
+                                <select class="form-select" id="productCategory" required></select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productBrand" class="form-label">Brend</label>
+                                <select class="form-select" id="productBrand" required></select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productSize" class="form-label">O'lcham</label>
+                                <select class="form-select" id="productSize" required></select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productColor" class="form-label">Rangi</label>
+                                <select class="form-select" id="productColor" required></select>
+                            </div>
+                        </div>
                     </div>
                     <div class="mb-3">
-                        <label for="productPrice" class="form-label">Price</label>
-                        <input type="number" step="0.01" class="form-control" id="productPrice" required />
-                    </div>
-                    <div class="mb-3">
-                        <label for="productCategory" class="form-label">Category</label>
-                        <select class="form-select" id="productCategory" required></select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="productBrand" class="form-label">Brand</label>
-                        <select class="form-select" id="productBrand" required></select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="productSize" class="form-label">Size</label>
-                        <select class="form-select" id="productSize" required></select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="productColor" class="form-label">Color</label>
-                        <select class="form-select" id="productColor" required></select>
+                        <label for="productDescription" class="form-label">Tavsif</label>
+                        <textarea class="form-control" id="productDescription" rows="3"></textarea>
                     </div>
                     <input type="hidden" id="productId" />
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="saveProductBtn">Save</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor qilish</button>
+                <button type="button" class="btn btn-primary" id="saveProductBtn">Saqlash</button>
             </div>
         </div>
     </div>
@@ -207,16 +222,16 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteProductModalLabel">Delete Product</h5>
+                <h5 class="modal-title" id="deleteProductModalLabel">Mahsulotni o'chirish</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to delete this product?</p>
+                <p>Haqiqatan ham bu mahsulotni o'chirmoqchimisiz?</p>
                 <input type="hidden" id="deleteProductId" />
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteProductBtn">Delete</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor qilish</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteProductBtn">O'chirish</button>
             </div>
         </div>
     </div>
@@ -243,7 +258,10 @@
     // Navbar tugmalari
     document.getElementById('btn-category').addEventListener('click', () => showSection('category-section'));
     document.getElementById('btn-product').addEventListener('click', () => showSection('product-section'));
-    document.getElementById('btn-order').addEventListener('click', () => showSection('order-section'));
+    // Order tugmasiga bosilganda orderManagement.html sahifasiga yo'naltirish
+    document.getElementById('btn-order').addEventListener('click', () => {
+        window.location.href = "orderManagement.html";
+    });
 
     // -------------------- CATEGORY FUNCTIONS --------------------
     function fetchCategories() {
@@ -313,8 +331,9 @@
     });
 
     // -------------------- PRODUCT FUNCTIONS --------------------
+    // -------------------- PRODUCT FUNCTIONS --------------------
     function fetchProducts() {
-        request.get("products")
+        request.get("/products")
             .then(response => {
                 const products = response.data;
                 const tbody = document.getElementById("product-table-body");
@@ -322,94 +341,168 @@
                 products.forEach(product => {
                     const row = document.createElement("tr");
                     row.innerHTML = `
-                        <td>${product.productName}</td>
-                        <td>${product.price}</td>
-                        <td>${product.category?.name || "N/A"}</td>
-                        <td>${product.productBrand?.productBrand || "N/A"}</td>
-                        <td>${product.size?.productSize || "N/A"}</td>
-                        <td>${product.color?.productColor || "N/A"}</td>
-                        <td>
-                            <button class="btn btn-outline-primary" onclick="openEditProductModal(${product.id})">
-                                Edit
-                            </button>
-                            <button class="btn btn-outline-danger" onclick="openDeleteProductModal(${product.id})">
-                                Delete
-                            </button>
-                        </td>
-                    `;
+                    <td>${product.name}</td>
+                    <td>${product.price}</td>
+                    <td>${product.categoryName || "N/A"}</td>
+                    <td>${product.productBrand || "N/A"}</td>
+                    <td>${product.productSize || "N/A"}</td>
+                    <td>${product.productColor || "N/A"}</td>
+                    <td>
+                        <button class="btn btn-outline-primary" onclick="openEditProductModal(${product.id})">
+                            Edit
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="openDeleteProductModal(${product.id})">
+                            Delete
+                        </button>
+                    </td>
+                `;
                     tbody.appendChild(row);
                 });
             })
-            .catch(error => console.error("Error fetching products:", error));
+            .catch(error => {
+                console.error("Error fetching products:", error);
+                alert("Mahsulotlarni yuklashda xatolik yuz berdi");
+            });
     }
 
-    // Mahsulotni GET so'rovi orqali olish va modalni to'ldirish
+    // Modalni ochish va ma'lumotlarni to'ldirish
     function openEditProductModal(id) {
-        axios.get(`http://localhost:8080/api/products/${id}`)
+        request.get(`/products/${id}`)
             .then(response => {
                 const product = response.data;
                 document.getElementById("productId").value = product.id;
-                document.getElementById("productName").value = product.productName || "";
+                document.getElementById("productName").value = product.name || "";
                 document.getElementById("productPrice").value = product.price || "";
-                document.getElementById("productCategory").value = product.category?.id || "";
-                document.getElementById("productBrand").value = product.productBrand?.id || "";
-                document.getElementById("productSize").value = product.size?.id || "";
-                document.getElementById("productColor").value = product.color?.id || "";
+                document.getElementById("productDescription").value = product.description || "";
+                document.getElementById("productAmount").value = product.amount || "";
+
+                // Kategoriyalar ro'yxatini yuklash
+                request.get("/category").then(catResponse => {
+                    const categorySelect = document.getElementById("productCategory");
+                    categorySelect.innerHTML = '<option value="">Select Category</option>';
+                    catResponse.data.forEach(cat => {
+                        const option = document.createElement("option");
+                        option.value = cat.id;
+                        option.textContent = cat.name;
+                        option.selected = (cat.id === product.categoryId);
+                        categorySelect.appendChild(option);
+                    });
+                });
+
+                // Brendlar ro'yxatini yuklash
+                request.get("/brands").then(brandResponse => {
+                    const brandSelect = document.getElementById("productBrand");
+                    brandSelect.innerHTML = '<option value="">Select Brand</option>';
+                    brandResponse.data.forEach(brand => {
+                        const option = document.createElement("option");
+                        option.value = brand.id;
+                        option.textContent = brand.productBrand;
+                        option.selected = (brand.id === product.productBrandId);
+                        brandSelect.appendChild(option);
+                    });
+                });
+
+                // O'lchamlar ro'yxatini yuklash
+                request.get("/sizes").then(sizeResponse => {
+                    const sizeSelect = document.getElementById("productSize");
+                    sizeSelect.innerHTML = '<option value="">Select Size</option>';
+                    sizeResponse.data.forEach(size => {
+                        const option = document.createElement("option");
+                        option.value = size.id;
+                        option.textContent = size.productSize;
+                        option.selected = (size.id === product.sizeId);
+                        sizeSelect.appendChild(option);
+                    });
+                });
+
+                // Ranglar ro'yxatini yuklash
+                request.get("/colors").then(colorResponse => {
+                    const colorSelect = document.getElementById("productColor");
+                    colorSelect.innerHTML = '<option value="">Select Color</option>';
+                    colorResponse.data.forEach(color => {
+                        const option = document.createElement("option");
+                        option.value = color.id;
+                        option.textContent = color.productColor;
+                        option.selected = (color.id === product.colorId);
+                        colorSelect.appendChild(option);
+                    });
+                });
+
                 new bootstrap.Modal(document.getElementById("productModal")).show();
             })
             .catch(error => {
                 console.error("Error fetching product details:", error);
-                alert("Mahsulot tafsilotlarini olishda xatolik yuz berdi.");
+                alert("Mahsulot tafsilotlarini olishda xatolik yuz berdi");
             });
     }
 
-    document.getElementById("saveProductBtn").addEventListener("click", function () {
+    // Mahsulotni yangilash/saqlash
+    document.getElementById("saveProductBtn").addEventListener("click", function() {
         const id = document.getElementById("productId").value;
         const productData = {
-            productName: document.getElementById("productName").value,
+            name: document.getElementById("productName").value,
             price: parseFloat(document.getElementById("productPrice").value),
-            category: { id: document.getElementById("productCategory").value },
-            productBrand: { id: document.getElementById("productBrand").value },
-            size: { id: document.getElementById("productSize").value },
-            color: { id: document.getElementById("productColor").value }
+            description: document.getElementById("productDescription").value,
+            amount: parseInt(document.getElementById("productAmount").value),
+            categoryId: parseInt(document.getElementById("productCategory").value),
+            productBrandId: parseInt(document.getElementById("productBrand").value),
+            sizeId: parseInt(document.getElementById("productSize").value),
+            colorId: parseInt(document.getElementById("productColor").value)
         };
 
-        if (id) {
-            request.put(`products/${id}`, productData)
-                .then(() => {
-                    bootstrap.Modal.getInstance(document.getElementById("productModal")).hide();
-                    fetchProducts();
-                })
-                .catch(error => console.error("Error updating product:", error));
-        } else {
-            request.post("products", productData)
-                .then(() => {
-                    bootstrap.Modal.getInstance(document.getElementById("productModal")).hide();
-                    fetchProducts();
-                })
-                .catch(error => console.error("Error adding product:", error));
+        // Validatsiya
+        if (!productData.name || !productData.price || isNaN(productData.price) ||
+            !productData.categoryId || !productData.productBrandId ||
+            !productData.sizeId || !productData.colorId) {
+            alert("Iltimos, barcha majburiy maydonlarni to'ldiring!");
+            return;
         }
+
+        const requestPromise = id
+            ? request.put(`/products/${id}`, productData)
+            : request.post("/products/save", productData);
+
+        requestPromise
+            .then(() => {
+                bootstrap.Modal.getInstance(document.getElementById("productModal")).hide();
+                fetchProducts();
+                alert("Mahsulot muvaffaqiyatli saqlandi!");
+            })
+            .catch(error => {
+                console.error("Error saving product:", error);
+                alert("Mahsulotni saqlashda xatolik yuz berdi: " +
+                    (error.response?.data?.message || error.message));
+            });
     });
 
+    // O'chirish modali
     function openDeleteProductModal(id) {
         document.getElementById("deleteProductId").value = id;
         new bootstrap.Modal(document.getElementById("deleteProductModal")).show();
     }
 
-    document.getElementById("confirmDeleteProductBtn").addEventListener("click", function () {
+    // Mahsulotni o'chirish
+    document.getElementById("confirmDeleteProductBtn").addEventListener("click", function() {
         const id = document.getElementById("deleteProductId").value;
-        request.delete(`products/${id}`)
+
+        request.delete(`/products/${id}`)
             .then(() => {
                 bootstrap.Modal.getInstance(document.getElementById("deleteProductModal")).hide();
                 fetchProducts();
+                alert("Mahsulot muvaffaqiyatli o'chirildi!");
             })
-            .catch(error => console.error("Error deleting product:", error));
+            .catch(error => {
+                console.error("Error deleting product:", error);
+                alert("Mahsulotni o'chirishda xatolik yuz berdi: " +
+                    (error.response?.data?.message || error.message));
+            });
     });
 
     // -------------------- NEW: Add Product Button Redirect --------------------
     document.getElementById("btn-add-product").addEventListener("click", function () {
         window.location.href = "admin.html";
     });
+
     document.addEventListener("DOMContentLoaded", function() {
         const userId = localStorage.getItem("userId");
         const token = localStorage.getItem("token");
@@ -425,17 +518,14 @@
         })
             .then(response => {
                 const user = response.data;
-
-                // Foydalanuvchi rasmini va ism-familiyasini o'rnatish
                 const userProfileImage = document.getElementById("userProfileImage");
                 const userFullName = document.getElementById("userFullName");
 
                 if (user.attachmentId) {
                     userProfileImage.src = `http://localhost:8080/file/user/${userId}`;
                 } else {
-                    userProfileImage.src = "https://via.placeholder.com/40"; // Agar rasm mavjud bo'lmasa, standart rasm
+                    userProfileImage.src = "https://via.placeholder.com/40";
                 }
-
                 userFullName.textContent = `${user.firstname} ${user.lastname}`;
             })
             .catch(error => {

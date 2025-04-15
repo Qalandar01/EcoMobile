@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MyStore - Mening Buyurtmalarim</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --secondary: #6b7280;
+      --dark: #1f2937;
+      --light: #f9fafb;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --border-radius: 12px;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f5f7fa;
+      color: var(--dark);
+      line-height: 1.6;
+    }
+
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--primary);
+    }
+
+    .navbar {
+      box-shadow: var(--shadow);
+      padding: 1rem 0;
+    }
+
+    .nav-link {
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: var(--border-radius);
+      transition: all 0.3s ease;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      background-color: rgba(37, 99, 235, 0.1);
+      color: var(--primary);
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      border: 2px solid var(--primary);
+    }
+
+    .dropdown-menu {
+      border: none;
+      box-shadow: var(--shadow-lg);
+      border-radius: var(--border-radius);
+    }
+
+    .dropdown-item {
+      padding: 0.5rem 1.5rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .dropdown-item:hover {
+      background-color: rgba(37, 99, 235, 0.1);
+      color: var(--primary);
+    }
+
+    .main-container {
+      margin-top: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    /* Orders */
+    .page-header {
+      margin-bottom: 2rem;
+    }
+
+    .page-title {
+      font-weight: 700;
+      color: var(--dark);
+    }
+
+    .order-card {
+      border: none;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .order-card:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      background-color: #f8f9fa;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .order-id {
+      font-weight: 600;
+      color: var(--dark);
+      margin: 0;
+    }
+
+    .order-date {
+      color: var(--secondary);
+      font-size: 0.9rem;
+      margin: 0;
+    }
+
+    .order-status {
+      font-size: 0.85rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 50px;
+      font-weight: 500;
+    }
+
+    .status-new {
+      background-color: rgba(37, 99, 235, 0.1);
+      color: var(--primary);
+    }
+
+    .status-processing {
+      background-color: rgba(245, 158, 11, 0.1);
+      color: var(--warning);
+    }
+
+    .status-shipped {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+    }
+
+    .status-delivered {
+      background-color: rgba(16, 185, 129, 0.2);
+      color: var(--success);
+    }
+
+    .status-cancelled {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+    }
+
+    .order-body {
+      padding: 1.5rem;
+    }
+
+    .order-items {
+      margin-bottom: 1.5rem;
+    }
+
+    .order-item {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .order-item:last-child {
+      border-bottom: none;
+    }
+
+    .item-details {
+      flex-grow: 1;
+    }
+
+    .item-name {
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+
+    .item-price {
+      color: var(--secondary);
+      font-size: 0.9rem;
+    }
+
+    .item-quantity {
+      background-color: rgba(37, 99, 235, 0.1);
+      color: var(--primary);
+      font-size: 0.85rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 50px;
+      margin-left: 1rem;
+    }
+
+    .order-summary {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .order-total-label {
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    .order-total-value {
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 1.25rem;
+    }
+
+    .order-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 1rem;
+    }
+
+    .btn-order-action {
+      margin-left: 0.5rem;
+      font-size: 0.9rem;
+      padding: 0.5rem 1rem;
+      border-radius: var(--border-radius);
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      border-color: var(--primary-hover);
+    }
+
+    .btn-outline-primary {
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .btn-outline-primary:hover {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .empty-orders {
+      text-align: center;
+      padding: 3rem 0;
+    }
+
+    .empty-icon {
+      font-size: 3rem;
+      color: var(--secondary);
+      margin-bottom: 1rem;
+    }
+
+    .empty-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .empty-text {
+      color: var(--secondary);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Notification bell styles */
+    .notification-bell {
+      position: relative;
+      cursor: pointer;
+      margin-right: 15px;
+    }
+
+    .notification-bell i {
+      font-size: 1.2rem;
+      color: var(--secondary);
+      transition: color 0.3s ease;
+    }
+
+    .notification-bell:hover i {
+      color: var(--primary);
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -8px;
+      background-color: var(--danger);
+      color: white;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Loading spinner */
+    .loading-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 3rem 0;
+    }
+
+    .spinner {
+      width: 3rem;
+      height: 3rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .order-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .order-status {
+        margin-top: 0.5rem;
+      }
+
+      .order-summary {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .order-total-value {
+        margin-top: 0.5rem;
+      }
+
+      .order-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .btn-order-action {
+        margin-left: 0;
+        margin-top: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header: Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="product.html">
+      <i class="fas fa-store-alt me-2"></i>
+      MyStore
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <!-- Left side navigation -->
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="product.html">
+            <i class="fas fa-home me-1"></i> Bosh sahifa
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="basket.html">
+            <i class="fas fa-shopping-cart me-1"></i> Savat
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="user-orders.html">
+            <i class="fas fa-clipboard-list me-1"></i> Buyurtmalar
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="favourite-products.html">
+            <i class="fas fa-heart me-1"></i> Sevimlilar
+          </a>
+        </li>
+      </ul>
+
+      <!-- Right side: Search, notifications and user profile -->
+      <div class="d-flex align-items-center">
+        <form class="d-flex me-3">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Qidirish..." aria-label="Search">
+            <button class="btn btn-outline-primary" type="submit">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </form>
+
+        <!-- Notification Bell -->
+        <div class="notification-bell dropdown">
+          <a class="nav-link" href="#" role="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-bell"></i>
+            <span class="notification-badge">3</span>
+          </a>
+          <div class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="width: 320px; padding: 0;">
+            <div class="p-3 border-bottom">
+              <div class="d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">Bildirishnomalar</h6>
+                <a href="#" class="text-primary" style="font-size: 0.8rem;">Barchasini o'qilgan deb belgilash</a>
+              </div>
+            </div>
+            <div style="max-height: 300px; overflow-y: auto;">
+              <a href="#" class="dropdown-item p-3 border-bottom bg-light">
+                <div class="d-flex">
+                  <div class="flex-shrink-0">
+                    <div class="bg-primary bg-opacity-10 rounded-circle p-2">
+                      <i class="fas fa-box text-primary"></i>
+                    </div>
+                  </div>
+                  <div class="ms-3">
+                    <p class="mb-1 fw-medium">Sizning buyurtmangiz yetkazib berildi</p>
+                    <p class="text-muted mb-0" style="font-size: 0.8rem;">2 soat oldin</p>
+                  </div>
+                </div>
+              </a>
+              <a href="#" class="dropdown-item p-3 border-bottom">
+                <div class="d-flex">
+                  <div class="flex-shrink-0">
+                    <div class="bg-primary bg-opacity-10 rounded-circle p-2">
+                      <i class="fas fa-tag text-primary"></i>
+                    </div>
+                  </div>
+                  <div class="ms-3">
+                    <p class="mb-1 fw-medium">Yangi chegirma! Barcha smartfonlarga 15% chegirma</p>
+                    <p class="text-muted mb-0" style="font-size: 0.8rem;">Kecha</p>
+                  </div>
+                </div>
+              </a>
+              <a href="#" class="dropdown-item p-3">
+                <div class="d-flex">
+                  <div class="flex-shrink-0">
+                    <div class="bg-primary bg-opacity-10 rounded-circle p-2">
+                      <i class="fas fa-heart text-primary"></i>
+                    </div>
+                  </div>
+                  <div class="ms-3">
+                    <p class="mb-1 fw-medium">Siz kuzatayotgan mahsulot yana sotuvda</p>
+                    <p class="text-muted mb-0" style="font-size: 0.8rem;">3 kun oldin</p>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="p-3 border-top text-center">
+              <a href="#" class="text-primary">Barcha bildirishnomalarni ko'rish</a>
+            </div>
+          </div>
+        </div>
+
+        <ul class="navbar-nav">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <img id="navbarProfileImage" src="https://via.placeholder.com/40" class="rounded-circle user-avatar me-2" alt="User Image">
+              <span class="d-none d-lg-inline" id="navbarUsername">Ism Familiya</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="settings.html"><i class="fas fa-user-cog me-2"></i> Profil</a></li>
+              <li><a class="dropdown-item" href="favourite-products.html"><i class="fas fa-heart me-2"></i> Sevimlilar</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="login.html" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i> Chiqish</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="container main-container">
+  <div class="page-header d-flex justify-content-between align-items-center">
+    <h1 class="page-title">
+      <i class="fas fa-clipboard-list me-2"></i> Mening Buyurtmalarim
+    </h1>
+  </div>
+
+  <!-- Orders Container -->
+  <div id="ordersContainer">
+    <!-- Loading spinner will be replaced with orders -->
+    <div class="loading-container">
+      <div class="spinner-border text-primary spinner" role="status">
+        <span class="visually-hidden">Yuklanmoqda...</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-dark text-white py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4 mb-4 mb-lg-0">
+        <h5 class="mb-3"><i class="fas fa-store-alt me-2"></i> MyStore</h5>
+        <p class="text-muted">Eng yaxshi mahsulotlar faqat bizda. Biz bilan xarid qilishning zavqini his eting!</p>
+        <div class="social-icons">
+          <a href="#" class="text-white me-2"><i class="fab fa-telegram"></i></a>
+          <a href="#" class="text-white me-2"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="text-white me-2"><i class="fab fa-facebook"></i></a>
+          <a href="#" class="text-white"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+      <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
+        <h5 class="mb-3">Ma'lumot</h5>
+        <ul class="list-unstyled">
+          <li class="mb-2"><a href="#" class="text-muted">Biz haqimizda</a></li>
+          <li class="mb-2"><a href="#" class="text-muted">Yetkazib berish</a></li>
+          <li class="mb-2"><a href="#" class="text-muted">To'lov usullari</a></li>
+          <li class="mb-2"><a href="#" class="text-muted">Garantiya</a></li>
+          <li><a href="#" class="text-muted">Kontaktlar</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
+        <h5 class="mb-3">Foydalanuvchi</h5>
+        <ul class="list-unstyled">
+          <li class="mb-2"><a href="#" class="text-muted">Profil</a></li>
+          <li class="mb-2"><a href="#" class="text-muted">Savat</a></li>
+          <li class="mb-2"><a href="#" class="text-muted">Sevimlilar</a></li>
+          <li class="mb-2"><a href="#" class="text-muted">Buyurtmalar</a></li>
+          <li><a href="#" class="text-muted">Chiqish</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-4">
+        <h5 class="mb-3">Yangiliklar uchun obuna bo'ling</h5>
+        <p class="text-muted mb-3">Yangi mahsulotlar va chegirmalar haqida birinchi bo'lib xabardor bo'ling.</p>
+        <form class="mb-3">
+          <div class="input-group">
+            <input type="email" class="form-control" placeholder="Email manzilingiz" required>
+            <button class="btn btn-primary" type="submit">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+        </form>
+        <div class="d-flex align-items-center">
+          <i class="fas fa-phone-alt me-2"></i>
+          <div>
+            <small class="text-muted">Qo'ng'iroq qiling</small>
+            <h6 class="mb-0">+998 90 123 45 67</h6>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr class="my-4 bg-secondary">
+    <div class="row">
+      <div class="col-md-6 text-center text-md-start">
+        <p class="small text-muted mb-0">&copy; 2023 MyStore. Barcha huquqlar himoyalangan.</p>
+      </div>
+      <div class="col-md-6 text-center text-md-end">
+        <img src="https://via.placeholder.com/200x30?text=Payment+Methods" alt="Payment Methods" class="img-fluid">
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Axios va Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Foydalanuvchi ma'lumotlari
+  let token = localStorage.getItem("token");
+  const userId = localStorage.getItem("userId");
+
+  // Check user authentication
+  if (!token || !userId) {
+    window.location.href = "login.html";
+  }
+
+  // Load user data
+  if (userId && token) {
+    axios.get(`http://localhost:8080/api/user/${userId}`, {
+      headers: { token: token }
+    })
+            .then(response => {
+              const user = response.data;
+              document.getElementById("navbarUsername").textContent = `${user.firstname} ${user.lastname}`;
+
+              if (user.attachmentId) {
+                document.getElementById("navbarProfileImage").src = `http://localhost:8080/file/${user.attachmentId}`;
+              } else {
+                document.getElementById("navbarProfileImage").src = "https://via.placeholder.com/40";
+              }
+            })
+            .catch(error => {
+              console.error("Error fetching user details:", error);
+            });
+  }
+
+  // API instance
+  const apiRequest = axios.create({
+    baseURL: "http://localhost:8080/api/",
+    headers: { token: token }
+  });
+
+  // Fetch user orders
+  async function fetchUserOrders() {
+    try {
+      const response = await apiRequest.get(`orders/user/${userId}`);
+      displayOrders(response.data);
+    } catch (error) {
+      console.error('Buyurtmalarni yuklashda xatolik:', error);
+      showErrorMessage('Buyurtmalarni yuklashda xatolik yuz berdi. Iltimos, keyinroq qayta urinib ko\'ring.');
+    }
+  }
+
+  // Display orders
+  function displayOrders(orders) {
+    const ordersContainer = document.getElementById('ordersContainer');
+
+    if (!orders || orders.length === 0) {
+      ordersContainer.innerHTML = `
+                <div class="empty-orders">
+                    <i class="fas fa-clipboard-list empty-icon"></i>
+                    <h3 class="empty-title">Buyurtmalar mavjud emas</h3>
+                    <p class="empty-text">Siz hali hech qanday buyurtma bermadingiz.</p>
+                    <a href="product.html" class="btn btn-primary">
+                        <i class="fas fa-shopping-cart me-2"></i> Xarid qilishni boshlash
+                    </a>
+                </div>
+            `;
+      return;
+    }
+
+    let ordersHTML = '';
+
+    // Sort orders by date (newest first)
+    orders.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    orders.forEach(order => {
+      const statusClass = getStatusClass(order.status);
+      const statusText = getStatusText(order.status);
+      const formattedDate = formatDate(order.date);
+
+      let orderItemsHTML = '';
+      let totalItems = 0;
+
+      order.orderItems.forEach(item => {
+        totalItems += item.quantity;
+        orderItemsHTML += `
+                    <div class="order-item">
+                        <div class="item-details">
+                            <h6 class="item-name">${item.productName}</h6>
+                            <span class="item-price">${formatPrice(item.price)} so'm</span>
+                        </div>
+                        <span class="item-quantity">${item.quantity} dona</span>
+                    </div>
+                `;
+      });
+
+      ordersHTML += `
+                <div class="order-card">
+                    <div class="order-header">
+                        <div>
+                            <h5 class="order-id">Buyurtma #${order.id}</h5>
+                            <p class="order-date">${formattedDate}</p>
+                        </div>
+                        <span class="order-status ${statusClass}">${statusText}</span>
+                    </div>
+                    <div class="order-body">
+                        <div class="order-items">
+                            ${orderItemsHTML}
+                        </div>
+                        <div class="order-summary">
+                            <span class="order-total-label">Jami: ${totalItems} mahsulot</span>
+                            <span class="order-total-value">${formatPrice(order.total)} so'm</span>
+                        </div>
+                        <div class="order-actions">
+                            <button class="btn btn-outline-primary btn-order-action" onclick="viewOrderDetails(${order.id})">
+                                <i class="fas fa-info-circle me-1"></i> Batafsil
+                            </button>
+                            ${order.status === 'NEW' ? `
+                                <button class="btn btn-outline-danger btn-order-action" onclick="cancelOrder(${order.id})">
+                                    <i class="fas fa-times me-1"></i> Bekor qilish
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+    });
+
+    ordersContainer.innerHTML = ordersHTML;
+  }
+
+  // Get status class for styling
+  function getStatusClass(status) {
+    switch (status) {
+      case 'NEW': return 'status-new';
+      case 'PROCESSING': return 'status-processing';
+      case 'SHIPPED': return 'status-shipped';
+      case 'DELIVERED': return 'status-delivered';
+      case 'CANCELLED': return 'status-cancelled';
+      default: return 'status-new';
+    }
+  }
+
+  // Get status text in Uzbek
+  function getStatusText(status) {
+    switch (status) {
+      case 'NEW': return 'Yangi';
+      case 'PROCESSING': return 'Jarayonda';
+      case 'SHIPPED': return 'Yo\'lda';
+      case 'DELIVERED': return 'Yetkazildi';
+      case 'CANCELLED': return 'Bekor qilingan';
+      default: return 'Yangi';
+    }
+  }
+
+  // Format date to Uzbek format
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}.${month}.${year}`;
+  }
+
+  // Format price with thousands separator
+  function formatPrice(price) {
+    return price ? price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") : "0";
+  }
+
+  // View order details
+  function viewOrderDetails(orderId) {
+    // In a real app, you might redirect to a detailed order page
+    window.location.href = `order-details.html?id=${orderId}`;
+  }
+
+  // Cancel order
+  async function cancelOrder(orderId) {
+    if (!confirm('Haqiqatan ham buyurtmani bekor qilmoqchimisiz?')) {
+      return;
+    }
+
+    try {
+      await apiRequest.post('/orders/status', {
+        orderId: orderId,
+        status: 'CANCELLED'
+      });
+
+      showToast('Buyurtma bekor qilindi', 'success');
+
+      // Refresh orders list
+      fetchUserOrders();
+    } catch (error) {
+      console.error('Buyurtmani bekor qilishda xatolik:', error);
+      showToast('Buyurtmani bekor qilishda xatolik yuz berdi', 'danger');
+    }
+  }
+
+  // Show error message
+  function showErrorMessage(message) {
+    const ordersContainer = document.getElementById('ordersContainer');
+    ordersContainer.innerHTML = `
+            <div class="alert alert-danger" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i> ${message}
+                <button class="btn btn-outline-danger btn-sm ms-3" onclick="fetchUserOrders()">
+                    <i class="fas fa-sync-alt me-1"></i> Qayta urinish
+                </button>
+            </div>
+        `;
+  }
+
+  // Show toast notification
+  function showToast(message, type = "info") {
+    const toastContainer = document.createElement('div');
+    toastContainer.innerHTML = `
+            <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+                <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header bg-${type} text-white">
+                        <strong class="me-auto">Xabar</strong>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                </div>
+            </div>
+        `;
+
+    document.body.appendChild(toastContainer);
+
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+      toastContainer.remove();
+    }, 5000);
+  }
+
+  // Logout function
+  function logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("role");
+    window.location.href = "login.html";
+  }
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', function() {
+    fetchUserOrders();
+  });
+</script>
+</body>
+</html>
